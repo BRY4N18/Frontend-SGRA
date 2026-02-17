@@ -1,3 +1,4 @@
+import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { authGuard, loginGuard, roleGuard } from './core/guards/auth.guard';
 
