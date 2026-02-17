@@ -1,0 +1,63 @@
+<div class="modal fade" id="createRoleModal" tabindex="-1" aria-labelledby="createRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+
+      <div class="modal-header border-bottom-0 pt-4 pb-2 px-4">
+        <div>
+          <h5 class="modal-title fw-bold fs-4 text-dark mb-1" id="createRoleModalLabel">Nuevo Rol</h5>
+          <p class="text-muted small mb-0">Defina los detalles del nuevo nivel de acceso.</p>
+        </div>
+        <button type="button" class="btn-close mb-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body px-4 py-3">
+        <form [formGroup]="createRoleForm" (ngSubmit)="onSubmitCreate()" class="d-flex flex-column gap-3">
+
+          <div>
+            <div class="form-floating">
+              <input type="text" class="form-control bg-light border-0 shadow-none" id="name" formControlName="name" placeholder="Ej: Auditor"
+                     [ngClass]="{'is-invalid': f['name'].invalid && (f['name'].dirty || f['name'].touched)}">
+              <label for="name" class="text-muted fw-medium">Nombre del Rol *</label>
+            </div>
+            @if (f['name'].hasError('required') && f['name'].touched) { <div class="text-danger mt-1 small">El nombre es obligatorio.</div> }
+          </div>
+
+          <div>
+            <div class="form-floating">
+              <textarea class="form-control bg-light border-0 shadow-none" id="description" formControlName="description" placeholder="Descripción" style="height: 100px"
+                        [ngClass]="{'is-invalid': f['description'].invalid && (f['description'].dirty || f['description'].touched)}"></textarea>
+              <label for="description" class="text-muted fw-medium">Descripción *</label>
+            </div>
+            @if (f['description'].invalid && f['description'].touched) { <div class="text-danger mt-1 small">La descripción es obligatoria.</div> }
+          </div>
+
+          <div>
+            <div class="form-floating">
+              <select class="form-select bg-light border-0 shadow-none" id="status" formControlName="status"
+                      [ngClass]="{'is-invalid': f['status'].invalid && f['status'].touched}">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+              <label for="status" class="text-muted fw-medium">Estado Inicial *</label>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer border-top-0 px-4 pb-4 pt-1 justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-4 fw-medium text-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary rounded-3 px-4 fw-medium shadow-sm" style="background-color: #0d1b2a; border: none;"
+                [disabled]="createRoleForm.invalid || isSubmitting" (click)="onSubmitCreate()">
+          @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Guardando...
+          } @else {
+            Guardar Rol
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

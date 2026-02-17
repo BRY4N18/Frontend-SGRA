@@ -6,169 +6,17 @@
       <p class="text-muted mb-0">Administra las cuentas y accesos del sistema.</p>
     </div>
     <button type="button" class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2"
-            data-bs-toggle="modal" data-bs-target="#createUserModal">
+            (click)="openModal()">
       <i class="bi bi-plus-lg fw-bold"></i> Nuevo Usuario
     </button>
   </div>
 
   <div class="card border-0 rounded-4 shadow-sm">
     <div class="card-body p-4">
-
-      <div class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-8">
-          <div class="input-group">
-            <span class="input-group-text bg-light border-end-0 ps-3 text-muted">
-              <i class="bi bi-search"></i>
-            </span>
-            <input type="text" class="form-control bg-light border-start-0 ps-0" placeholder="Buscar por nombre, usuario o correo...">
-          </div>
-        </div>
-        <div class="col-md-6 col-lg-4">
-          <select class="form-select bg-light" aria-label="Filtrar por estado">
-            <option selected value="">Todos los estados</option>
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="bg-light text-secondary small text-uppercase fw-bold tracking-wide">
-            <tr>
-              <th scope="col" class="py-3">Usuario</th>
-              <th scope="col" class="py-3">Rol</th>
-              <th scope="col" class="py-3">Estado</th>
-              <th scope="col" class="py-3">Fecha Creación</th>
-              <th scope="col" class="py-3 text-end pe-4">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if (isLoading) {
-              <tr>
-                <td colspan="7" class="text-center py-5 text-muted">
-                  <div class="spinner-border text-success spinner-border-sm me-2" role="status"></div>
-                  Cargando usuarios...
-                </td>
-              </tr>
-            }
-
-            @for (user of users; track user.id) {
-              <tr>
-                <td>{{ user.username }}</td>
-                <td>
-                  <span class="badge bg-light text-dark border fw-medium rounded-pill px-3">
-                    {{ user.role }}
-                  </span>
-                </td>
-                <td>
-                  <span class="badge rounded-pill text-uppercase px-3 fw-bold"
-                        [ngClass]="{
-                          'bg-success-subtle text-success': user.status === 'activo',
-                          'bg-danger-subtle text-danger': user.status === 'inactivo'
-                        }"
-                        style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                    {{ user.status }}
-                  </span>
-                </td>
-                <td class="text-muted">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
-                <td class="text-end pe-4">
-                  <div class="d-inline-flex gap-2">
-                    <button class="btn btn-sm btn-outline-secondary border-0 bg-light-hover" title="Ver detalles">
-                      <i class="bi bi-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">
-                      <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger border-0 bg-light-hover" title="Eliminar">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            } @empty {
-              @if (!isLoading) {
-                <tr>
-                  <td colspan="7" class="text-center py-5 text-muted fw-medium">
-                    <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
-                    No se encontraron usuarios.
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      </div>
-      </div>
-  </div>
-</div>
-
-<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
-
-      <div class="modal-header border-bottom-0 pt-4 pb-0 px-4">
-        <h5 class="modal-title fw-bold fs-4" id="createUserModalLabel">Nuevo Usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <div class="modal-body px-4 pb-2">
-        <p class="text-muted small mb-4">Ingrese las credenciales base y asigne un nivel de acceso.</p>
-
-        <form [formGroup]="createUserForm" (ngSubmit)="onSubmitCreate()" class="row g-3">
-
-          <div class="col-12">
-            <label for="username" class="form-label fw-medium small mb-1">Nombre de Usuario *</label>
-            <div class="input-group">
-              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control bg-light border-start-0 ps-0" id="username" formControlName="username" placeholder="admin01"
-                     [ngClass]="{'is-invalid': f['username'].invalid && (f['username'].dirty || f['username'].touched)}">
-              @if (f['username'].hasError('required') && f['username'].touched) { <div class="invalid-feedback">El usuario es obligatorio.</div> }
-              @if (f['username'].hasError('minlength') && f['username'].touched) { <div class="invalid-feedback">Mínimo 4 caracteres.</div> }
-            </div>
-          </div>
-
-          <div class="col-12">
-            <label for="password" class="form-label fw-medium small mb-1">Contraseña *</label>
-            <div class="input-group">
-              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control bg-light border-start-0 border-end-0 ps-0" id="password" formControlName="password" placeholder="Mínimo 6 caracteres"
-                     [ngClass]="{'is-invalid': f['password'].invalid && (f['password'].dirty || f['password'].touched)}">
-              <span class="input-group-text bg-light border-start-0 text-muted"><i class="bi bi-eye-slash"></i></span>
-              @if (f['password'].invalid && f['password'].touched) {
-                  <div class="invalid-feedback">La contraseña es obligatoria (mín. 6 caracteres).</div>
-              }
-            </div>
-          </div>
-
-          <div class="col-12">
-            <label for="roleId" class="form-label fw-medium small mb-1">Rol Asignado *</label>
-            <select class="form-select bg-light" id="roleId" formControlName="roleId"
-                    [ngClass]="{'is-invalid': f['roleId'].invalid && f['roleId'].touched}">
-              <option value="" selected disabled>Seleccione un rol...</option>
-              @for (role of rolesList; track role.id) {
-                <option [value]="role.id">{{ role.name }}</option>
-              }
-            </select>
-            @if (f['roleId'].invalid && f['roleId'].touched) { <div class="invalid-feedback">Debe seleccionar un rol para el usuario.</div> }
-          </div>
-
-        </form>
-      </div>
-
-      <div class="modal-footer border-top-0 px-4 py-4 mt-2">
-        <button type="button" class="btn btn-light rounded-pill px-4 fw-medium" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-success rounded-pill px-4 fw-medium"
-                [disabled]="createUserForm.invalid || isSubmitting" (click)="onSubmitCreate()">
-          @if (isSubmitting) {
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Creando...
-          } @else {
-            Crear Usuario
-          }
-        </button>
-      </div>
-
+      <app-admin-user-table [users]="users" [isLoading]="isLoading"></app-admin-user-table>
     </div>
   </div>
+
 </div>
+
+<app-admin-user-create-modal (userCreated)="loadUsers()"></app-admin-user-create-modal>
