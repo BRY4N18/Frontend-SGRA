@@ -1,0 +1,109 @@
+<div class="container-fluid">
+  <h1 class="mb-4 fw-bold text-dark">Dashboard de Coordinación</h1>
+
+  <!-- Fila de Tarjetas de Estadísticas -->
+  <div class="row g-3 mb-4">
+
+    <!-- Tarjeta 1: Información Cargada -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm" style="border-left: 4px solid #198754;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted mb-2">Información Cargada</p>
+              <h3 class="mb-0 fw-bold">1,245</h3>
+            </div>
+            <i class="bi bi-cloud-check text-success" style="font-size: 2rem;"></i>
+          </div>
+          <small class="text-success">+12.5% desde el mes pasado</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 2: Espacios Físicos -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm" style="border-left: 4px solid #0d6efd;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted mb-2">Espacios Registrados</p>
+              <h3 class="mb-0 fw-bold">48</h3>
+            </div>
+            <i class="bi bi-building text-primary" style="font-size: 2rem;"></i>
+          </div>
+          <small class="text-primary">Disponibles</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 3: Coordinadores Activos -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm" style="border-left: 4px solid #fd7e14;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted mb-2">Coordinadores Activos</p>
+              <h3 class="mb-0 fw-bold">12</h3>
+            </div>
+            <i class="bi bi-people-fill text-warning" style="font-size: 2rem;"></i>
+          </div>
+          <small class="text-warning">En el sistema</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta 4: Reportes Pendientes -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card border-0 shadow-sm" style="border-left: 4px solid #dc3545;">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <p class="text-muted mb-2">Reportes Pendientes</p>
+              <h3 class="mb-0 fw-bold">5</h3>
+            </div>
+            <i class="bi bi-exclamation-circle text-danger" style="font-size: 2rem;"></i>
+          </div>
+          <small class="text-danger">Requieren revisión</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos/Tabla de Actividad -->
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-bottom">
+          <h5 class="mb-0 fw-bold">Actividad Reciente</h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted text-center py-4">Gráfico de actividad (próximas integraciones)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-bottom">
+          <h5 class="mb-0 fw-bold">Próximas Tareas</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled">
+            <li class="pb-2 border-bottom">
+              <small class="d-block text-muted">Hoy</small>
+              <span class="fw-bold">Revisar cargas de información</span>
+            </li>
+            <li class="py-2 border-bottom">
+              <small class="d-block text-muted">Mañana</small>
+              <span class="fw-bold">Validar espacios físicos</span>
+            </li>
+            <li class="pt-2">
+              <small class="d-block text-muted">La próxima semana</small>
+              <span class="fw-bold">Generar reportes consolidados</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

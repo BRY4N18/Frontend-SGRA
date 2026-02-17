@@ -53,8 +53,26 @@ export const routes: Routes = [
   },
   {
     path: 'coordinator',
-    loadComponent: () => import('./components/coordination/coordinator-dashboard.component').then(m => m.CoordinatorDashboardComponent),
-    canActivate: [authGuard, roleGuard(['coordinator', 'coordinador'])]
+    loadComponent: () => import('./components/coordination/coord-layout/coord-layout.component').then(m => m.CoordLayoutComponent),
+    canActivate: [authGuard, roleGuard(['coordinator', 'coordinador'])],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/coordination/coord-dashboard/coord-dashboard.component').then(m => m.CoordDashboardComponent)
+      },
+      {
+        path: 'dataload',
+        loadComponent: () => import('./components/coordination/coord-dataload/coord-dataload.component').then(m => m.CoordDataloadComponent)
+      },
+      {
+        path: 'physicalspaces',
+        loadComponent: () => import('./components/coordination/coord-physicalspaces/coord-physicalspaces.component').then(m => m.CoordPhysicalspacesComponent)
+      },
+
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+    ]
+
+
   },
   {
     path: '**',

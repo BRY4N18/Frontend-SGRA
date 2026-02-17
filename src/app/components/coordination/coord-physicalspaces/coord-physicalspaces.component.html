@@ -1,0 +1,126 @@
+<div class="container-fluid">
+  <h1 class="mb-4 fw-bold text-dark">Espacios Físicos</h1>
+
+  <!-- Controles y Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Buscar espacios por nombre, código...">
+        <button class="btn btn-outline-success" type="button">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-success fw-bold">
+        <i class="bi bi-plus-circle me-2"></i>Agregar Espacio
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla de Espacios Físicos -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-bottom">
+          <h5 class="mb-0 fw-bold">
+            <i class="bi bi-building me-2"></i>Listado de Espacios Registrados
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre</th>
+                  <th>Capacidad</th>
+                  <th>Tipo</th>
+                  <th>Bloque</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>A-101</strong></td>
+                  <td>Aula de Sistemas</td>
+                  <td>30</td>
+                  <td><span class="badge bg-primary">Aula</span></td>
+                  <td>A</td>
+                  <td><span class="badge bg-success">Disponible</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>B-205</strong></td>
+                  <td>Laboratorio de Redes</td>
+                  <td>20</td>
+                  <td><span class="badge bg-info">Laboratorio</span></td>
+                  <td>B</td>
+                  <td><span class="badge bg-success">Disponible</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>C-301</strong></td>
+                  <td>Aula de Inglés</td>
+                  <td>25</td>
+                  <td><span class="badge bg-primary">Aula</span></td>
+                  <td>C</td>
+                  <td><span class="badge bg-warning">Mantenimiento</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>D-102</strong></td>
+                  <td>Sala de Conferencias</td>
+                  <td>50</td>
+                  <td><span class="badge bg-secondary">Sala Especial</span></td>
+                  <td>D</td>
+                  <td><span class="badge bg-success">Disponible</span></td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" title="Editar">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer bg-light border-top">
+          <nav aria-label="Paginación">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,295 @@
+<div class="container-fluid pt-4 pb-5">
+  <!-- Header Principal -->
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <h1 class="mb-2 fw-bold">Carga de Información Base</h1>
+      <p class="text-muted mb-0">Importa datos de estudiantes y docentes desde archivos Excel</p>
+    </div>
+    <span class="badge bg-light text-success badge-custom">RF26</span>
+  </div>
+
+  <!-- Sección de Carga - Tarjetas Mejoradas -->
+  <div class="row g-4 mb-5">
+    <!-- Tarjeta Estudiantes -->
+    <div class="col-lg-6">
+      <div class="upload-card card-students">
+        <!-- Header Verde - MÁS PROMINENT -->
+        <div class="upload-card-header header-students">
+          <div class="header-icon">
+            <i class="bi bi-check-square-fill"></i>
+          </div>
+          <div class="header-text">
+            <h3>ESTUDIANTES</h3>
+          </div>
+          <span class="ms-auto" *ngIf="studentUploadSuccess">
+            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+          </span>
+        </div>
+
+        <!-- Área de Drop -->
+        <div class="upload-card-body">
+          <div
+            class="dropzone"
+            [class.dragover]="isDraggingStudents"
+            [class.has-file]="selectedFileStudents"
+            (click)="openFileSelectStudents()"
+            (drop)="onDropStudents($event)"
+            (dragover)="onDragOverStudents($event)"
+            (dragleave)="onDragLeaveStudents()">
+
+            <!-- Estado Vacío -->
+            <div *ngIf="!selectedFileStudents" class="dropzone-content">
+              <i class="bi bi-file-earmark"></i>
+              <p class="text-dark fw-bold">Arrastra el archivo aquí</p>
+              <p class="text-muted mb-1">o <span class="link-select">haz clic para seleccionar</span></p>
+              <small class="text-muted">Formatos: .xls, .xlsx • Máx. 10 MB</small>
+            </div>
+
+            <!-- Estado con Archivo -->
+            <div *ngIf="selectedFileStudents" class="dropzone-content file-selected">
+              <i class="bi bi-check-circle-fill text-success"></i>
+              <p class="text-dark fw-bold">{{ selectedFileStudents.name }}</p>
+              <small class="text-muted">{{ (selectedFileStudents.size / 1024 / 1024).toFixed(2) }} MB</small>
+            </div>
+          </div>
+
+          <!-- Progreso -->
+          <div *ngIf="studentUploadProgress > 0" class="mt-3">
+            <div class="progress-container">
+              <div class="progress" style="height: 6px;">
+                <div
+                  class="progress-bar"
+                  [style.width.%]="studentUploadProgress"
+                  [style.background-color]="'var(--color-students)'">
+                </div>
+              </div>
+              <small class="text-muted">{{ studentUploadProgress }}%</small>
+            </div>
+          </div>
+
+          <!-- Botón Subir -->
+          <button
+            class="btn btn-upload btn-students w-100 mt-3"
+            (click)="uploadStudents()"
+            [disabled]="!selectedFileStudents || isUploadingStudents">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span>{{ isUploadingStudents ? 'Subiendo...' : 'Subir Estudiantes' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjeta Docentes -->
+    <div class="col-lg-6">
+      <div class="upload-card card-teachers">
+        <!-- Header Azul - MÁS PROMINENT -->
+        <div class="upload-card-header header-teachers">
+          <div class="header-icon">
+            <i class="bi bi-person-badge-fill"></i>
+          </div>
+          <div class="header-text">
+            <h3>DOCENTES</h3>
+          </div>
+          <span class="ms-auto" *ngIf="teacherUploadSuccess">
+            <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+          </span>
+        </div>
+
+        <!-- Área de Drop -->
+        <div class="upload-card-body">
+          <div
+            class="dropzone"
+            [class.dragover]="isDraggingTeachers"
+            [class.has-file]="selectedFileTeachers"
+            (click)="openFileSelectTeachers()"
+            (drop)="onDropTeachers($event)"
+            (dragover)="onDragOverTeachers($event)"
+            (dragleave)="onDragLeaveTeachers()">
+
+            <!-- Estado Vacío -->
+            <div *ngIf="!selectedFileTeachers" class="dropzone-content">
+              <i class="bi bi-file-earmark"></i>
+              <p class="text-dark fw-bold">Arrastra el archivo aquí</p>
+              <p class="text-muted mb-1">o <span class="link-select">haz clic para seleccionar</span></p>
+              <small class="text-muted">Formatos: .xls, .xlsx • Máx. 10 MB</small>
+            </div>
+
+            <!-- Estado con Archivo -->
+            <div *ngIf="selectedFileTeachers" class="dropzone-content file-selected">
+              <i class="bi bi-check-circle-fill text-success"></i>
+              <p class="text-dark fw-bold">{{ selectedFileTeachers.name }}</p>
+              <small class="text-muted">{{ (selectedFileTeachers.size / 1024 / 1024).toFixed(2) }} MB</small>
+            </div>
+          </div>
+
+          <!-- Progreso -->
+          <div *ngIf="teacherUploadProgress > 0" class="mt-3">
+            <div class="progress-container">
+              <div class="progress" style="height: 6px;">
+                <div
+                  class="progress-bar"
+                  [style.width.%]="teacherUploadProgress"
+                  [style.background-color]="'var(--color-teachers)'">
+                </div>
+              </div>
+              <small class="text-muted">{{ teacherUploadProgress }}%</small>
+            </div>
+          </div>
+
+          <!-- Botón Subir -->
+          <button
+            class="btn btn-upload btn-teachers w-100 mt-3"
+            (click)="uploadTeachers()"
+            [disabled]="!selectedFileTeachers || isUploadingTeachers">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span>{{ isUploadingTeachers ? 'Subiendo...' : 'Subir Docentes' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reporte de Carga - Versión Mejorada -->
+  <div class="card report-card border-0">
+    <!-- Header del Reporte -->
+    <div class="report-header">
+      <div class="d-flex align-items-center gap-3">
+        <input type="checkbox" class="form-check-input" style="cursor: pointer;">
+        <div>
+          <h5 class="mb-1 fw-bold">Reporte de Carga</h5>
+          <span class="badge report-type">Estudiantes</span>
+        </div>
+      </div>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <span class="badge badge-count">
+          <i class="bi bi-check-square"></i>
+          {{ successCount }} exitosos
+        </span>
+        <span class="badge badge-error">
+          <i class="bi bi-exclamation-square"></i>
+          {{ errorCount }} con error
+        </span>
+        <span class="badge badge-rows">
+          <i class="bi bi-file-text"></i>
+          {{ uploadedItems }} filas
+        </span>
+        <button class="btn btn-export-sm">
+          <i class="bi bi-download"></i>
+          Exportar
+        </button>
+      </div>
+    </div>
+
+    <!-- Cuerpo del Reporte -->
+    <div class="report-body">
+      <!-- Filtros -->
+      <div class="d-flex gap-2 mb-3 align-items-center flex-wrap">
+        <input
+          type="text"
+          class="form-control form-control-search"
+          placeholder="Buscar en resultados..."
+          [(ngModel)]="searchTerm"
+          (input)="filterResults()">
+
+        <div class="btn-group" role="group">
+          <button
+            type="button"
+            class="btn btn-filter-active"
+            (click)="filterByStatus('all')"
+            [class.active]="currentFilterStatus === 'all'">
+            Todos
+          </button>
+          <button
+            type="button"
+            class="btn btn-filter"
+            (click)="filterByStatus('success')"
+            [class.active]="currentFilterStatus === 'success'">
+            Exitosos
+          </button>
+          <button
+            type="button"
+            class="btn btn-filter"
+            (click)="filterByStatus('error')"
+            [class.active]="currentFilterStatus === 'error'">
+            Errores
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Resultados -->
+      <div *ngIf="paginatedResults.length > 0; else noResults" class="table-responsive">
+        <table class="table report-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;"><input type="checkbox" class="form-check-input"></th>
+              <th style="width: 40px;">#</th>
+              <th style="width: 100px;">ESTADO</th>
+              <th>MENSAJE DEL SISTEMA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let result of paginatedResults; let i = index">
+              <td><input type="checkbox" class="form-check-input"></td>
+              <td class="text-muted fw-bold">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>
+                <span *ngIf="result.status === 'success'" class="badge-status-success">
+                  <i class="bi bi-check-circle-fill"></i>
+                  Éxito
+                </span>
+                <span *ngIf="result.status === 'error'" class="badge-status-error">
+                  <i class="bi bi-exclamation-circle-fill"></i>
+                  Error
+                </span>
+              </td>
+              <td class="text-message">{{ result.message }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sin Resultados -->
+      <ng-template #noResults>
+        <div class="text-center py-5">
+          <i class="bi bi-inbox" style="font-size: 3rem; color: #ddd;"></i>
+          <p class="text-muted mt-3">Sin resultados aún</p>
+          <p class="text-muted small">Selecciona y sube un archivo Excel para ver el reporte de carga aquí.</p>
+        </div>
+      </ng-template>
+
+      <!-- Paginación -->
+      <div class="pagination-section" *ngIf="uploadResults.length > 0">
+        <small class="text-muted">Mostrando {{ (currentPage - 1) * pageSize + 1 }} a {{ Math.min(currentPage * pageSize, uploadResults.length) }} de {{ uploadResults.length }}</small>
+        <div class="pagination-nav">
+          <button
+            class="btn-page"
+            (click)="previousPage($event)"
+            [disabled]="currentPage === 1">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-number">{{ currentPage }}/{{ getTotalPages() }}</span>
+          <button
+            class="btn-page"
+            (click)="nextPage($event)"
+            [disabled]="!hasNextPage()">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Inputs -->
+  <input
+    type="file"
+    #fileInputStudents
+    (change)="onFileSelectedStudents($event)"
+    accept=".xlsx,.xls,.csv"
+    style="display: none;">
+
+  <input
+    type="file"
+    #fileInputTeachers
+    (change)="onFileSelectedTeachers($event)"
+    accept=".xlsx,.xls,.csv"
+    style="display: none;">
+</div>

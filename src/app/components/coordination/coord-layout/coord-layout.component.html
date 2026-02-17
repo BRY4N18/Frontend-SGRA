@@ -1,0 +1,131 @@
+<div class="d-flex w-100" style="min-height: 100vh; background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif;">
+
+    <!-- SIDEBAR (BARRA LATERAL) -->
+    <nav class="d-flex flex-column flex-shrink-0 p-3 text-white"
+         style="width: 280px; background-color: #0a3d1d; height: 100vh; position: sticky; top: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1);">
+
+        <!-- Logo UTEQ/SGRA -->
+        <a href="/" class="d-flex align-items-center mb-4 text-white text-decoration-none px-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                 style="width: 45px; height: 45px; background-color: rgba(255,255,255,0.2);">
+                <span class="fw-bold fs-4">U</span>
+            </div>
+            <div class="lh-1">
+                <h5 class="mb-0 fw-bold">SGRA</h5>
+                <small class="text-white-50" style="font-size: 0.75rem;">Coordinación</small>
+            </div>
+        </a>
+
+        <!-- Tarjeta de Perfil de Usuario -->
+        <div class="card border-0 mb-4 text-white" style="background-color: rgba(255,255,255,0.1); border-radius: 12px;">
+            <div class="card-body p-2 d-flex align-items-center">
+                <div class="rounded-circle bg-white text-success d-flex align-items-center justify-content-center me-2"
+                     style="width: 35px; height: 35px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="lh-1">
+                    <span class="d-block fw-bold" style="font-size: 0.85rem;">{{ userName }}</span>
+                    <small class="text-white-50" style="font-size: 0.65rem;">Coordinador</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <ul class="nav nav-pills flex-column mb-auto gap-2">
+
+            <!-- SECCIÓN: PRINCIPAL -->
+            <li class="nav-item">
+                <span class="text-uppercase text-white-50 fw-bold px-3" style="font-size: 0.7rem; letter-spacing: 1px;">Principal</span>
+            </li>
+            <li>
+                <a routerLink="/coordinator/dashboard" routerLinkActive="active"
+                   class="nav-link text-white d-flex align-items-center"
+                   style="border-radius: 8px; padding: 10px 15px; transition: all 0.2s ease-in-out; cursor: pointer;">
+                    <i class="bi bi-grid-fill me-3 opacity-75"></i>
+                    Dashboard
+                </a>
+            </li>
+
+            <!-- SECCIÓN: GESTIÓN -->
+            <li class="nav-item mt-3">
+                <span class="text-uppercase text-white-50 fw-bold px-3" style="font-size: 0.7rem; letter-spacing: 1px;">Gestión</span>
+            </li>
+
+            <li>
+                <a routerLink="/coordinator/dataload" routerLinkActive="active"
+                   class="nav-link text-white d-flex align-items-center"
+                   style="border-radius: 8px; padding: 10px 15px; transition: all 0.2s ease-in-out; cursor: pointer;">
+                    <i class="bi bi-cloud-arrow-up-fill me-3 opacity-75"></i>
+                    Carga de Información
+                </a>
+            </li>
+
+            <li>
+                <a routerLink="/coordinator/physicalspaces" routerLinkActive="active"
+                   class="nav-link text-white d-flex align-items-center"
+                   style="border-radius: 8px; padding: 10px 15px; transition: all 0.2s ease-in-out; cursor: pointer;">
+                    <i class="bi bi-building-fill me-3 opacity-75"></i>
+                    Espacios Físicos
+                </a>
+            </li>
+
+            <!-- SECCIÓN: REPORTES -->
+            <li class="nav-item mt-3">
+                <span class="text-uppercase text-white-50 fw-bold px-3" style="font-size: 0.7rem; letter-spacing: 1px;">Reportes</span>
+            </li>
+            <li>
+                <a href="#" class="nav-link text-white d-flex align-items-center"
+                   style="border-radius: 8px; padding: 10px 15px; transition: all 0.2s ease-in-out; cursor: pointer; opacity: 0.8;">
+                    <i class="bi bi-file-earmark-bar-graph-fill me-3 opacity-75"></i>
+                    Consolidados
+                </a>
+            </li>
+        </ul>
+
+        <!-- FOOTER DEL SIDEBAR - CERRAR SESIÓN -->
+        <div class="mt-auto pt-3 border-top border-secondary">
+            <button (click)="logout()"
+                    class="nav-link text-white px-2 d-flex align-items-center bg-transparent border-0 w-100"
+                    style="border-radius: 8px; padding: 10px 15px; transition: all 0.2s ease-in-out; cursor: pointer;">
+                <i class="bi bi-box-arrow-left me-2"></i> Cerrar sesión
+            </button>
+            <small class="text-white-50 d-block mt-3 text-center small">UTEQ © {{ currentYear }} - v1.0</small>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="flex-grow-1 d-flex flex-column h-100 overflow-hidden">
+
+        <!-- HEADER/NAVBAR SUPERIOR -->
+        <header class="bg-white py-3 px-4 d-flex justify-content-between align-items-center shadow-sm sticky-top"
+                style="height: 70px; z-index: 900;">
+
+            <!-- Breadcrumb -->
+            <div class="d-flex align-items-center text-muted">
+                <small>Coordinación</small>
+                <i class="bi bi-chevron-right mx-2" style="font-size: 0.7rem;"></i>
+                <span class="text-dark fw-bold">Gestión de Información</span>
+            </div>
+
+            <!-- Iconos y Perfil -->
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-light position-relative rounded-circle border p-2" style="cursor: pointer;">
+                    <i class="bi bi-bell"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </button>
+
+                <div class="border-start ps-3">
+                    <button class="btn btn-outline-success btn-sm fw-bold px-3 rounded-pill" style="cursor: pointer;">
+                        <i class="bi bi-person-circle me-1"></i> {{ userName }}
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ÁREA DE CONTENIDO PRINCIPAL CON ROUTER-OUTLET -->
+        <main class="p-4 flex-grow-1 overflow-auto">
+            <router-outlet></router-outlet>
+        </main>
+
+    </div>
+</div>

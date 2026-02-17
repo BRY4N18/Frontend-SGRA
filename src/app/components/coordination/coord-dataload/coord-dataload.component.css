@@ -1,0 +1,710 @@
+﻿/* ===================================
+   VARIABLES Y CONFIGURACIÓN GENERAL
+   =================================== */
+:root {
+  --color-students: #27ae60;
+  --color-teachers: #2980b9;
+  --color-border: #e0e0e0;
+  --color-bg: #f5f5f5;
+  --color-text-muted: #999;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ===================================
+   HEADER PRINCIPAL
+   =================================== */
+h1 {
+  font-size: 1.75rem;
+  color: #333;
+  font-weight: 700;
+}
+
+.badge-custom {
+  background-color: #e8f5e9 !important;
+  color: var(--color-students) !important;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* ===================================
+   TARJETAS DE CARGA MEJORADAS
+   =================================== */
+.upload-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background: white;
+  border-top: 5px solid #ccc;
+}
+
+.upload-card.card-students {
+  border-top-color: var(--color-students);
+}
+
+.upload-card.card-teachers {
+  border-top-color: var(--color-teachers);
+}
+
+.upload-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Header de Tarjeta */
+.upload-card-header {
+  padding: 30px 28px;
+  color: white;
+  font-weight: 900;
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.upload-card-header i {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.header-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.header-text h3 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.header-students {
+  background: linear-gradient(135deg, var(--color-students) 0%, #1e8449 100%);
+  border-top: 5px solid var(--color-students);
+}
+
+.header-teachers {
+  background: linear-gradient(135deg, var(--color-teachers) 0%, #1e5a7a 100%);
+  border-top: 5px solid var(--color-teachers);
+}
+
+/* Body de Tarjeta */
+.upload-card-body {
+  padding: 30px;
+  background-color: #ffffff;
+}
+
+/* ===================================
+   DROPZONE / ÁREA DE CARGA
+   =================================== */
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 45px 25px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 150px;
+}
+
+.dropzone:hover {
+  background: linear-gradient(135deg, #f0f1f2 0%, #e5ebf2 100%);
+  border-color: #999;
+}
+
+.dropzone.dragover {
+  border-color: var(--color-students);
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.08) 0%, rgba(39, 174, 96, 0.03) 100%);
+  border-width: 2px;
+}
+
+.dropzone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.dropzone i {
+  font-size: 2.8rem;
+  color: #bbb;
+  margin-bottom: 8px;
+}
+
+.dropzone.file-selected i {
+  color: var(--color-students);
+  font-size: 3rem;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 1rem;
+  color: #222;
+}
+
+.dropzone small {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.link-select {
+  color: var(--color-students);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.link-select:hover {
+  color: #1e8449;
+}
+
+/* ===================================
+   BARRA DE PROGRESO
+   =================================== */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  flex: 1;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 8px;
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+  height: 100%;
+}
+
+/* ===================================
+   BOTONES DE CARGA
+   =================================== */
+.btn-upload {
+  padding: 16px 28px;
+  font-weight: 900;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-upload i {
+  font-size: 1.4rem;
+}
+
+.btn-students {
+  background: linear-gradient(135deg, var(--color-students) 0%, #1e8449 100%);
+}
+
+.btn-students:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e8449 0%, #17653a 100%);
+  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.5);
+  transform: translateY(-3px);
+}
+
+.btn-teachers {
+  background: linear-gradient(135deg, var(--color-teachers) 0%, #1e5a7a 100%);
+}
+
+.btn-teachers:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e5a7a 0%, #16445f 100%);
+  box-shadow: 0 6px 16px rgba(41, 128, 185, 0.5);
+  transform: translateY(-3px);
+}
+
+.btn-upload:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================================
+   TARJETA DE REPORTE
+   =================================== */
+.report-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.report-header {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%);
+  border-bottom: 2px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.report-type {
+  background-color: #e9ecef !important;
+  color: #333 !important;
+  padding: 6px 12px !important;
+  font-size: 0.75rem !important;
+  font-weight: 700;
+  border-radius: 20px;
+}
+
+.badge-count {
+  background-color: #e8f5e9 !important;
+  color: var(--color-students) !important;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.15);
+}
+
+.badge-error {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(198, 40, 40, 0.15);
+}
+
+.badge-rows {
+  background-color: #f5f5f5 !important;
+  color: #333 !important;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.btn-export-sm {
+  background: linear-gradient(135deg, #333 0%, #555 100%);
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-export-sm:hover {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ===================================
+   CUERPO DEL REPORTE
+   =================================== */
+.report-body {
+  padding: 24px;
+}
+
+/* ===================================
+   FILTROS Y BÚSQUEDA
+   =================================== */
+.form-control-search {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  width: 300px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.form-control-search:focus {
+  border-color: var(--color-students);
+  box-shadow: 0 0 0 0.3rem rgba(39, 174, 96, 0.15);
+  outline: none;
+}
+
+.btn-group {
+  display: flex;
+  gap: 2px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+}
+
+.btn-filter,
+.btn-filter-active {
+  background-color: white;
+  border: none;
+  color: #555;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.btn-filter:hover {
+  background-color: #f5f5f5;
+}
+
+.btn-filter.active {
+  background-color: #333;
+  color: white;
+}
+
+.btn-filter-active {
+  background-color: #333;
+  color: white;
+}
+
+/* ===================================
+   TABLA DE RESULTADOS
+   =================================== */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.report-table {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.report-table thead {
+  background: linear-gradient(135deg, #f8f9fa 0%, #eef2f7 100%);
+}
+
+.report-table thead th {
+  border-bottom: 3px solid #ddd;
+  color: #333;
+  font-weight: 800;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.report-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.report-table tbody td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.text-message {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.badge-status-success {
+  background-color: #e8f5e9;
+  color: var(--color-students);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(39, 174, 96, 0.1);
+}
+
+.badge-status-error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(198, 40, 40, 0.1);
+}
+
+/* ===================================
+   SIN RESULTADOS
+   =================================== */
+.text-center i {
+  color: #ddd;
+}
+
+/* ===================================
+   PAGINACIÓN
+   =================================== */
+.pagination-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-top: 1px solid #e9ecef;
+  margin-top: 15px;
+}
+
+.pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-page {
+  background-color: white;
+  border: 1px solid #ddd;
+  color: #666;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.btn-page:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #999;
+  color: #333;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-number {
+  font-weight: 700;
+  color: #333;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* ===================================
+   RESPONSIVE DESIGN
+   =================================== */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .upload-card-header {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .upload-card-body {
+    padding: 18px;
+  }
+
+  .dropzone {
+    padding: 25px 15px;
+    min-height: 120px;
+  }
+
+  .dropzone i {
+    font-size: 2rem;
+  }
+
+  .btn-upload {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .report-header {
+    padding: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .report-body {
+    padding: 15px;
+  }
+
+  .form-control-search {
+    width: 100%;
+  }
+
+  .btn-group {
+    width: 100%;
+  }
+
+  .btn-filter,
+  .btn-filter-active {
+    flex: 1;
+  }
+
+  .report-table {
+    font-size: 0.8rem;
+  }
+
+  .report-table thead th,
+  .report-table tbody td {
+    padding: 10px 8px;
+  }
+
+  .pagination-section {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.25rem;
+  }
+
+  .badge-custom {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .upload-card-header {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .upload-card-body {
+    padding: 14px;
+  }
+
+  .dropzone {
+    padding: 20px 10px;
+    min-height: 100px;
+  }
+
+  .dropzone i {
+    font-size: 1.8rem;
+  }
+
+  .dropzone p {
+    font-size: 0.85rem;
+  }
+
+  .report-header {
+    padding: 12px;
+  }
+
+  .report-body {
+    padding: 12px;
+  }
+
+  .badge-count,
+  .badge-error,
+  .badge-rows {
+    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+  }
+
+  .form-control-search {
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .btn-filter,
+  .btn-filter-active {
+    padding: 0.4rem 8px;
+    font-size: 0.75rem;
+  }
+
+  .report-table {
+    font-size: 0.75rem;
+  }
+
+  .report-table thead th,
+  .report-table tbody td {
+    padding: 8px 6px;
+  }
+
+  .table-responsive {
+    margin: 0 -12px;
+    padding: 0 12px;
+  }
+
+  .pagination-section {
+    width: 100%;
+  }
+
+  .pagination-nav {
+    gap: 6px;
+  }
+
+  .btn-page {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+}
