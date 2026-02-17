@@ -15,7 +15,7 @@
           <div>
             <div class="form-floating">
               <input type="text" class="form-control bg-light border-0 shadow-none" id="username" formControlName="username" placeholder="admin01"
-                     [ngClass]="{'is-invalid': f['username'].invalid && (f['username'].dirty || f['username'].touched)}">
+                    [ngClass]="{'is-invalid': f['username'].invalid && (f['username'].dirty || f['username'].touched)}">
               <label for="username" class="text-muted fw-medium">Usuario</label>
             </div>
             @if (f['username'].hasError('required') && f['username'].touched) { <div class="text-danger mt-1 small">El usuario es obligatorio.</div> }
@@ -25,7 +25,7 @@
           <div>
             <div class="form-floating">
               <input type="password" class="form-control bg-light border-0 shadow-none" id="password" formControlName="password" placeholder="123456"
-                     [ngClass]="{'is-invalid': f['password'].invalid && (f['password'].dirty || f['password'].touched)}">
+                  [ngClass]="{'is-invalid': f['password'].invalid && (f['password'].dirty || f['password'].touched)}">
               <label for="password" class="text-muted fw-medium">Contraseña *</label>
             </div>
             @if (f['password'].invalid && f['password'].touched) {
