@@ -114,18 +114,63 @@ export class CoordDataloadComponent {
       return;
     }
 
-    this.isUploadingStudents = true;
-    this.studentUploadProgress = 0;
+    // Validar archivo antes de enviar
+    const validation = this.dataloadService.validateFile(this.selectedFileStudents);
+    if (!validation.valid) {
+      this.showError(validation.message);
+      return;
+    }
 
-    // Simular progreso de carga
-    const interval = setInterval(() => {
-      this.studentUploadProgress += Math.random() * 30;
-      if (this.studentUploadProgress >= 100) {
+    this.isUploadingStudents = true;
+    this.studentUploadProgress = 10; // Indicar que comenzó
+
+    // Llamar al servicio real
+    this.dataloadService.uploadStudentsFile(this.selectedFileStudents).subscribe({
+      next: (reporte: string[]) => {
         this.studentUploadProgress = 100;
-        clearInterval(interval);
-        this.completeStudentUpload();
+        this.isUploadingStudents = false;
+        this.studentUploadSuccess = true;
+
+        // Procesar reporte del backend y agregarlo a resultados
+        this.processUploadReport(reporte, 'Estudiantes');
+
+        this.showSuccess(`✓ Archivo "${this.selectedFileStudents?.name}" cargado exitosamente.`);
+
+        // Resetear después de 2 segundos
+        setTimeout(() => {
+          this.selectedFileStudents = null;
+          this.studentUploadProgress = 0;
+          if (this.fileInputStudents) {
+            this.fileInputStudents.nativeElement.value = '';
+          }
+        }, 2000);
+      },
+      error: (error: Error) => {
+        this.isUploadingStudents = false;
+        this.studentUploadProgress = 0;
+        this.showError(error.message || 'Error al cargar el archivo de estudiantes.');
       }
-    }, 300);
+    });
+  }
+
+  /**
+   * Procesa el reporte del backend y lo agrega a uploadResults
+   */
+  private processUploadReport(reporte: string[], tipo: 'Estudiantes' | 'Docentes'): void {
+    reporte.forEach((mensaje: string) => {
+      const isError = mensaje.toLowerCase().includes('error') || mensaje.toLowerCase().includes('fallo');
+      const result: UploadResult = {
+        tipo: tipo,
+        status: isError ? 'error' : 'success',
+        message: mensaje,
+        timestamp: new Date()
+      };
+      this.uploadResults.push(result);
+    });
+
+    this.updateCounters();
+    this.currentPage = 1;
+    this.filterResults();
   }
 
   private completeStudentUpload(): void {
@@ -196,18 +241,43 @@ export class CoordDataloadComponent {
       return;
     }
 
-    this.isUploadingTeachers = true;
-    this.teacherUploadProgress = 0;
+    // Validar archivo antes de enviar
+    const validation = this.dataloadService.validateFile(this.selectedFileTeachers);
+    if (!validation.valid) {
+      this.showError(validation.message);
+      return;
+    }
 
-    // Simular progreso de carga
-    const interval = setInterval(() => {
-      this.teacherUploadProgress += Math.random() * 30;
-      if (this.teacherUploadProgress >= 100) {
+    this.isUploadingTeachers = true;
+    this.teacherUploadProgress = 10; // Indicar que comenzó
+
+    // Llamar al servicio real
+    this.dataloadService.uploadTeachersFile(this.selectedFileTeachers).subscribe({
+      next: (reporte: string[]) => {
         this.teacherUploadProgress = 100;
-        clearInterval(interval);
-        this.completeTeacherUpload();
+        this.isUploadingTeachers = false;
+        this.teacherUploadSuccess = true;
+
+        // Procesar reporte del backend y agregarlo a resultados
+        this.processUploadReport(reporte, 'Docentes');
+
+        this.showSuccess(`✓ Archivo "${this.selectedFileTeachers?.name}" cargado exitosamente.`);
+
+        // Resetear después de 2 segundos
+        setTimeout(() => {
+          this.selectedFileTeachers = null;
+          this.teacherUploadProgress = 0;
+          if (this.fileInputTeachers) {
+            this.fileInputTeachers.nativeElement.value = '';
+          }
+        }, 2000);
+      },
+      error: (error: Error) => {
+        this.isUploadingTeachers = false;
+        this.teacherUploadProgress = 0;
+        this.showError(error.message || 'Error al cargar el archivo de docentes.');
       }
-    }, 300);
+    });
   }
 
   private completeTeacherUpload(): void {

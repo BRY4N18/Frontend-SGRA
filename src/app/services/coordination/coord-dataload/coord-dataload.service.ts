@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
@@ -20,11 +20,9 @@ import {
   providedIn: 'root'
 })
 export class CoordDataloadService {
-  private readonly apiUrl = `${environment.apiUrl}/coordination/dataload`;
+  private readonly apiUrl = `${environment.apiUrl}/coordination`;
 
-  constructor(/* private http: HttpClient */) {
-    // HttpClient se inyectará cuando se integre con el backend
-  }
+  constructor(private http: HttpClient) {}
 
   // ============================================
   // MÉTODOS PARA ESTUDIANTES
@@ -33,78 +31,89 @@ export class CoordDataloadService {
   /**
    * Carga un archivo Excel de estudiantes al servidor
    * @param file Archivo Excel a cargar
-   * @returns Observable con el progreso y resultado de la carga
+   * @returns Observable con el reporte de la carga (string[])
    */
-  uploadStudentsFile(file: File): Observable<StudentUploadResponse> {
-    // TODO: Implementar llamada real al backend
-    // const formData = new FormData();
-    // formData.append('file', file);
-    // return this.http.post<StudentUploadResponse>(`${this.apiUrl}/students/upload`, formData);
+  uploadStudentsFile(file: File): Observable<string[]> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
 
-    // Mock temporal para desarrollo
-    return of(this.getMockStudentUploadResponse());
+    return this.http.post<string[]>(`${this.apiUrl}/upload-students`, formData, {
+      withCredentials: true
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al cargar estudiantes:', error);
+        const errorMessage = typeof error.error === 'string'
+          ? error.error
+          : 'Error al procesar el archivo';
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Carga un archivo Excel de docentes al servidor
+   * @param file Archivo Excel a cargar
+   * @returns Observable con el reporte de la carga (string[])
+   */
+  uploadTeachersFile(file: File): Observable<string[]> {
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.http.post<string[]>(`${this.apiUrl}/upload-teachers`, formData, {
+      withCredentials: true
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al cargar docentes:', error);
+        const errorMessage = typeof error.error === 'string'
+          ? error.error
+          : 'Error al procesar el archivo';
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   /**
    * Obtiene la lista de estudiantes cargados
    */
   getStudents(): Observable<Student[]> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<Student[]>(`${this.apiUrl}/students`);
-
-    return of(this.getMockStudents());
+    return this.http.get<Student[]>(`${this.apiUrl}/students`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of([]))
+    );
   }
 
   /**
    * Obtiene un estudiante por su código
    */
   getStudentByCodigo(codigo: string): Observable<Student | null> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<Student>(`${this.apiUrl}/students/${codigo}`);
-
-    const students = this.getMockStudents();
-    const student = students.find(s => s.codigo === codigo);
-    return of(student || null);
-  }
-
-  // ============================================
-  // MÉTODOS PARA DOCENTES
-  // ============================================
-
-  /**
-   * Carga un archivo Excel de docentes al servidor
-   * @param file Archivo Excel a cargar
-   * @returns Observable con el progreso y resultado de la carga
-   */
-  uploadTeachersFile(file: File): Observable<TeacherUploadResponse> {
-    // TODO: Implementar llamada real al backend
-    // const formData = new FormData();
-    // formData.append('file', file);
-    // return this.http.post<TeacherUploadResponse>(`${this.apiUrl}/teachers/upload`, formData);
-
-    return of(this.getMockTeacherUploadResponse());
+    return this.http.get<Student>(`${this.apiUrl}/students/${codigo}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of(null))
+    );
   }
 
   /**
    * Obtiene la lista de docentes cargados
    */
   getTeachers(): Observable<Teacher[]> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<Teacher[]>(`${this.apiUrl}/teachers`);
-
-    return of(this.getMockTeachers());
+    return this.http.get<Teacher[]>(`${this.apiUrl}/teachers`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of([]))
+    );
   }
 
   /**
    * Obtiene un docente por su código
    */
   getTeacherByCodigo(codigo: string): Observable<Teacher | null> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<Teacher>(`${this.apiUrl}/teachers/${codigo}`);
-
-    const teachers = this.getMockTeachers();
-    const teacher = teachers.find(t => t.codigo === codigo);
-    return of(teacher || null);
+    return this.http.get<Teacher>(`${this.apiUrl}/teachers/${codigo}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of(null))
+    );
   }
 
   // ============================================
@@ -115,26 +124,27 @@ export class CoordDataloadService {
    * Obtiene estadísticas de las cargas realizadas
    */
   getUploadStats(): Observable<UploadStats> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<UploadStats>(`${this.apiUrl}/stats`);
-
-    return of({
-      totalArchivos: 5,
-      totalRegistros: 150,
-      exitosos: 142,
-      errores: 8,
-      ultimaCarga: new Date()
-    });
+    return this.http.get<UploadStats>(`${this.apiUrl}/stats`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of({
+        totalArchivos: 0,
+        totalRegistros: 0,
+        exitosos: 0,
+        errores: 0
+      }))
+    );
   }
 
   /**
    * Obtiene el historial de resultados de carga
    */
   getUploadHistory(): Observable<UploadResult[]> {
-    // TODO: Implementar llamada real al backend
-    // return this.http.get<UploadResult[]>(`${this.apiUrl}/history`);
-
-    return of(this.getMockUploadResults());
+    return this.http.get<UploadResult[]>(`${this.apiUrl}/history`, {
+      withCredentials: true
+    }).pipe(
+      catchError(() => of([]))
+    );
   }
 
   /**
@@ -142,12 +152,7 @@ export class CoordDataloadService {
    */
   validateFile(file: File): { valid: boolean; message: string } {
     const maxSize = 10 * 1024 * 1024; // 10 MB
-    const allowedTypes = [
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'text/csv'
-    ];
-    const allowedExtensions = ['.xls', '.xlsx', '.csv'];
+    const allowedExtensions = ['.xls', '.xlsx'];
 
     // Validar tamaño
     if (file.size > maxSize) {
@@ -157,63 +162,9 @@ export class CoordDataloadService {
     // Validar extensión
     const extension = '.' + file.name.split('.').pop()?.toLowerCase();
     if (!allowedExtensions.includes(extension)) {
-      return { valid: false, message: 'Formato no válido. Use archivos .xls, .xlsx o .csv' };
+      return { valid: false, message: 'Formato no válido. Use archivos .xls o .xlsx' };
     }
 
     return { valid: true, message: 'Archivo válido' };
-  }
-
-  // ============================================
-  // DATOS MOCK PARA DESARROLLO
-  // ============================================
-
-  private getMockStudents(): Student[] {
-    return [
-      { id: 1, codigo: 'EST001', nombres: 'Juan Carlos', apellidos: 'Pérez García', email: 'jperez@uni.edu', carrera: 'Ingeniería de Sistemas', semestre: 5, estado: 'activo' },
-      { id: 2, codigo: 'EST002', nombres: 'María Fernanda', apellidos: 'López Ruiz', email: 'mlopez@uni.edu', carrera: 'Ingeniería Industrial', semestre: 3, estado: 'activo' },
-      { id: 3, codigo: 'EST003', nombres: 'Carlos Andrés', apellidos: 'Gómez Torres', email: 'cgomez@uni.edu', carrera: 'Administración', semestre: 7, estado: 'activo' },
-    ];
-  }
-
-  private getMockTeachers(): Teacher[] {
-    return [
-      { id: 1, codigo: 'DOC001', nombres: 'Roberto', apellidos: 'Martínez Silva', email: 'rmartinez@uni.edu', departamento: 'Sistemas', especialidad: 'Bases de Datos', tipoContrato: 'tiempo_completo', estado: 'activo' },
-      { id: 2, codigo: 'DOC002', nombres: 'Ana María', apellidos: 'Rodríguez Vega', email: 'arodriguez@uni.edu', departamento: 'Industrial', especialidad: 'Logística', tipoContrato: 'tiempo_completo', estado: 'activo' },
-    ];
-  }
-
-  private getMockStudentUploadResponse(): StudentUploadResponse {
-    return {
-      totalProcesados: 10,
-      exitosos: 8,
-      errores: 2,
-      detalles: [
-        { fila: 1, codigo: 'EST001', estado: 'success', mensaje: 'Estudiante registrado correctamente' },
-        { fila: 2, codigo: 'EST002', estado: 'success', mensaje: 'Estudiante registrado correctamente' },
-        { fila: 3, codigo: 'EST003', estado: 'error', mensaje: 'Email duplicado en el sistema' },
-      ]
-    };
-  }
-
-  private getMockTeacherUploadResponse(): TeacherUploadResponse {
-    return {
-      totalProcesados: 5,
-      exitosos: 4,
-      errores: 1,
-      detalles: [
-        { fila: 1, codigo: 'DOC001', estado: 'success', mensaje: 'Docente registrado correctamente' },
-        { fila: 2, codigo: 'DOC002', estado: 'error', mensaje: 'Código ya existe en el sistema' },
-      ]
-    };
-  }
-
-  private getMockUploadResults(): UploadResult[] {
-    return [
-      { id: 1, tipo: 'Estudiantes', status: 'success', message: 'Juan Pérez registrado correctamente', timestamp: new Date() },
-      { id: 2, tipo: 'Estudiantes', status: 'success', message: 'María López registrada correctamente', timestamp: new Date() },
-      { id: 3, tipo: 'Estudiantes', status: 'error', message: 'Error: Email duplicado para Carlos Gómez', timestamp: new Date() },
-      { id: 4, tipo: 'Docentes', status: 'success', message: 'Roberto Martínez registrado correctamente', timestamp: new Date() },
-      { id: 5, tipo: 'Docentes', status: 'error', message: 'Error: Código DOC002 ya existe', timestamp: new Date() },
-    ];
   }
 }
