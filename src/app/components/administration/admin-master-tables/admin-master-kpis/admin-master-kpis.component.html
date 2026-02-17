@@ -1,0 +1,48 @@
+<div class="row g-4 mb-4">
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-primary-subtle text-primary" style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem;">
+          <i class="bi bi-collection"></i>
+        </div>
+        <div>
+          @if (isLoading) { <div class="spinner-border spinner-border-sm text-primary mb-2"></div> }
+          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalCatalogs || 0 }}</h3> }
+          <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Catálogos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-success-subtle text-success" style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem;">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div>
+          @if (isLoading) { <div class="spinner-border spinner-border-sm text-success mb-2"></div> }
+          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.activeRecords || 0 }}</h3> }
+          <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Registros Activos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-secondary-subtle text-secondary" style="width: 3.5rem; height: 3.5rem; font-size: 1.5rem;">
+          <i class="bi bi-list-ol"></i>
+        </div>
+        <div>
+          @if (isLoading) { <div class="spinner-border spinner-border-sm text-secondary mb-2"></div> }
+          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalRecords || 0 }}</h3> }
+          <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Registros Totales</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,86 @@
+<div class="card border-0 rounded-4 shadow-sm h-100">
+
+  <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <h5 class="fw-bold text-dark d-flex align-items-center gap-2 mb-1">
+        <i class="bi bi-book text-muted"></i> {{ catalogName }}
+      </h5>
+      <p class="text-muted small mb-0">Gestión de registros vinculados al catálogo seleccionado.</p>
+    </div>
+    <button class="btn btn-primary rounded-3 px-4 fw-medium shadow-sm d-flex align-items-center gap-2" style="background-color: #0d6efd;">
+      <i class="bi bi-plus-lg"></i> Nuevo registro
+    </button>
+  </div>
+
+  <div class="card-body px-4 pb-4">
+
+    <div class="mb-4">
+      <div class="input-group">
+        <input type="text" class="form-control bg-light border-0 py-2 ps-3 shadow-none" placeholder="Buscar registro...">
+        <span class="input-group-text bg-light border-0 text-muted pe-3">
+          <i class="bi bi-search"></i>
+        </span>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="bg-transparent text-secondary small text-uppercase fw-bold tracking-wide">
+          <tr>
+            <th scope="col" class="py-3 border-bottom border-2 text-center" style="width: 80px;">ID</th>
+            <th scope="col" class="py-3 border-bottom border-2">Nombre / Descripción</th>
+            <th scope="col" class="py-3 border-bottom border-2">Estado</th>
+            <th scope="col" class="py-3 text-end pe-4 border-bottom border-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          @if (isLoading) {
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted">
+                <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                Cargando registros...
+              </td>
+            </tr>
+          }
+
+          @for (record of records; track record.id) {
+            <tr>
+              <td class="text-center text-muted fw-medium">{{ record.id }}</td>
+              <td class="fw-bold text-dark">{{ record.genericName }}</td>
+              <td>
+                <span class="badge rounded-pill text-uppercase px-3 fw-bold"
+                      [ngClass]="{
+                        'bg-success-subtle text-success': record.status === 'activo',
+                        'bg-danger-subtle text-danger': record.status === 'inactivo'
+                      }" style="font-size: 0.7rem; letter-spacing: 0.05em;">
+                  {{ record.status }}
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <div class="d-inline-flex gap-2">
+                  <button class="btn btn-sm btn-light border-0 text-secondary" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn btn-sm btn-light border-0 text-secondary" title="Cambiar Estado">
+                    <i class="bi bi-arrow-repeat"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            @if (!isLoading) {
+              <tr>
+                <td colspan="4" class="text-center py-5 text-muted fw-medium">
+                  <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+                  No hay registros en este catálogo.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
