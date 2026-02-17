@@ -15,8 +15,31 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    loadComponent: () => import('./components/administration/admin-dashboard.component').then(m => m.AdminDashboardComponent),
-    canActivate: [authGuard, roleGuard(['admin', 'administrador'])]
+    loadComponent: () => import('./components/administration/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+    canActivate: [authGuard, roleGuard(['admin', 'administrador'])],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/administration/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./components/administration/admin-user-management/admin-user-management.component').then(m => m.AdminUserManagementComponent)
+      },
+      {
+        path: 'master-tables',
+        loadComponent: () => import('./components/administration/admin-master-tables/admin-master-tables.component').then(m => m.AdminMasterTablesComponent)
+      },
+      {
+        path: 'permissions',
+        loadComponent: () => import('./components/administration/admin-permission-management/admin-permission-management.component').then(m => m.AdminPermissionManagementComponent)
+      },
+      {
+        path: 'roles',
+        loadComponent: () => import('./components/administration/admin-role-management/admin-role-management.component').then(m => m.AdminRoleManagementComponent)
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+    ]
   },
   {
     path: 'teacher',
@@ -35,6 +58,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: '/login'
   }
 ];

@@ -1,0 +1,58 @@
+.admin-sidebar {
+  width: 17.5rem;
+  background-color: #1B7505;
+  transition: all 0.3s ease-in-out;
+}
+
+.admin-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #1a6b27;
+}
+
+.btn-profile {
+  background-color: transparent;
+  transition: background-color 0.2s;
+  border-radius: 3.125rem;
+  padding: 0.3125rem 0.9375rem 0.3125rem 0.3125rem;
+}
+
+.btn-profile:hover {
+  background-color: #f8f9fa;
+}
+
+.nav-link,
+.btn-logout {
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.9375rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link {
+  opacity: 0.85;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  opacity: 1;
+  transform: translateX(0.25rem);
+}
+
+.active-link {
+  background-color: #124d1c !important;
+  font-weight: 600;
+  opacity: 1;
+  border-left: 0.25rem solid #ffffff;
+  border-radius: 0.25rem 0.5rem 0.5rem 0.25rem;
+}
+
+.btn-logout {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.btn-logout:hover {
+  background-color: #9c5151;
+}
