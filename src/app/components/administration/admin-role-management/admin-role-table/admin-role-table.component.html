@@ -1,20 +1,20 @@
 <div class="table-responsive">
   <table class="table table-hover align-middle">
-    <thead class="bg-transparent text-secondary small fw-bold">
+    <thead class="bg-light text-secondary small text-uppercase fw-bold tracking-wide">
       <tr>
-        <th scope="col" class="ps-4 py-3 border-bottom border-2">Nombre</th>
-        <th scope="col" class="py-3 border-bottom border-2">Descripción</th>
-        <th scope="col" class="py-3 border-bottom border-2">Permisos</th>
-        <th scope="col" class="py-3 border-bottom border-2">Estado</th>
-        <th scope="col" class="py-3 border-bottom border-2">Fecha Creación</th>
-        <th scope="col" class="py-3 text-end pe-4 border-bottom border-2">Acciones</th>
+        <th scope="col" class="py-3">Nombre</th>
+        <th scope="col" class="py-3">Descripción</th>
+        <th scope="col" class="py-3">Permisos</th>
+        <th scope="col" class="py-3">Estado</th>
+        <th scope="col" class="py-3">Fecha Creación</th>
+        <th scope="col" class="py-3 text-end pe-4">Acciones</th>
       </tr>
     </thead>
     <tbody>
 
       @if (isLoading) {
         <tr>
-          <td colspan="6" class="text-center py-5 text-muted">
+          <td colspan="7" class="text-center py-5 text-muted">
             <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
             Cargando roles...
           </td>
@@ -23,7 +23,7 @@
 
       @for (role of roles; track role.id) {
         <tr>
-          <td class="ps-4 fw-bold text-dark">{{ role.name }}</td>
+          <td>{{ role.name }}</td>
           <td class="text-muted small">{{ role.description }}</td>
           <td>
             <span class="badge border text-dark fw-medium rounded-pill px-3 py-2">
@@ -31,10 +31,10 @@
             </span>
           </td>
           <td>
-            <span class="badge rounded-pill text-uppercase px-3 py-1 fw-bold"
+            <span class="badge rounded-pill text-uppercase px-3 fw-bold"
                   [ngClass]="{
-                    'bg-dark text-white': role.status === 'activo',
-                    'bg-light text-secondary border': role.status === 'inactivo'
+                    'bg-success-subtle text-success': role.status === 'activo',
+                    'bg-danger-subtle text-danger': role.status === 'inactivo'
                   }"
                   style="font-size: 0.7rem; letter-spacing: 0.05em;">
               {{ role.status }}
@@ -43,8 +43,8 @@
           <td class="text-muted small">{{ role.createdAt | date:'dd/MM/yyyy' }}</td>
           <td class="text-end pe-4">
             <div class="d-inline-flex gap-2">
-              <button class="btn btn-sm btn-light border-0 text-secondary" title="Editar">
-                <i class="bi bi-pencil-square"></i>
+              <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">
+                <i class="bi bi-pencil"></i>
               </button>
               <button class="btn btn-sm btn-light border-0 text-danger" title="Eliminar">
                 <i class="bi bi-trash"></i>

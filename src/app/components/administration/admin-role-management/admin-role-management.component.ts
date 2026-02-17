@@ -1,7 +1,7 @@
 import { Component, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GRole } from '../../../models/administration/admin-role-management/GRole.model';
-import { AdminRoleManagementService } from '../../../services/administration/admin-role-management/admin-role-management-service';
+import { AdminRoleManagementService } from '../../../services/administration/admin-role-management/admin-role-management.service';
 import { AdminRoleTableComponent } from './admin-role-table/admin-role-table.component';
 import { AdminRoleCreateModalComponent } from './admin-role-create-modal/admin-role-create-modal.component';
 

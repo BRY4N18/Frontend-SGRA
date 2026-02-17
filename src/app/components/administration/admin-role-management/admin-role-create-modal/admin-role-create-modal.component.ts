@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AdminRoleManagementService } from '../../../../services/administration/admin-role-management/admin-role-management-service';
+import { AdminRoleManagementService } from '../../../../services/administration/admin-role-management/admin-role-management.service';
 
 declare var bootstrap: any;
 

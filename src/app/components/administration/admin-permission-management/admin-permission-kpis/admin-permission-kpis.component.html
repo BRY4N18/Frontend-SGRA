@@ -1,0 +1,57 @@
+<div class="row g-4 mb-4">
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100 bg-white">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-primary-subtle text-primary icon-kpi">
+          <i class="bi bi-diagram-3-fill"></i>
+        </div>
+        <div>
+          @if (isLoading) {
+            <div class="spinner-border spinner-border-sm text-primary mb-2" role="status"></div>
+          } @else {
+            <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalSchemas || 0 }}</h3>
+          }
+          <p class="text-muted mb-0 fw-medium small text-uppercase">Esquemas Habilitados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100 bg-white">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-info-subtle text-info icon-tables">
+          <i class="bi bi-table"></i>
+        </div>
+        <div>
+          @if (isLoading) {
+            <div class="spinner-border spinner-border-sm text-info mb-2" role="status"></div>
+          } @else {
+            <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalTablesWithAccess || 0 }}</h3>
+          }
+          <p class="text-muted mb-0 fw-medium small text-uppercase p-subtitle-tables">Tablas con Acceso</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card border-0 rounded-4 shadow-sm h-100 bg-white">
+      <div class="card-body p-4 d-flex align-items-center gap-3">
+        <div class="rounded-circle d-flex justify-content-center align-items-center bg-success-subtle text-success icon-access-all">
+          <i class="bi bi-shield-lock-fill"></i>
+        </div>
+        <div>
+          @if (isLoading) {
+            <div class="spinner-border spinner-border-sm text-success mb-2" role="status"></div>
+          } @else {
+            <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.fullAccessTables || 0 }}</h3>
+          }
+          <p class="text-muted mb-0 fw-medium small text-uppercase p-tables-access">Tablas con Acceso Total</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
