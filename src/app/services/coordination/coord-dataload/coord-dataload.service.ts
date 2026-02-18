@@ -37,7 +37,7 @@ export class CoordDataloadService {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.post<string[]>(`${this.apiUrl}/api/academic/coordinations/upload-students`, formData, {
+    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-students`, formData, {
       withCredentials: true
     }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -59,7 +59,7 @@ export class CoordDataloadService {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.post<string[]>(`${this.apiUrl}/api/academic/coordinations/upload-teachers`, formData, {
+    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-teachers`, formData, {
       withCredentials: true
     }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -76,7 +76,7 @@ export class CoordDataloadService {
    * Obtiene la lista de estudiantes cargados
    */
   getStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.apiUrl}/api/academic/coordinations/students=`, {
+    return this.http.get<Student[]>(`${this.apiUrl}/academic/coordinations/students=`, {
       withCredentials: true
     }).pipe(
       catchError(() => of([]))
@@ -87,7 +87,7 @@ export class CoordDataloadService {
    * Obtiene un estudiante por su código
    */
   getStudentByCodigo(codigo: string): Observable<Student | null> {
-    return this.http.get<Student>(`${this.apiUrl}/students/${codigo}`, {
+    return this.http.get<Student>(`${this.apiUrl}/academic/coordinations/students/${codigo}`, {
       withCredentials: true
     }).pipe(
       catchError(() => of(null))
@@ -98,7 +98,7 @@ export class CoordDataloadService {
    * Obtiene la lista de docentes cargados
    */
   getTeachers(): Observable<Teacher[]> {
-    return this.http.get<Teacher[]>(`${this.apiUrl}/teachers`, {
+    return this.http.get<Teacher[]>(`${this.apiUrl}/academic/coordinations/teachers`, {
       withCredentials: true
     }).pipe(
       catchError(() => of([]))
@@ -109,7 +109,7 @@ export class CoordDataloadService {
    * Obtiene un docente por su código
    */
   getTeacherByCodigo(codigo: string): Observable<Teacher | null> {
-    return this.http.get<Teacher>(`${this.apiUrl}/teachers/${codigo}`, {
+    return this.http.get<Teacher>(`${this.apiUrl}/academic/coordinations/teachers/${codigo}`, {
       withCredentials: true
     }).pipe(
       catchError(() => of(null))
