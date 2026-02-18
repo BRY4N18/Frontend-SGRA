@@ -20,7 +20,7 @@ import {
   providedIn: 'root'
 })
 export class CoordDataloadService {
-  private readonly apiUrl = `${environment.apiUrl}/coordination`;
+  private readonly apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -76,7 +76,7 @@ export class CoordDataloadService {
    * Obtiene la lista de estudiantes cargados
    */
   getStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.apiUrl}/academic/coordinations/students=`, {
+    return this.http.get<Student[]>(`${this.apiUrl}/academic/coordinations/students`, {
       withCredentials: true
     }).pipe(
       catchError(() => of([]))
@@ -168,3 +168,5 @@ export class CoordDataloadService {
     return { valid: true, message: 'Archivo válido' };
   }
 }
+
+
