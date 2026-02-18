@@ -59,7 +59,7 @@ export class CoordDataloadService {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.post<string[]>(`${this.apiUrl}/upload-teachers`, formData, {
+    return this.http.post<string[]>(`${this.apiUrl}/api/academic/coordinations/upload-teachers`, formData, {
       withCredentials: true
     }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -76,7 +76,7 @@ export class CoordDataloadService {
    * Obtiene la lista de estudiantes cargados
    */
   getStudents(): Observable<Student[]> {
-    return this.http.get<Student[]>(`${this.apiUrl}/students`, {
+    return this.http.get<Student[]>(`${this.apiUrl}/api/academic/coordinations/students=`, {
       withCredentials: true
     }).pipe(
       catchError(() => of([]))
