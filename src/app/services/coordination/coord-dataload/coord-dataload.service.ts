@@ -37,7 +37,7 @@ export class CoordDataloadService {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.post<string[]>(`${this.apiUrl}/upload-students`, formData, {
+    return this.http.post<string[]>(`${this.apiUrl}/api/academic/coordinations/upload-students`, formData, {
       withCredentials: true
     }).pipe(
       catchError((error: HttpErrorResponse) => {
