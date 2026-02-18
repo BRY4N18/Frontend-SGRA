@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 import { Routes } from '@angular/router';
 import { authGuard, loginGuard, roleGuard } from './core/guards/auth.guard';
 
@@ -48,8 +47,37 @@ export const routes: Routes = [
   },
   {
     path: 'student',
-    loadComponent: () => import('./components/student/student-dashboard.component').then(m => m.StudentDashboardComponent),
-    canActivate: [authGuard, roleGuard(['student', 'estudiante'])]
+    loadComponent: () => import('./components/student/student-layout/student-layout.component')
+      .then(m => m.StudentLayoutComponent),
+    canActivate: [authGuard, roleGuard(['student', 'estudiante'])],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/student/student-dashboard.component')
+          .then(m => m.StudentDashboardComponent)
+      },
+      {
+        path: 'new-request',
+        loadComponent: () => import('./components/student/student-new-request/student-new-request.component')
+          .then(m => m.StudentNewRequestComponent)
+      },
+      {
+        path: 'my-requests',
+        loadComponent: () => import('./components/student/student-my-requests/student-my-requests.component')
+          .then(m => m.StudentMyRequestsComponent)
+      },
+      {
+        path: 'history',
+        loadComponent: () => import('./components/student/student-history/student-history.component')
+          .then(m => m.StudentHistoryComponent)
+      },
+      {
+        path: 'preferences',
+        loadComponent: () => import('./components/student/student-preferences/student-preferences.component')
+          .then(m => m.StudentPreferencesComponent)
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
   },
   {
     path: 'coordinator',

@@ -1,0 +1,124 @@
+/* Theme CSS Variables */
+:host {
+  --sgra-primary: #1B7505;
+  --sgra-primary-dark: #124d1c;
+  --sgra-surface: #ffffff;
+  --sgra-border: rgba(255, 255, 255, 0.25);
+  --sgra-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.student-sidebar {
+  width: 17.5rem;
+  background-color: var(--sgra-primary);
+  transition: width 0.3s ease-in-out;
+}
+
+.student-sidebar.collapsed {
+  width: 5rem;
+}
+
+.student-sidebar.collapsed .brand-text,
+.student-sidebar.collapsed .nav-label {
+  display: none;
+}
+
+.student-sidebar.collapsed .nav-icon {
+  margin-right: 0;
+}
+
+.sidebar-header {
+  transition: padding 0.3s ease-in-out;
+}
+
+.student-sidebar.collapsed .sidebar-header {
+  padding: 1rem !important;
+}
+
+/* Navigation */
+.nav-icon {
+  font-size: 1.1rem;
+  margin-right: 0.625rem;
+  min-width: 1.25rem;
+}
+
+.nav-link,
+.btn-logout {
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.9375rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link {
+  opacity: 0.85;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  opacity: 1;
+  transform: translateX(0.25rem);
+}
+
+.active-link {
+  background-color: var(--sgra-primary-dark) !important;
+  font-weight: 600;
+  opacity: 1;
+  border-left: 0.25rem solid #ffffff;
+  border-radius: 0.25rem 0.5rem 0.5rem 0.25rem;
+}
+
+.btn-logout {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background-color: #9c5151;
+}
+
+/* Topbar */
+.btn-toggle-sidebar {
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.btn-toggle-sidebar:hover {
+  background-color: #f8f9fa;
+}
+
+.btn-icon {
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: #6c757d;
+  transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+  background-color: #f8f9fa;
+  color: var(--sgra-primary);
+}
+
+.user-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--sgra-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-profile {
+  background-color: transparent;
+  transition: background-color 0.2s;
+  border-radius: 3.125rem;
+  padding: 0.3125rem 0.9375rem 0.3125rem 0.3125rem;
+}
+
+.btn-profile:hover {
+  background-color: #f8f9fa;
+}
