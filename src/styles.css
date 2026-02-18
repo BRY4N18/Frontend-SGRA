@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+:root{
+  --sgra-green-900:#0D4F32;  /* sidebar */
+  --sgra-green-800:#0F5B3B;  /* topbar */
+  --sgra-green-700:#116A43;  /* hover/acento */
+  --sgra-bg:#F4F7F5;         /* fondo */
+  --sgra-card:#FFFFFF;       /* cards */
+  --sgra-muted:#6c757d;
+  --sgra-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+body{
+  background: var(--sgra-bg);
+}
