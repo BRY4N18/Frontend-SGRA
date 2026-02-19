@@ -1,21 +1,22 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of} from 'rxjs';
 import { GRole } from '../../../models/administration/admin-role-management/GRole.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminRoleManagementService {
-  constructor() { }
 
-  getRoles(): Observable<GRole[]> {
-    const mockRoles: GRole[] = [
-      { id: 1, name: 'Administrador', description: 'Acceso completo al sistema', permissionsCount: 3, status: 'activo', createdAt: new Date('2023-12-31') },
-      { id: 2, name: 'Docente', description: 'Acceso a gestión académica', permissionsCount: 2, status: 'activo', createdAt: new Date('2023-12-31') },
-      { id: 3, name: 'Estudiante', description: 'Acceso básico', permissionsCount: 1, status: 'activo', createdAt: new Date('2023-12-31') },
-      { id: 4, name: 'Coordinador', description: 'Gestión de espacios y reportes', permissionsCount: 9, status: 'inactivo', createdAt: new Date('2024-01-15') }
-    ];
-    return of(mockRoles);
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
+
+  getRoles(filter: string = '', state: boolean = true): Observable<GRole[]> {
+    let params = new HttpParams().set('state',state);
+    if(filter) params = params.set('filter',filter);
+
+    return this.http.get<GRole[]>(`${this.apiUrl}/security/role-managements/list-roles`,{ params });
   }
 
   createRole(roleData: any): Observable<boolean> {

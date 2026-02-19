@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { map, Observable, of } from 'rxjs';
 import { GSchemaPermission } from '../../../models/administration/admin-permission-management/GSchemaPermission';
 import { GPermissionMetrics } from '../../../models/administration/admin-permission-management/GPermissionMetrics';
 import { GRoleSimple } from '../../../models/administration/admin-permission-management/GRoleSimple';
+import { HttpClient , HttpParams} from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,47 +12,45 @@ import { GRoleSimple } from '../../../models/administration/admin-permission-man
 export class AdminPermissionManagement {
   constructor() { }
 
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
+
   getRolesForSelect(): Observable<GRoleSimple[]> {
-    const roles: GRoleSimple[] = [
-      { id: 1, name: 'Administrador' },
-      { id: 2, name: 'Docente' },
-      { id: 3, name: 'Coordinador' }
-    ];
-    return of(roles);
+    return this.http.get<GRoleSimple[]>(`${this.apiUrl}/security/role-managements/list-roles-combo`);
   }
 
-  getMetricsByRoleId(roleId: number): Observable<GPermissionMetrics> {
-    const metrics: GPermissionMetrics = roleId === 1
+  getMetricsByRoleId(role: String): Observable<GPermissionMetrics> {
+    const metrics: GPermissionMetrics = role === 'admin'
       ? { totalSchemas: 3, totalTablesWithAccess: 12, fullAccessTables: 12 }
       : { totalSchemas: 2, totalTablesWithAccess: 5, fullAccessTables: 1 };
 
     return of(metrics);
   }
 
-  getPermissionsByRoleId(roleId: number): Observable<GSchemaPermission[]> {
-    const isAdmin = roleId === 1;
+  getPermissionsByRole(role: string): Observable<GSchemaPermission[]> {
+    let params = new HttpParams().set('role',role);
 
-    const schemas: GSchemaPermission[] = [
-      {
-        schemaName: 'Seguridad',
-        tables: [
-          { tableName: 'Usuarios', description: 'Gestión de credenciales y acceso al sistema.', canRead: true, canCreate: isAdmin, canUpdate: isAdmin, canDelete: isAdmin },
-          { tableName: 'Roles', description: 'Definición de niveles de acceso y perfiles.', canRead: true, canCreate: isAdmin, canUpdate: isAdmin, canDelete: isAdmin }
-        ]
-      },
-      {
-        schemaName: 'Académico',
-        tables: [
-          { tableName: 'Asignaturas', description: 'Catálogo de materias, temarios y sílabos.', canRead: true, canCreate: false, canUpdate: isAdmin, canDelete: false },
-          { tableName: 'Periodos', description: 'Configuración de los ciclos académicos vigentes.', canRead: true, canCreate: isAdmin, canUpdate: isAdmin, canDelete: false }
-        ]
-      }
-    ];
+    return this.http.get<any[]>(`${this.apiUrl}/security/module-managements/list-modules-permisis`,{ params }).pipe(
+      map(datosPlanos => {
+        const agrupados = datosPlanos.reduce((acumulador: GSchemaPermission[], tablaActual) =>{
 
-    return of(schemas);
+          let esquemaExistente = acumulador.find(e => e.pesquema === tablaActual.pesquema);
+
+          if(!esquemaExistente){
+            esquemaExistente = { pesquema: tablaActual.pesquema, tablas: []};
+            acumulador.push(esquemaExistente);
+          }
+
+          esquemaExistente.tablas.push(tablaActual);
+
+          return acumulador;
+        }, []);
+        return agrupados;
+      })
+    );
   }
 
-  savePermissions(roleId: number, permissions: GSchemaPermission[]): Observable<boolean> {
+  savePermissions(roleId: String, permissions: GSchemaPermission[]): Observable<boolean> {
     console.log(`Guardando permisos para el rol ${roleId}:`, permissions);
     return of(true);
   }

@@ -10,26 +10,26 @@
       </div>
     } @else {
       <div class="list-group list-group-flush pb-3">
-        @for (cat of catalogs; track cat.pschematable) {
+        @for (cat of catalogs; track cat.pschematabla) {
           <button type="button"
                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3 border-0"
-                  [class.active]="cat.pschematable === selectedCatalogSchema"
-                  (click)="selectCatalog(cat.pschematable)">
+                  [class.active]="cat.pschematabla === selectedCatalogSchema"
+                  (click)="selectCatalog(cat.pschematabla)">
 
             <div class="d-flex align-items-center">
-              <i class="bi {{ cat.icon || 'bi-table' }} me-3 fs-5"
-                [ngClass]="cat.pschematable === selectedCatalogSchema ? 'text-success' : 'text-muted'"></i>
-              <span class="fw-medium" [ngClass]="cat.pschematable === selectedCatalogSchema ? 'text-dark' : 'text-secondary'">
-                {{ cat.pname }}
+              <i class="bi me-3 fs-5"
+                [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'text-success' : 'text-muted'"></i>
+              <span class="fw-medium" [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'text-dark' : 'text-secondary'">
+                {{ cat.pnombre }}
               </span>
             </div>
 
-            @if (cat.recordCount) {
+            <!-- @if (cat.recordCount) {
               <span class="badge rounded-pill"
-                    [ngClass]="cat.pschematable === selectedCatalogSchema ? 'bg-success text-white' : 'bg-light text-muted border'">
+                    [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'bg-success text-white' : 'bg-light text-muted border'">
                 {{ cat.recordCount }}
               </span>
-            }
+            } -->
           </button>
         }
       </div>

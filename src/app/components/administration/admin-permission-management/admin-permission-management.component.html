@@ -13,14 +13,14 @@
         <select class="form-select border-0 shadow-none fw-medium text-dark bg-transparent" id="roleSelector"
                 style="min-width: 160px; cursor: pointer;" (change)="onRoleChange($event)">
           <option value="" selected disabled>Seleccione un rol...</option>
-          @for (role of rolesList; track role.id) {
-            <option [value]="role.id">{{ role.name }}</option>
+          @for (role of rolesList; track role.roleGId) {
+            <option [value]="role.roleGId">{{ role.roleG }}</option>
           }
         </select>
       </div>
 
       <button type="button" class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2"
-              [disabled]="!selectedRoleId || isSaving" (click)="saveConfiguration()">
+              [disabled]="!selectedRole || isSaving" (click)="saveConfiguration()">
         @if (isSaving) {
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
           Guardando...

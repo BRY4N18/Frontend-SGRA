@@ -21,26 +21,26 @@
         </tr>
       }
 
-      @for (role of roles; track role.id) {
+      @for (role of roles; track role.idg) {
         <tr>
-          <td>{{ role.name }}</td>
-          <td class="text-muted small">{{ role.description }}</td>
+          <td>{{ role.nombreg }}</td>
+          <td class="text-muted small">{{ role.descripciong }}</td>
           <td>
             <span class="badge border text-dark fw-medium rounded-pill px-3 py-2">
-              {{ role.permissionsCount }} permisos
+              {{ role.permisosg }} permisos
             </span>
           </td>
           <td>
             <span class="badge rounded-pill text-uppercase px-3 fw-bold"
                   [ngClass]="{
-                    'bg-success-subtle text-success': role.status === 'activo',
-                    'bg-danger-subtle text-danger': role.status === 'inactivo'
+                    'bg-success-subtle text-success': (role.estadog | lowercase) === 'activo',
+                    'bg-danger-subtle text-danger': (role.estadog | lowercase)=== 'inactivo'
                   }"
                   style="font-size: 0.7rem; letter-spacing: 0.05em;">
-              {{ role.status }}
+              {{ role.estadog }}
             </span>
           </td>
-          <td class="text-muted small">{{ role.createdAt | date:'dd/MM/yyyy' }}</td>
+          <td class="text-muted small">{{ role.fechacreaciong | date:'dd/MM/yyyy' }}</td>
           <td class="text-end pe-4">
             <div class="d-inline-flex gap-2">
               <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">

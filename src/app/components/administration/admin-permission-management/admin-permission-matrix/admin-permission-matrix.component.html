@@ -11,14 +11,14 @@
 } @else {
   <div class="accordion shadow-sm" id="permissionsAccordion">
 
-    @for (schema of schemas; track schema.schemaName; let i = $index) {
+    @for (schema of schemas; track schema.pesquema; let i = $index) {
       <div class="accordion-item border-0 rounded-4 mb-3 overflow-hidden">
 
         <h2 class="accordion-header" id="heading-{{i}}">
           <button class="accordion-button fw-bold text-dark bg-light border-0" type="button"
                   data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse-' + i"
                   aria-expanded="true" [attr.aria-controls]="'collapse-' + i">
-            <i class="bi bi-diagram-2-fill text-primary me-2"></i> Esquema: {{ schema.schemaName }}
+            <i class="bi bi-diagram-2-fill text-primary me-2"></i> Esquema: {{ schema.pesquema }}
           </button>
         </h2>
 
@@ -26,42 +26,42 @@
           <div class="accordion-body p-0">
 
             <div class="list-group list-group-flush">
-              @for (table of schema.tables; track table.tableName) {
+              @for (table of schema.tablas; track table.pnombre) {
                 <div class="list-group-item p-4 border-bottom">
                   <div class="row align-items-center">
 
                     <div class="col-md-5 mb-3 mb-md-0">
                       <h6 class="fw-bold mb-1 text-dark d-flex align-items-center">
-                        <i class="bi bi-table text-secondary me-2"></i> {{ table.tableName }}
+                        <i class="bi bi-table text-secondary me-2"></i> {{ table.pnombre }}
                       </h6>
-                      <p class="text-muted small mb-0 ms-4">{{ table.description }}</p>
+                      <p class="text-muted small mb-0 ms-4">{{ table.pdescripcion }}</p>
                     </div>
 
                     <div class="col-md-7">
                       <div class="d-flex flex-wrap gap-4 justify-content-md-end">
 
                         <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" [id]="'read-'+schema.schemaName+'-'+table.tableName"
-                                [(ngModel)]="table.canRead">
-                          <label class="form-check-label small fw-medium text-muted" [for]="'read-'+schema.schemaName+'-'+table.tableName">Ver</label>
+                          <input class="form-check-input" type="checkbox" role="switch" [id]="'read-'+schema.pesquema+'-'+table.ptabla"
+                                [(ngModel)]="table.ppselect">
+                          <label class="form-check-label small fw-medium text-muted" [for]="'read-'+schema.pesquema+'-'+table.ptabla">Ver</label>
                         </div>
 
                         <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" [id]="'create-'+schema.schemaName+'-'+table.tableName"
-                                [(ngModel)]="table.canCreate">
-                          <label class="form-check-label small fw-medium text-muted" [for]="'create-'+schema.schemaName+'-'+table.tableName">Crear</label>
+                          <input class="form-check-input" type="checkbox" role="switch" [id]="'create-'+schema.pesquema+'-'+table.ptabla"
+                                [(ngModel)]="table.ppinsert">
+                          <label class="form-check-label small fw-medium text-muted" [for]="'create-'+schema.pesquema+'-'+table.ptabla">Crear</label>
                         </div>
 
                         <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" [id]="'update-'+schema.schemaName+'-'+table.tableName"
-                                [(ngModel)]="table.canUpdate">
-                          <label class="form-check-label small fw-medium text-muted" [for]="'update-'+schema.schemaName+'-'+table.tableName">Editar</label>
+                          <input class="form-check-input" type="checkbox" role="switch" [id]="'update-'+schema.pesquema+'-'+table.ptabla"
+                                [(ngModel)]="table.ppupdate">
+                          <label class="form-check-label small fw-medium text-muted" [for]="'update-'+schema.pesquema+'-'+table.ptabla">Editar</label>
                         </div>
 
                         <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" [id]="'delete-'+schema.schemaName+'-'+table.tableName"
-                                [(ngModel)]="table.canDelete">
-                          <label class="form-check-label small fw-medium text-danger" [for]="'delete-'+schema.schemaName+'-'+table.tableName">Eliminar</label>
+                          <input class="form-check-input" type="checkbox" role="switch" [id]="'delete-'+schema.pesquema+'-'+table.ptabla"
+                                [(ngModel)]="table.ppdelete">
+                          <label class="form-check-label small fw-medium text-danger" [for]="'delete-'+schema.pesquema+'-'+table.ptabla">Eliminar</label>
                         </div>
 
                       </div>

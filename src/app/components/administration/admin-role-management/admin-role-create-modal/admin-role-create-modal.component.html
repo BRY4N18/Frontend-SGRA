@@ -16,7 +16,7 @@
           <div>
             <div class="form-floating">
               <input type="text" class="form-control bg-light border-0 shadow-none" id="name" formControlName="name" placeholder="Ej: Auditor"
-                     [ngClass]="{'is-invalid': f['name'].invalid && (f['name'].dirty || f['name'].touched)}">
+                    [ngClass]="{'is-invalid': f['name'].invalid && (f['name'].dirty || f['name'].touched)}">
               <label for="name" class="text-muted fw-medium">Nombre del Rol *</label>
             </div>
             @if (f['name'].hasError('required') && f['name'].touched) { <div class="text-danger mt-1 small">El nombre es obligatorio.</div> }

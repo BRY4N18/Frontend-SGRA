@@ -1,13 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of} from 'rxjs';
 import { GUser } from '../../../models/administration/admin-user-management/GUser.model';
-import { RoleSelect } from '../../../models/administration/admin-user-management/RoleSelect.model';
+import { GRoleSimple } from '../../../models/administration/admin-permission-management/GRoleSimple';
+import { HttpClient , HttpParams} from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminUserManagementService {
   constructor() { }
+
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
 
   getUsers(): Observable<GUser[]> {
     const mockUsers: GUser[] = [
@@ -19,18 +24,12 @@ export class AdminUserManagementService {
     return of(mockUsers);
   }
 
-  getRolesForSelect(): Observable<RoleSelect[]> {
-    const mockRoles: RoleSelect[] = [
-      { id: 1, name: 'Administrador' },
-      { id: 2, name: 'Coordinador' },
-      { id: 3, name: 'Docente' },
-      { id: 4, name: 'Estudiante' }
-    ];
-    return of(mockRoles);
+  getRolesForSelect(): Observable<GRoleSimple[]> {
+      return this.http.get<GRoleSimple[]>(`${this.apiUrl}/security/role-managements/list-roles-combo`);
   }
 
   createUser(userData: any): Observable<boolean> {
-    console.log('Enviando al backend:', userData);
-    return of(true);
+    console.log('Enviando al backend este JSON:', userData);
+    return this.http.post<boolean>(`${this.apiUrl}/security/user-managements/create-user`, userData);
   }
 }

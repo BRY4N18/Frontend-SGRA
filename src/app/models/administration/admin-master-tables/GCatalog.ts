@@ -1,7 +1,6 @@
 export interface GCatalog {
-  pschematable: string;
-  pname: string;
-  icon?: string;
-  recordCount?: number;
+  pschematabla: string;
+  pnombre: string;
+  pdescripcion: string;
 }
 

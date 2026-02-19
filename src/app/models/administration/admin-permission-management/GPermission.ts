@@ -1,8 +1,10 @@
 export interface GTablePermission {
-  tableName: string;
-  description: string;
-  canRead: boolean;
-  canCreate: boolean;
-  canUpdate: boolean;
-  canDelete: boolean;
+  pnombre: string;
+  ptabla: string;
+  pesquematabla: string;
+  pdescripcion: string;
+  ppselect: boolean;
+  ppinsert: boolean;
+  ppupdate: boolean;
+  ppdelete: boolean;
 }

@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { GCatalog } from '../../../models/administration/admin-master-tables/GCatalog';
 import { GCatalogRecord } from '../../../models/administration/admin-master-tables/GCatalogRecord';
 import { GCatalogMetrics } from './../../../models/administration/admin-master-tables/GCatalogMetrics';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,13 +12,11 @@ import { GCatalogMetrics } from './../../../models/administration/admin-master-t
 export class AdminMasterTablesService {
   constructor() { }
 
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
+
   getCatalogs(): Observable<GCatalog[]> {
-    const catalogs: GCatalog[] = [
-      { pschematable: 'general.tbinstituciones', pname: 'Instituciones', icon: 'bi-building', recordCount: 2 },
-      { pschematable: 'academico.tbareas', pname: 'Áreas Académicas', icon: 'bi-book', recordCount: 4 },
-      { pschematable: 'academico.tbcarreras', pname: 'Carreras', icon: 'bi-mortarboard', recordCount: 3 }
-    ];
-    return of(catalogs);
+    return this.http.get<GCatalog[]>(`${this.apiUrl}/security/module-managements/list-master-tables`);
   }
 
   getRecordsByCatalog(pschematable: string): Observable<GCatalogRecord[]> {

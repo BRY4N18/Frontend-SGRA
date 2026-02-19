@@ -36,7 +36,7 @@ export class AdminMasterTablesComponent implements OnInit{
       this.isLoadingCatalogs = false;
 
       if (this.catalogs.length > 0) {
-        this.onCatalogSelected(this.catalogs[0].pschematable);
+        this.onCatalogSelected(this.catalogs[0].pschematabla);
       }
     });
   }
@@ -47,8 +47,8 @@ export class AdminMasterTablesComponent implements OnInit{
     this.selectedCatalogSchema = pschematable;
     this.isLoadingRecords = true;
 
-    const found = this.catalogs.find(c => c.pschematable === pschematable);
-    this.selectedCatalogName = found ? found.pname : 'Catálogo';
+    const found = this.catalogs.find(c => c.pschematabla === pschematable);
+    this.selectedCatalogName = found ? found.pnombre : 'Catálogo';
 
     this.catalogService.getRecordsByCatalog(pschematable).subscribe(data => {
       this.currentRecords = data;

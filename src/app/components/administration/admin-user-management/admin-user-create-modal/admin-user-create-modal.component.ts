@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RoleSelect } from '../../../../models/administration/admin-user-management/RoleSelect.model';
+import { ReactiveFormsModule, FormBuilder, FormGroup,FormArray, FormControl, Validators} from '@angular/forms';
+import { GRoleSimple } from './../../../../models/administration/admin-permission-management/GRoleSimple';
 import { AdminUserManagementService } from '../../../../services/administration/admin-user-management/admin-user-management.service';
 
 declare var bootstrap: any;
@@ -17,7 +17,7 @@ export class AdminUserCreateModalComponent implements OnInit{
 
   @Output() userCreated = new EventEmitter<void>();
 
-  rolesList: RoleSelect[] = [];
+  rolesList: GRoleSimple[] = [];
   createUserForm: FormGroup;
   isSubmitting: boolean = false;
 
@@ -28,13 +28,33 @@ export class AdminUserCreateModalComponent implements OnInit{
     this.createUserForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      roleId: ['', [Validators.required]],
+      roleIds: this.fb.array([[], [Validators.required]]),
       status: ['activo']
     });
   }
 
   ngOnInit(): void {
     this.userService.getRolesForSelect().subscribe(data => this.rolesList = data);
+  }
+
+  onRoleToggle(event: Event, roleId: number): void {
+    const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
+    const isChecked = (event.target as HTMLInputElement).checked;
+
+    if (isChecked) {
+      roleIdsArray.push(new FormControl(roleId));
+    } else {
+      const index = roleIdsArray.controls.findIndex(ctrl => ctrl.value === roleId);
+      if (index !== -1) {
+        roleIdsArray.removeAt(index);
+      }
+    }
+    roleIdsArray.markAsTouched();
+  }
+
+  isRoleSelected(roleId: number): boolean {
+    const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
+    return roleIdsArray.value.includes(roleId);
   }
 
   onSubmitCreate(): void {
@@ -44,6 +64,7 @@ export class AdminUserCreateModalComponent implements OnInit{
     }
 
     this.isSubmitting = true;
+
     this.userService.createUser(this.createUserForm.value).subscribe({
       next: (success) => {
         if (success) {
@@ -53,6 +74,8 @@ export class AdminUserCreateModalComponent implements OnInit{
           }
 
           this.createUserForm.reset({ status: 'activo' });
+          const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
+          roleIdsArray.clear();
           this.userCreated.emit();
         }
         this.isSubmitting = false;

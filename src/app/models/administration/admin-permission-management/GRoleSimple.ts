@@ -1,4 +1,4 @@
 export interface GRoleSimple {
-  id: number;
-  name: string;
+  roleGId: number;
+  roleG: string;
 }
