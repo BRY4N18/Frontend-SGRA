@@ -1,7 +1,7 @@
 export interface GUser {
-  id: number;
-  username: string;
-  role: string;
-  status: 'activo' | 'inactivo';
-  createdAt: Date;
+  idgu: number;
+  usuariogu: string;
+  rolesasignadosgu: number;
+  estadogu: string;
+  fechacreaciongu: Date;
 }

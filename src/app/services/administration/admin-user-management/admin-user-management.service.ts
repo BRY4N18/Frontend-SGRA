@@ -4,6 +4,7 @@ import { GUser } from '../../../models/administration/admin-user-management/GUse
 import { GRoleSimple } from '../../../models/administration/admin-permission-management/GRoleSimple';
 import { HttpClient , HttpParams} from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { dateTimestampProvider } from 'rxjs/internal/scheduler/dateTimestampProvider';
 
 @Injectable({
   providedIn: 'root',
@@ -14,14 +15,23 @@ export class AdminUserManagementService {
   private http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  getUsers(): Observable<GUser[]> {
-    const mockUsers: GUser[] = [
-      { id: 1, username: 'admin', role: 'Administrador', status: 'activo', createdAt: new Date('2023-12-31') },
-      { id: 2,  username: 'jperez',role: 'Docente', status: 'activo', createdAt: new Date('2024-02-14') },
-      { id: 3, username: 'mgonzalez', role: 'Estudiante', status: 'inactivo', createdAt: new Date('2024-03-19') },
-      { id: 4, username: 'clopez', role: 'Coordinador', status: 'activo', createdAt: new Date('2024-04-01') }
-    ];
-    return of(mockUsers);
+  getUsers(filter?: string, date?: string, state?: boolean): Observable<GUser[]> {
+    let params = new HttpParams();
+    let apiFinish = "${this.apiUrl}/security/user-managements/list-userG";
+
+    if(filter){
+      params.set('filter',filter);
+    }
+
+    if(date) {
+      params = params.set('date',date);
+    }
+
+    if(state){
+      params = params.set('state',state);
+    }
+
+    return this.http.get<GUser[]>(`${this.apiUrl}/security/user-managements/list-userG`,{ params });
   }
 
   getRolesForSelect(): Observable<GRoleSimple[]> {

@@ -2,11 +2,11 @@
         <table class="table table-hover align-middle">
           <thead class="bg-light text-secondary small text-uppercase fw-bold tracking-wide">
             <tr>
-              <th scope="col" class="py-3">Usuario</th>
-              <th scope="col" class="py-3">Rol</th>
-              <th scope="col" class="py-3">Estado</th>
-              <th scope="col" class="py-3">Fecha Creación</th>
-              <th scope="col" class="py-3 text-end pe-4">Acciones</th>
+              <th scope="col" class="py-3 col-2">Usuario</th>
+              <th scope="col" class="py-3 col-2">Roles Asignados</th>
+              <th scope="col" class="py-3 col-2">Estado</th>
+              <th scope="col" class="py-3 col-2">Fecha Creación</th>
+              <th scope="col" class="py-3 text-end pe-4 col-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -19,25 +19,29 @@
               </tr>
             }
 
-            @for (user of users; track user.id) {
+            @for (user of users; track user.idgu) {
               <tr>
-                <td>{{ user.username }}</td>
+                <td>{{ user.usuariogu }}</td>
                 <td>
                   <span class="badge bg-light text-dark border fw-medium rounded-pill px-3">
-                    {{ user.role }}
+                    @if (user.rolesasignadosgu === 1){
+                      {{ user.rolesasignadosgu }} Rol asignado
+                    } @else {
+                      {{ user.rolesasignadosgu }} Roles asignados
+                    }
                   </span>
                 </td>
+                <td class="text-muted">{{ user.fechacreaciongu | date:'dd/MM/yyyy' }}</td>
                 <td>
                   <span class="badge rounded-pill text-uppercase px-3 fw-bold"
                         [ngClass]="{
-                          'bg-success-subtle text-success': user.status === 'activo',
-                          'bg-danger-subtle text-danger': user.status === 'inactivo'
+                          'bg-success-subtle text-success': (user.estadogu | lowercase) === 'activo',
+                          'bg-danger-subtle text-danger': (user.estadogu | lowercase) === 'inactivo'
                         }"
                         style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                    {{ user.status }}
+                    {{ user.estadogu }}
                   </span>
                 </td>
-                <td class="text-muted">{{ user.createdAt | date:'dd/MM/yyyy' }}</td>
                 <td class="text-end pe-4">
                   <div class="d-inline-flex gap-2">
                     <button class="btn btn-sm btn-outline-secondary border-0 bg-light-hover" title="Ver detalles">

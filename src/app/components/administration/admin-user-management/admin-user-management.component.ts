@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GUser } from '../../../models/administration/admin-user-management/GUser.model';
 import { AdminUserManagementService } from '../../../services/administration/admin-user-management/admin-user-management.service';
@@ -18,6 +18,7 @@ export class AdminUserManagementComponent implements OnInit{
   users: GUser[] = [];
   isLoading: boolean = true;
 
+  private cdr = inject(ChangeDetectorRef);
   private userService = inject(AdminUserManagementService);
 
   ngOnInit(): void {
@@ -41,6 +42,7 @@ export class AdminUserManagementComponent implements OnInit{
       next: (data) => {
         this.users = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error cargando usuarios', err);
