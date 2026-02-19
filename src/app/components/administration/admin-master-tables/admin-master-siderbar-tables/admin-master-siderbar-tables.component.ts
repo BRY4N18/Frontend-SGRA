@@ -12,7 +12,6 @@ import { GCatalog } from '../../../../models/administration/admin-master-tables/
 export class AdminMasterSiderbarTablesComponent {
   @Input() catalogs: GCatalog[] = [];
   @Input() selectedCatalogSchema: string | null = null;
-  @Input() isLoading: boolean = false;
 
   @Output() catalogSelected = new EventEmitter<string>();
 

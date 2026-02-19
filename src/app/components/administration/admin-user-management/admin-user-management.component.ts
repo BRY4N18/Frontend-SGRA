@@ -16,7 +16,6 @@ declare var bootstrap: any;
 })
 export class AdminUserManagementComponent implements OnInit{
   users: GUser[] = [];
-  isLoading: boolean = true;
 
   private cdr = inject(ChangeDetectorRef);
   private userService = inject(AdminUserManagementService);
@@ -37,16 +36,13 @@ export class AdminUserManagementComponent implements OnInit{
   }
 
   loadUsers(): void {
-    this.isLoading = true;
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.users = data;
-        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error cargando usuarios', err);
-        this.isLoading = false;
       }
     });
   }

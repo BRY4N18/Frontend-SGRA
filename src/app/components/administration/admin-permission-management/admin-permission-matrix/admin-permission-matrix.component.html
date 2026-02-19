@@ -1,9 +1,4 @@
-@if (isLoading) {
-  <div class="text-center py-5 text-muted">
-    <div class="spinner-border text-success spinner-border-sm me-2" role="status"></div>
-    Cargando matriz de permisos...
-  </div>
-} @else if (schemas.length === 0) {
+@if (schemas.length === 0) {
   <div class="text-center py-5 text-muted fw-medium border rounded-4 bg-light">
     <i class="bi bi-shield-lock fs-1 d-block mb-2 opacity-50"></i>
     Seleccione un rol para ver sus permisos.
@@ -22,7 +17,7 @@
           </button>
         </h2>
 
-        <div [id]="'collapse-' + i" class="accordion-collapse collapse show" [attr.aria-labelledby]="'heading-' + i">
+        <div [id]="'collapse-' + i" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading-' + i">
           <div class="accordion-body p-0">
 
             <div class="list-group list-group-flush">

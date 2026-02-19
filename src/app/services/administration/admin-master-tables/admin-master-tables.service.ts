@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import { GCatalog } from '../../../models/administration/admin-master-tables/GCatalog';
 import { GCatalogRecord } from '../../../models/administration/admin-master-tables/GCatalogRecord';
 import { GCatalogMetrics } from './../../../models/administration/admin-master-tables/GCatalogMetrics';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -20,21 +20,8 @@ export class AdminMasterTablesService {
   }
 
   getRecordsByCatalog(pschematable: string): Observable<GCatalogRecord[]> {
-    let records: GCatalogRecord[] = [];
-
-    if (pschematable === 'general.tbinstituciones') {
-      records = [
-        { id: 1, genericName: 'Universidad Técnica Estatal de Quevedo', status: 'activo' },
-        { id: 2, genericName: 'Instituto Tecnológico Superior', status: 'inactivo' }
-      ];
-    } else {
-      records = [
-        { id: 1, genericName: 'Facultad de Ciencias de la Computación', status: 'activo' },
-        { id: 2, genericName: 'Facultad de Ciencias Empresariales', status: 'activo' },
-        { id: 3, genericName: 'Facultad de Ciencias Ambientales', status: 'activo' }
-      ];
-    }
-    return of(records);
+    let params = new HttpParams().set('schemaTable',pschematable);
+    return this.http.get<any[]>(`${this.apiUrl}/security/module-managements/list-data-master-table`, { params });
   }
 
   getMetrics(): Observable<GCatalogMetrics> {

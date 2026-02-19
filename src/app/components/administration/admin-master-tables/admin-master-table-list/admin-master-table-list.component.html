@@ -28,33 +28,24 @@
         <thead class="bg-transparent text-secondary small text-uppercase fw-bold tracking-wide">
           <tr>
             <th scope="col" class="py-3 border-bottom border-2 text-center" style="width: 80px;">ID</th>
-            <th scope="col" class="py-3 border-bottom border-2">Nombre / Descripción</th>
+            <th scope="col" class="py-3 border-bottom border-2">Nombre</th>
             <th scope="col" class="py-3 border-bottom border-2">Estado</th>
             <th scope="col" class="py-3 text-end pe-4 border-bottom border-2">Acciones</th>
           </tr>
         </thead>
         <tbody>
 
-          @if (isLoading) {
+          @for (record of records; track record.mid) {
             <tr>
-              <td colspan="4" class="text-center py-5 text-muted">
-                <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
-                Cargando registros...
-              </td>
-            </tr>
-          }
-
-          @for (record of records; track record.id) {
-            <tr>
-              <td class="text-center text-muted fw-medium">{{ record.id }}</td>
-              <td class="fw-bold text-dark">{{ record.genericName }}</td>
+              <td class="text-center text-muted fw-medium">{{ record.mid }}</td>
+              <td class="fw-bold text-dark">{{ record.mnombre }}</td>
               <td>
                 <span class="badge rounded-pill text-uppercase px-3 fw-bold"
                       [ngClass]="{
-                        'bg-success-subtle text-success': record.status === 'activo',
-                        'bg-danger-subtle text-danger': record.status === 'inactivo'
+                        'bg-success-subtle text-success': record.mestado === 'activo',
+                        'bg-danger-subtle text-danger': record.mestado === 'inactivo'
                       }" style="font-size: 0.7rem; letter-spacing: 0.05em;">
-                  {{ record.status }}
+                  {{ record.mestado }}
                 </span>
               </td>
               <td class="text-end pe-4">

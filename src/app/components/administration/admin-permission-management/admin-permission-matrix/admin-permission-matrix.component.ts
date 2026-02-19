@@ -12,5 +12,4 @@ import { GSchemaPermission } from '../../../../models/administration/admin-permi
 })
 export class AdminPermissionMatrixComponent {
   @Input() schemas: GSchemaPermission[] = [];
-  @Input() isLoading: boolean = false;
 }

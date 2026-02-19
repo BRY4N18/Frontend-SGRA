@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GCatalog } from '../../../models/administration/admin-master-tables/GCatalog';
 import { GCatalogRecord } from '../../../models/administration/admin-master-tables/GCatalogRecord';
@@ -27,6 +27,7 @@ export class AdminMasterTablesComponent implements OnInit{
   isLoadingRecords: boolean = false;
 
   private catalogService = inject(AdminMasterTablesService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.catalogService.getMetrics().subscribe(data => this.metrics = data);
@@ -34,9 +35,10 @@ export class AdminMasterTablesComponent implements OnInit{
     this.catalogService.getCatalogs().subscribe(data => {
       this.catalogs = data;
       this.isLoadingCatalogs = false;
+      this.cdr.detectChanges();
 
       if (this.catalogs.length > 0) {
-        this.onCatalogSelected(this.catalogs[0].pschematabla);
+        this.onCatalogSelected(this.catalogs[0].pesquematabla);
       }
     });
   }
@@ -45,14 +47,17 @@ export class AdminMasterTablesComponent implements OnInit{
     if (this.selectedCatalogSchema === pschematable) return;
 
     this.selectedCatalogSchema = pschematable;
+
+    this.currentRecords = [];
     this.isLoadingRecords = true;
 
-    const found = this.catalogs.find(c => c.pschematabla === pschematable);
+    const found = this.catalogs.find(c => c.pesquematabla === pschematable);
     this.selectedCatalogName = found ? found.pnombre : 'Catálogo';
 
     this.catalogService.getRecordsByCatalog(pschematable).subscribe(data => {
       this.currentRecords = data;
       this.isLoadingRecords = false;
+      this.cdr.detectChanges();
     });
   }
 }

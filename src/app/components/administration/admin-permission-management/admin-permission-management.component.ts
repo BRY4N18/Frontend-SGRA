@@ -22,7 +22,6 @@ export class AdminPermissionManagementComponent implements OnInit{
   metrics: GPermissionMetrics | null = null;
   schemas: GSchemaPermission[] = [];
 
-  isLoadingData: boolean = false;
   isSaving: boolean = false;
 
   private cdr = inject(ChangeDetectorRef);
@@ -43,15 +42,13 @@ export class AdminPermissionManagementComponent implements OnInit{
     if (!role) return;
 
     this.selectedRole = role;
-    this.isLoadingData = true;
 
     this.permissionService.getMetricsByRoleId(role).subscribe({
-      
+
     });
 
     this.permissionService.getPermissionsByRole(role).subscribe(data => {
       this.schemas = data;
-      this.isLoadingData = false;
       this.cdr.detectChanges();
     });
   }

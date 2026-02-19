@@ -10,14 +10,6 @@
             </tr>
           </thead>
           <tbody>
-            @if (isLoading) {
-              <tr>
-                <td colspan="7" class="text-center py-5 text-muted">
-                  <div class="spinner-border text-success spinner-border-sm me-2" role="status"></div>
-                  Cargando usuarios...
-                </td>
-              </tr>
-            }
 
             @for (user of users; track user.idgu) {
               <tr>

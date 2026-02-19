@@ -11,5 +11,4 @@ import { GCatalogMetrics } from '../../../../models/administration/admin-master-
 })
 export class AdminMasterKpisComponent {
   @Input() metrics: GCatalogMetrics | null = null;
-  @Input() isLoading: boolean = false;
 }

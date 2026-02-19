@@ -3,37 +3,22 @@
     <h6 class="fw-bold text-muted small text-uppercase tracking-wide mb-0">Catálogos</h6>
   </div>
   <div class="card-body p-0">
-
-    @if (isLoading) {
-      <div class="text-center py-4">
-        <div class="spinner-border spinner-border-sm text-success" role="status"></div>
-      </div>
-    } @else {
-      <div class="list-group list-group-flush pb-3">
-        @for (cat of catalogs; track cat.pschematabla) {
+    <div class="list-group list-group-flush pb-3">
+        @for (cat of catalogs; track cat.pesquematabla) {
           <button type="button"
                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3 border-0"
-                  [class.active]="cat.pschematabla === selectedCatalogSchema"
-                  (click)="selectCatalog(cat.pschematabla)">
+                  [class.active]="cat.pesquematabla === selectedCatalogSchema"
+                  (click)="selectCatalog(cat.pesquematabla)">
 
             <div class="d-flex align-items-center">
               <i class="bi me-3 fs-5"
-                [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'text-success' : 'text-muted'"></i>
-              <span class="fw-medium" [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'text-dark' : 'text-secondary'">
+                [ngClass]="cat.pesquematabla === selectedCatalogSchema ? 'text-success' : 'text-muted'"></i>
+              <span class="fw-medium" [ngClass]="cat.pesquematabla === selectedCatalogSchema ? 'text-dark' : 'text-secondary'">
                 {{ cat.pnombre }}
               </span>
             </div>
-
-            <!-- @if (cat.recordCount) {
-              <span class="badge rounded-pill"
-                    [ngClass]="cat.pschematabla === selectedCatalogSchema ? 'bg-success text-white' : 'bg-light text-muted border'">
-                {{ cat.recordCount }}
-              </span>
-            } -->
           </button>
         }
       </div>
-    }
-
   </div>
 </div>

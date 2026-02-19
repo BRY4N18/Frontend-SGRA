@@ -12,15 +12,6 @@
     </thead>
     <tbody>
 
-      @if (isLoading) {
-        <tr>
-          <td colspan="7" class="text-center py-5 text-muted">
-            <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
-            Cargando roles...
-          </td>
-        </tr>
-      }
-
       @for (role of roles; track role.idg) {
         <tr>
           <td>{{ role.nombreg }}</td>

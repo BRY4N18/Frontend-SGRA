@@ -7,8 +7,7 @@
           <i class="bi bi-collection"></i>
         </div>
         <div>
-          @if (isLoading) { <div class="spinner-border spinner-border-sm text-primary mb-2"></div> }
-          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalCatalogs || 0 }}</h3> }
+          <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalCatalogs || 0 }}</h3>
           <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Catálogos</p>
         </div>
       </div>
@@ -22,8 +21,7 @@
           <i class="bi bi-check-circle"></i>
         </div>
         <div>
-          @if (isLoading) { <div class="spinner-border spinner-border-sm text-success mb-2"></div> }
-          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.activeRecords || 0 }}</h3> }
+        <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.activeRecords || 0 }}</h3>
           <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Registros Activos</p>
         </div>
       </div>
@@ -37,8 +35,7 @@
           <i class="bi bi-list-ol"></i>
         </div>
         <div>
-          @if (isLoading) { <div class="spinner-border spinner-border-sm text-secondary mb-2"></div> }
-          @else { <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalRecords || 0 }}</h3> }
+          <h3 class="mb-0 fw-bold fs-3 text-dark">{{ metrics?.totalRecords || 0 }}</h3>
           <p class="text-muted mb-0 fw-medium small text-uppercase" style="letter-spacing: 0.05em;">Registros Totales</p>
         </div>
       </div>
