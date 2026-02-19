@@ -7,7 +7,7 @@
     <p class="text-muted mb-0">Gestiona los catálogos base del sistema: instituciones, áreas, periodos y más.</p>
   </div>
 
-  <app-admin-master-kpis [metrics]="metrics" [isLoading]="isLoadingCatalogs"></app-admin-master-kpis>
+  <app-admin-master-kpis [metrics]="metrics"></app-admin-master-kpis>
 
   <div class="row g-4">
 
@@ -15,7 +15,6 @@
       <app-admin-master-siderbar-tables
         [catalogs]="catalogs"
         [selectedCatalogSchema]="selectedCatalogSchema"
-        [isLoading]="isLoadingCatalogs"
         (catalogSelected)="onCatalogSelected($event)">
       </app-admin-master-siderbar-tables>
     </div>
