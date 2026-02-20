@@ -7,7 +7,7 @@
       </h5>
       <p class="text-muted small mb-0">Gestión de registros vinculados al catálogo seleccionado.</p>
     </div>
-    <button class="btn btn-primary rounded-3 px-4 fw-medium shadow-sm d-flex align-items-center gap-2" style="background-color: #0d6efd;">
+    <button class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2">
       <i class="bi bi-plus-lg"></i> Nuevo registro
     </button>
   </div>
@@ -27,10 +27,10 @@
       <table class="table table-hover align-middle">
         <thead class="bg-transparent text-secondary small text-uppercase fw-bold tracking-wide">
           <tr>
-            <th scope="col" class="py-3 border-bottom border-2 text-center" style="width: 80px;">ID</th>
-            <th scope="col" class="py-3 border-bottom border-2">Nombre</th>
-            <th scope="col" class="py-3 border-bottom border-2">Estado</th>
-            <th scope="col" class="py-3 text-end pe-4 border-bottom border-2">Acciones</th>
+            <th scope="col" class="py-3 col-1 text-center">ID</th>
+            <th scope="col" class="py-3 col-4">Nombre</th>
+            <th scope="col" class="py-3 col-1">Estado</th>
+            <th scope="col" class="py-3 col-2 text-md-end">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -50,11 +50,11 @@
               </td>
               <td class="text-end pe-4">
                 <div class="d-inline-flex gap-2">
-                  <button class="btn btn-sm btn-light border-0 text-secondary" title="Editar">
-                    <i class="bi bi-pencil-square"></i>
+                  <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">
+                    <i class="bi bi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-light border-0 text-secondary" title="Cambiar Estado">
-                    <i class="bi bi-arrow-repeat"></i>
+                  <button class="btn btn-sm btn-outline-danger border-0 bg-light-hover" title="Cambiar Estado">
+                    <i class="bi bi-trash"></i>
                   </button>
                 </div>
               </td>
