@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UploadResult } from '../../../models/coordination/coord-dataload';
@@ -12,21 +12,33 @@ import { CoordDataloadService } from '../../../services/coordination/coord-datal
   styleUrl: './coord-dataload.component.css',
 })
 export class CoordDataloadComponent {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputStudents') fileInputStudents!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputTeachers') fileInputTeachers!: ElementRef<HTMLInputElement>;
 
   // Inyección del servicio
-  constructor(private dataloadService: CoordDataloadService) {}
+  constructor(
+    private dataloadService: CoordDataloadService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  // ===== CONTROL DE ARCHIVOS =====
+  // ===== NUEVO SISTEMA UNIFICADO =====
+  selectedUploadType: 'students' | 'teachers' = 'students';
+  selectedFile: File | null = null;
+  isDragging = false;
+  isUploading = false;
+  uploadProgress = 0;
+  uploadSuccess = false;
+
+  // ===== CONTROL DE ARCHIVOS (LEGACY) =====
   selectedFileStudents: File | null = null;
   selectedFileTeachers: File | null = null;
 
-  // ===== CONTROL DE DRAG & DROP =====
+  // ===== CONTROL DE DRAG & DROP (LEGACY) =====
   isDraggingStudents = false;
   isDraggingTeachers = false;
 
-  // ===== CONTROL DE CARGA Y PROGRESO =====
+  // ===== CONTROL DE CARGA Y PROGRESO (LEGACY) =====
   isUploadingStudents = false;
   isUploadingTeachers = false;
   studentUploadProgress = 0;
@@ -55,7 +67,127 @@ export class CoordDataloadComponent {
   errorCount = 0;
   successCount = 0;
 
-  // ===== MÉTODOS PARA ABRIR SELECTOR =====
+  // ===== MÉTODOS UNIFICADOS =====
+
+  selectUploadType(type: 'students' | 'teachers'): void {
+    this.selectedUploadType = type;
+    this.clearFile();
+  }
+
+  openFileSelect(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(): void {
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (this.isValidFile(file)) {
+        this.selectedFile = file;
+        this.uploadSuccess = false;
+      } else {
+        this.showError('Por favor, selecciona un archivo válido (Excel o CSV). Máximo 10 MB.');
+      }
+    }
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (this.isValidFile(file)) {
+        this.selectedFile = file;
+        this.uploadSuccess = false;
+      } else {
+        this.showError('Por favor, selecciona un archivo válido (Excel o CSV). Máximo 10 MB.');
+        input.value = '';
+      }
+    }
+  }
+
+  clearFile(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.selectedFile = null;
+    this.uploadProgress = 0;
+    this.uploadSuccess = false;
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+  uploadFile(): void {
+    if (!this.selectedFile) {
+      this.showError('Por favor, selecciona un archivo primero.');
+      return;
+    }
+
+    const validation = this.dataloadService.validateFile(this.selectedFile);
+    if (!validation.valid) {
+      this.showError(validation.message);
+      return;
+    }
+
+    this.isUploading = true;
+
+    const uploadObservable = this.selectedUploadType === 'students'
+      ? this.dataloadService.uploadStudentsFile(this.selectedFile)
+      : this.dataloadService.uploadTeachersFile(this.selectedFile);
+
+    uploadObservable.subscribe({
+      next: (reporte: string[]) => {
+        this.isUploading = false;
+
+        const tipo = this.selectedUploadType === 'students' ? 'Estudiantes' : 'Docentes';
+        this.processUploadReport(reporte, tipo);
+
+        // Limpiar archivo seleccionado
+        this.selectedFile = null;
+        if (this.fileInput) {
+          this.fileInput.nativeElement.value = '';
+        }
+      },
+      error: (error: Error) => {
+        this.isUploading = false;
+
+        // Mostrar error en el reporte
+        const tipo = this.selectedUploadType === 'students' ? 'Estudiantes' : 'Docentes';
+        this.uploadResults = [{
+          tipo: tipo,
+          status: 'error',
+          message: error.message || 'Error al cargar el archivo.',
+          timestamp: new Date()
+        }];
+        this.updateCounters();
+        this.filterResults();
+        this.cdr.detectChanges();
+
+        // Limpiar archivo seleccionado
+        this.selectedFile = null;
+        if (this.fileInput) {
+          this.fileInput.nativeElement.value = '';
+        }
+      }
+    });
+  }
+
+  // ===== MÉTODOS PARA ABRIR SELECTOR (LEGACY) =====
 
   openFileSelectStudents(): void {
     this.fileInputStudents.nativeElement.click();
@@ -157,6 +289,9 @@ export class CoordDataloadComponent {
    * Procesa el reporte del backend y lo agrega a uploadResults
    */
   private processUploadReport(reporte: string[], tipo: 'Estudiantes' | 'Docentes'): void {
+    // Limpiar resultados anteriores para mostrar solo el reporte actual
+    this.uploadResults = [];
+
     reporte.forEach((mensaje: string) => {
       const isError = mensaje.toLowerCase().includes('error') || mensaje.toLowerCase().includes('fallo');
       const result: UploadResult = {
@@ -171,6 +306,9 @@ export class CoordDataloadComponent {
     this.updateCounters();
     this.currentPage = 1;
     this.filterResults();
+
+    // Forzar actualización de la vista
+    this.cdr.detectChanges();
   }
 
   private completeStudentUpload(): void {
@@ -345,7 +483,7 @@ export class CoordDataloadComponent {
    * Filtra los resultados según el término de búsqueda y estado
    */
   filterResults(): void {
-    let filtered = this.uploadResults;
+    let filtered = [...this.uploadResults];
 
     // Filtrar por estado
     if (this.currentFilterStatus !== 'all') {
@@ -359,6 +497,7 @@ export class CoordDataloadComponent {
       );
     }
 
+    this.filteredResults = filtered;
     this.paginatedResults = this.getPaginatedResults(filtered);
   }
 
