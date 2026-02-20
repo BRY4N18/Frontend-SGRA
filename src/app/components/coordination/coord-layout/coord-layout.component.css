@@ -1,283 +1,58 @@
-/* =========================================
-   VARIABLES Y CONFIGURACIÓN BASE
-   ========================================= */
-:root {
-    --uteq-dark: #0a3d1d;       /* El verde oscuro institucional */
-    --uteq-active: #198754;     /* Verde brillante para items activos */
-    --uteq-light: #f4f6f9;      /* Fondo gris muy suave para el contenido */
-    --text-muted: rgba(255, 255, 255, 0.5);
-    --sidebar-width: 280px;
+.coord-sidebar {
+  width: 17.5rem;
+  background-color: #1B7505;
+  transition: all 0.3s ease-in-out;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.coord-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #1a6b27;
 }
 
-/* Contenedor Principal */
-.layout-wrapper {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-    background-color: var(--uteq-light);
-    font-family: 'Segoe UI', system-ui, sans-serif;
+.btn-profile {
+  background-color: transparent;
+  transition: background-color 0.2s;
+  border-radius: 3.125rem;
+  padding: 0.3125rem 0.9375rem 0.3125rem 0.3125rem;
 }
 
-/* =========================================
-   SIDEBAR (BARRA LATERAL)
-   ========================================= */
-nav {
-    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1) !important;
-    transition: all 0.3s ease-in-out;
+.btn-profile:hover {
+  background-color: #f8f9fa;
 }
 
-/* Logo UTEQ */
-.logo-container {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    padding: 10px;
-    transition: background 0.3s;
-}
-
-.logo-circle {
-    width: 45px;
-    height: 45px;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.25rem;
-}
-
-/* Tarjeta de Usuario Mini */
-.user-profile-card {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.user-profile-card:hover {
-    background-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-/* =========================================
-   NAVEGACIÓN (MENÚ)
-   ========================================= */
-.nav-section-label {
-    font-size: 0.7rem;
-    letter-spacing: 1.5px;
-    color: var(--text-muted);
-    font-weight: 700;
-    text-transform: uppercase;
-    padding-left: 1rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    display: block;
+.nav-link,
+.btn-logout {
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.9375rem;
+  transition: all 0.2s ease-in-out;
 }
 
 .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-bottom: 5px;
-    transition: all 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.95rem;
+  opacity: 0.85;
 }
 
-/* Efecto Hover (Al pasar el mouse) */
 .nav-link:hover {
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
+  background-color: rgba(255, 255, 255, 0.15);
+  opacity: 1;
+  transform: translateX(0.25rem);
 }
 
-/* Estado Activo (La página actual) */
-.nav-link.active {
-    background-color: var(--uteq-active) !important;
-    color: #fff !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    font-weight: 600;
+.active-link {
+  background-color: #124d1c !important;
+  font-weight: 600;
+  opacity: 1;
+  border-left: 0.25rem solid #ffffff;
+  border-radius: 0.25rem 0.5rem 0.5rem 0.25rem;
 }
 
-/* Iconos del menú */
-.nav-link i {
-    font-size: 1.1rem;
-    min-width: 20px;
+.btn-logout {
+  background-color: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
 }
 
-/* Footer del Sidebar */
-.sidebar-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: auto;
-    padding-top: 1rem;
-}
-
-/* =========================================
-   CONTENIDO PRINCIPAL
-   ========================================= */
-.main-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-}
-
-header {
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    z-index: 900;
-    transition: box-shadow 0.3s ease;
-}
-
-header:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
-}
-
-.breadcrumb-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: #6c757d;
-    font-size: 0.95rem;
-}
-
-.breadcrumb-current {
-    color: #212529;
-    font-weight: 600;
-}
-
-/* Área de Contenido */
-main {
-    background-color: var(--uteq-light);
-    overflow-y: auto;
-    padding: 1.5rem;
-}
-
-/* Scrollbar personalizado */
-main::-webkit-scrollbar {
-    width: 8px;
-}
-
-main::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-}
-
-main::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    transition: background 0.3s;
-}
-
-main::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.25);
-}
-
-/* =========================================
-   BOTONES Y ELEMENTOS INTERACTIVOS
-   ========================================= */
-.btn {
-    transition: all 0.2s ease-in-out;
-    border-radius: 8px;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.btn-light {
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
-}
-
-.btn-light:hover {
-    background-color: #e9ecef;
-}
-
-.btn-outline-success {
-    border-color: #198754;
-    color: #198754;
-}
-
-.btn-outline-success:hover {
-    background-color: #198754;
-    border-color: #198754;
-    color: #fff;
-}
-
-/* =========================================
-   NOTIFICACIONES (BADGE)
-   ========================================= */
-.notification-badge {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 8px;
-    height: 8px;
-    background-color: #dc3545;
-    border-radius: 50%;
-    border: 2px solid #fff;
-}
-
-/* =========================================
-   RESPONSIVE (MÓVILES Y TABLETS)
-   ========================================= */
-@media (max-width: 768px) {
-    nav {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 280px;
-        height: 100vh;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
-        z-index: 1000;
-    }
-
-    nav.show {
-        transform: translateX(0);
-    }
-
-    main {
-        margin-left: 0;
-        padding: 1rem;
-    }
-
-    header {
-        height: auto;
-        padding: 1rem !important;
-    }
-
-    .breadcrumb-container {
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    main {
-        padding: 0.75rem;
-    }
-
-    header {
-        padding: 0.75rem !important;
-    }
-
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-    }
-
-    .nav-link {
-        font-size: 0.85rem;
-    }
+.btn-logout:hover {
+  background-color: #9c5151;
 }

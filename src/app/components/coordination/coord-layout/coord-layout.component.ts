@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-coord-layout',
@@ -16,7 +17,7 @@ export class CoordLayoutComponent implements OnInit {
   userName: string = '';
   isSidebarCollapsed: boolean = false;
 
-  constructor(private router: Router) {}
+  public authService = inject(AuthService);
 
   ngOnInit(): void {
     // Obtener el nombre del usuario desde localStorage o usar un valor por defecto
@@ -28,15 +29,7 @@ export class CoordLayoutComponent implements OnInit {
    * Limpia el almacenamiento local y redirige al login
    */
   logout(): void {
-    // Limpiar datos de sesión
-    localStorage.removeItem('userName');
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-
-    console.log('Sesión cerrada');
-
-    // Redirigir al login
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe();
   }
 
   /**

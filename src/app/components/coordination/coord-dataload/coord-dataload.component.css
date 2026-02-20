@@ -1,10 +1,4 @@
-﻿/* ===================================
-   ESTILOS COORDINACIÓN - CARGA DE DATOS
-   Diseño minimalista con Bootstrap
-   =================================== */
-
-/* Dropzone Container */
-.dropzone-container {
+﻿.dropzone-container {
   border: 2px dashed #dee2e6;
   border-radius: 12px;
   padding: 48px 24px;
@@ -19,18 +13,18 @@
 }
 
 .dropzone-container:hover {
-  border-color: #198754;
+  border-color: #1B7505;
   background-color: #f1f8f4;
 }
 
 .dropzone-container.dragover {
-  border-color: #198754;
+  border-color: #1B7505;
   background-color: rgba(25, 135, 84, 0.05);
   border-style: solid;
 }
 
 .dropzone-container.has-file {
-  border-color: #198754;
+  border-color: #1B7505;
   background-color: #f1f8f4;
   border-style: solid;
 }
@@ -57,7 +51,7 @@
 }
 
 .dropdown-item.active {
-  background-color: #198754;
+  background-color: #1B7505;
   color: white;
 }
 
