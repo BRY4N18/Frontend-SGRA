@@ -28,7 +28,7 @@ export class AdminUserCreateModalComponent implements OnInit{
     this.createUserForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      roleIds: this.fb.array([[], [Validators.required]]),
+      roleIds: this.fb.array([], [Validators.required]),
       status: ['activo']
     });
   }
@@ -65,9 +65,19 @@ export class AdminUserCreateModalComponent implements OnInit{
 
     this.isSubmitting = true;
 
-    this.userService.createUser(this.createUserForm.value).subscribe({
-      next: (success) => {
-        if (success) {
+    const formValues = this.createUserForm.value;
+
+    const requestPayLoad ={
+      user: formValues.username,
+      password: formValues.password,
+      state: formValues.status === 'activo',
+      roles: formValues.roleIds
+    }
+
+    this.userService.createUser(requestPayLoad).subscribe({
+      next: (response) => {
+        if (response.success) {
+          alert(response.message);
           const modalElement = document.getElementById('createUserModal');
           if (modalElement) {
             bootstrap.Modal.getInstance(modalElement)?.hide();
@@ -78,6 +88,10 @@ export class AdminUserCreateModalComponent implements OnInit{
           roleIdsArray.clear();
           this.userCreated.emit();
         }
+        else {
+          alert(response.message);
+        }
+
         this.isSubmitting = false;
       },
       error: () => {

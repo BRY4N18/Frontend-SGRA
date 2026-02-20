@@ -4,7 +4,8 @@ import { GUser } from '../../../models/administration/admin-user-management/GUse
 import { GRoleSimple } from '../../../models/administration/admin-permission-management/GRoleSimple';
 import { HttpClient , HttpParams} from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { dateTimestampProvider } from 'rxjs/internal/scheduler/dateTimestampProvider';
+import { GUserCUD } from '../../../models/administration/admin-user-management/GUser.model';
+import { SpResponse } from '../../../models/administration/SpResponse.model';
 
 @Injectable({
   providedIn: 'root',
@@ -38,8 +39,8 @@ export class AdminUserManagementService {
       return this.http.get<GRoleSimple[]>(`${this.apiUrl}/security/role-managements/list-roles-combo`);
   }
 
-  createUser(userData: any): Observable<boolean> {
+  createUser(userData: GUserCUD): Observable<SpResponse> {
     console.log('Enviando al backend este JSON:', userData);
-    return this.http.post<boolean>(`${this.apiUrl}/security/user-managements/create-user`, userData);
+    return this.http.post<SpResponse>(`${this.apiUrl}/security/user-managements/create-user`, userData);
   }
 }

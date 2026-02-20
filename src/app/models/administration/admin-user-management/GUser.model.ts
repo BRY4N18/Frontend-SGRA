@@ -5,3 +5,10 @@ export interface GUser {
   estadogu: string;
   fechacreaciongu: Date;
 }
+
+export interface GUserCUD{
+  userGId?: number;
+  user: string;
+  password?: string;
+  state: boolean;
+}
