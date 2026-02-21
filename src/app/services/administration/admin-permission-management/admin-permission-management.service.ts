@@ -10,7 +10,6 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class AdminPermissionManagement {
-  constructor() { }
 
   private http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
@@ -50,8 +49,24 @@ export class AdminPermissionManagement {
     );
   }
 
-  savePermissions(roleId: String, permissions: GSchemaPermission[]): Observable<boolean> {
-    console.log(`Guardando permisos para el rol ${roleId}:`, permissions);
-    return of(true);
+  savePermissions(roleId: number, permissions: GSchemaPermission[]): Observable<any> {
+    const tablasPlanas = permissions.flatMap(schema => schema.tablas);
+
+    const permisosLimpios = tablasPlanas.map(table => ({
+      pesquematabla: table.pesquematabla,
+      ppselect: table.ppselect,
+      ppinsert: table.ppinsert,
+      ppupdate: table.ppupdate,
+      ppdelete: table.ppdelete
+    }));
+
+    const payload = {
+      roleId: roleId,
+      permissions: permisosLimpios
+    };
+
+    console.log('JSON a enviar al backend:', payload);
+
+    return this.http.put(`${this.apiUrl}/security/module-managements/update-permissions`, payload);
   }
 }

@@ -18,6 +18,7 @@ import { AdminPermissionMatrixComponent } from './admin-permission-matrix/admin-
 export class AdminPermissionManagementComponent implements OnInit{
   rolesList: GRoleSimple[] = [];
   selectedRole: String | null = null;
+  selectedRoleId: number | null = null;
 
   metrics: GPermissionMetrics | null = null;
   schemas: GSchemaPermission[] = [];
@@ -36,12 +37,13 @@ export class AdminPermissionManagementComponent implements OnInit{
 
   onRoleChange(event: any): void {
     const idselect = Number((event.target as HTMLSelectElement).value);
-    const roleid = this.rolesList.find(role => role.roleGId === idselect);
-    const role = roleid?.roleG;
+    const roleFound = this.rolesList.find(role => role.roleGId === idselect);
+    const role = roleFound?.roleG;
 
     if (!role) return;
 
-    this.selectedRole = role;
+    this.selectedRoleId = roleFound.roleGId;
+    this.selectedRole = roleFound.roleG;
 
     this.permissionService.getMetricsByRoleId(role).subscribe({
 
@@ -54,13 +56,13 @@ export class AdminPermissionManagementComponent implements OnInit{
   }
 
   saveConfiguration(): void {
-    if (!this.selectedRole) return;
+    if (!this.selectedRole || !this.selectedRoleId) return;
 
-    this.isSaving = true;
+    this.isSaving = false;
 
-    this.permissionService.savePermissions(this.selectedRole, this.schemas).subscribe({
+    this.permissionService.savePermissions(this.selectedRoleId, this.schemas).subscribe({
       next: () => {
-        this.isSaving = false;
+        this.isSaving = true;
         alert('Permisos guardados con éxito');
       },
       error: () => {
