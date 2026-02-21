@@ -1,4 +1,3 @@
-import { User } from './../../coordination/coord-layout/coord-layout.component.spec';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GUser } from '../../../models/administration/admin-user-management/GUser.model';
