@@ -18,7 +18,7 @@ export interface User {
   standalone: true,
   imports: [CommonModule, RouterModule, RouterOutlet],
   templateUrl: './coord-layout.component.html', // Asegúrate de que el nombre coincida
-  styleUrls: ['./coord-layout.component.scss']
+  styleUrls: ['./coord-layout.component.css']
 })
 export class CoordinationLayoutComponent implements OnInit, OnDestroy {
 

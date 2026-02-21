@@ -10,5 +10,6 @@ export interface GUserCUD{
   userGId?: number;
   user: string;
   password?: string;
+  roles: number[];
   state: boolean;
 }

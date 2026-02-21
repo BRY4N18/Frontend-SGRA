@@ -1,3 +1,4 @@
+import { User } from './../../coordination/coord-layout/coord-layout.component.spec';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GUser } from '../../../models/administration/admin-user-management/GUser.model';
@@ -16,6 +17,7 @@ declare var bootstrap: any;
 })
 export class AdminUserManagementComponent implements OnInit{
   users: GUser[] = [];
+  selectedUserId: number | null = null;
 
   private cdr = inject(ChangeDetectorRef);
   private userService = inject(AdminUserManagementService);
@@ -23,6 +25,7 @@ export class AdminUserManagementComponent implements OnInit{
   ngOnInit(): void {
     this.loadUsers();
   }
+
 
   openModal(): void{
     const modalElement = document.getElementById('createUserModal');
@@ -33,6 +36,16 @@ export class AdminUserManagementComponent implements OnInit{
     } else {
       console.error('Angular no está dibujando el componente del modal en la pantalla.');
     }
+  }
+
+  prepareEdit(user: GUser){
+    this.selectedUserId = user.idgu;
+    this.openModal();
+  }
+
+  prepareCreate() {
+    this.selectedUserId = null;
+    this.openModal();
   }
 
   loadUsers(): void {

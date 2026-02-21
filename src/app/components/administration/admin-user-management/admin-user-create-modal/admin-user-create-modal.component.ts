@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup,FormArray, FormControl, Validators} from '@angular/forms';
 import { GRoleSimple } from './../../../../models/administration/admin-permission-management/GRoleSimple';
@@ -20,6 +20,7 @@ export class AdminUserCreateModalComponent implements OnInit{
   rolesList: GRoleSimple[] = [];
   createUserForm: FormGroup;
   isSubmitting: boolean = false;
+  isEditing: boolean = false;
 
   private fb = inject(FormBuilder);
   private userService = inject(AdminUserManagementService);
@@ -99,6 +100,41 @@ export class AdminUserCreateModalComponent implements OnInit{
         alert('Error al crear usuario');
       }
     });
+  }
+
+  @Input() set userIdToEdit(id: number | null) {
+    const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
+
+    if (id) {
+      roleIdsArray.clear();
+
+      this.userService.getUserById(id).subscribe({
+        next: (userData) => {
+          this.createUserForm.patchValue({
+            username: userData.user,
+            password: userData.password,
+            status: userData.state ? 'activo' : 'inactivo'
+          });
+
+          if (userData.roles && Array.isArray(userData.roles)) {
+            userData.roles.forEach((roleId: number) => {
+              roleIdsArray.push(new FormControl(roleId));
+            });
+          }
+
+          this.createUserForm.updateValueAndValidity();
+        },
+        error: (err) => {
+          console.error('Error al traer los detalles del usuario', err);
+          alert('No se pudo cargar la información del usuario.');
+        }
+      });
+
+    } else {
+      this.isEditing = false;
+      this.createUserForm.reset({ status: 'activo' });
+      if (roleIdsArray) roleIdsArray.clear();
+    }
   }
 
   get f() { return this.createUserForm.controls; }

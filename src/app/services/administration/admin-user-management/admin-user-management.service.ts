@@ -21,7 +21,7 @@ export class AdminUserManagementService {
     let apiFinish = "${this.apiUrl}/security/user-managements/list-userG";
 
     if(filter){
-      params.set('filter',filter);
+      params = params.set('filter',filter);
     }
 
     if(date) {
@@ -37,6 +37,11 @@ export class AdminUserManagementService {
 
   getRolesForSelect(): Observable<GRoleSimple[]> {
       return this.http.get<GRoleSimple[]>(`${this.apiUrl}/security/role-managements/list-roles-combo`);
+  }
+
+  // se manda el id del usuario para que devuelva los datos necesarios incluido sus roles
+  getUserById(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/security/user-managements/get-user/${userId}`);
   }
 
   createUser(userData: GUserCUD): Observable<SpResponse> {

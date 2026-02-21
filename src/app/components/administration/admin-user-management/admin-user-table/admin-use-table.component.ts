@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GUser } from '../../../../models/administration/admin-user-management/GUser.model';
 
@@ -11,5 +11,9 @@ import { GUser } from '../../../../models/administration/admin-user-management/G
 })
 export class AdminUseTableComponent {
   @Input() users: GUser[] = [];
+  @Output() editUser = new EventEmitter<GUser>();
   @Input() isLoading: boolean = true;
+  onEditClick(user: GUser) {
+    this.editUser.emit(user);
+  }
 }
