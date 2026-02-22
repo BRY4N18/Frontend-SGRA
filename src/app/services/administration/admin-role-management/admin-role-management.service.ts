@@ -21,7 +21,12 @@ export class AdminRoleManagementService {
   }
 
   createRole(roleData: GRoleCUD): Observable<SpResponse> {
-    console.log('Enviando rol al backend:', roleData);
     return this.http.post<SpResponse>(`${this.apiUrl}/security/role-managements/create-role`, roleData);
   }
+
+  updateRole(roleData: GRoleCUD): Observable<SpResponse> {
+    console.log(roleData);
+    return this.http.put<SpResponse>(`${this.apiUrl}/security/role-managements/update-role`, roleData);
+  }
+
 }

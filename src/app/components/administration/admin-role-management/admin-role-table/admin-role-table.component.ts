@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GRole } from '../../../../models/administration/admin-role-management/GRole.model';
 
@@ -12,4 +12,9 @@ import { GRole } from '../../../../models/administration/admin-role-management/G
 export class AdminRoleTableComponent {
   @Input() roles: GRole[] = [];
   @Input() isLoading: boolean = true;
+  @Output() editRole = new EventEmitter<GRole>();
+
+  onEditClick(role: GRole) {
+    this.editRole.emit(role);
+  }
 }

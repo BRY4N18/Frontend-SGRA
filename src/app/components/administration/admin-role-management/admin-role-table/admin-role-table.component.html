@@ -34,7 +34,7 @@
           <td class="text-muted small">{{ role.fechacreaciong | date:'dd/MM/yyyy' }}</td>
           <td class="text-end pe-4">
             <div class="d-inline-flex gap-2">
-              <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">
+              <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar" (click)="onEditClick(role)">
                 <i class="bi bi-pencil"></i>
               </button>
               <button class="btn btn-sm btn-light border-0 text-danger" title="Eliminar">

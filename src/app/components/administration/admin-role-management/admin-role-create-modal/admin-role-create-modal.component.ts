@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminRoleManagementService } from '../../../../services/administration/admin-role-management/admin-role-management.service';
+import { GRole } from '../../../../models/administration/admin-role-management/GRole.model';
 
 declare var bootstrap: any;
 
@@ -17,6 +18,8 @@ export class AdminRoleCreateModalComponent {
 
   createRoleForm: FormGroup;
   isSubmitting: boolean = false;
+  isEditing: boolean = false;
+  currentRoleId: number | null = null;
 
   private fb = inject(FormBuilder);
   private roleService = inject(AdminRoleManagementService);
@@ -25,7 +28,7 @@ export class AdminRoleCreateModalComponent {
     this.createRoleForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.maxLength(200)]],
-      status: ['activo', Validators.required]
+      status: ['activo', Validators.required],
     });
   }
 
@@ -39,12 +42,17 @@ export class AdminRoleCreateModalComponent {
     const formValues = this.createRoleForm.value;
 
     const requestPayload = {
+      roleGId: this.isEditing ? (this.currentRoleId ?? undefined) : undefined,
       roleG: formValues.name,
       description: formValues.description,
-      state: formValues.status === 'activo'
+      state: formValues.status === 'activo',
     };
 
-    this.roleService.createRole(requestPayload).subscribe({
+    const request$ = this.isEditing
+      ? this.roleService.updateRole(requestPayload)
+      : this.roleService.createRole(requestPayload)
+
+    request$.subscribe({
       next: (response) => {
         if (response.success) {
           alert(response.message);
@@ -63,10 +71,29 @@ export class AdminRoleCreateModalComponent {
       error: (error) => {
         console.error('Error creando rol:', error);
         this.isSubmitting = false;
-        alert('Error al crear el rol');
-      }
+        alert(this.isEditing ? 'Error al actualizar el rol' : 'Error al crear el rol');
+      },
     });
   }
 
-  get f() { return this.createRoleForm.controls; }
+  @Input() set roleToEdit(role: GRole | null) {
+    if (role) {
+      this.isEditing = true;
+      this.currentRoleId = role.idg;
+
+      this.createRoleForm.patchValue({
+        name: role.nombreg,
+        description: role.descripciong,
+        status: role.estadog.toLowerCase() === 'activo' ? 'activo' : 'inactivo',
+      });
+    } else {
+      this.isEditing = false;
+      this.currentRoleId = null;
+      this.createRoleForm.reset({ status: 'activo' });
+    }
+  }
+
+  get f() {
+    return this.createRoleForm.controls;
+  }
 }

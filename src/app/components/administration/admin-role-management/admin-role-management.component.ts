@@ -18,6 +18,8 @@ export class AdminRoleManagementComponent implements OnInit{
   roles: GRole[] = [];
   isLoading: boolean = true;
 
+  selectedRoleToEdit: GRole | null = null;
+
   private cdr = inject(ChangeDetectorRef);
   private roleService = inject(AdminRoleManagementService);
 
@@ -45,5 +47,15 @@ export class AdminRoleManagementComponent implements OnInit{
       const modal = new bootstrap.Modal(modalElement);
       modal.show();
     }
+  }
+
+  prepareCreate() {
+    this.selectedRoleToEdit = null;
+    this.openModal();
+  }
+
+  prepareEdit(role: GRole) {
+    this.selectedRoleToEdit = { ...role };
+    this.openModal();
   }
 }
