@@ -13,3 +13,12 @@ export interface GUserCUD{
   roles: number[];
   state: boolean;
 }
+
+export interface GUserDetail {
+  idgu: number;
+  usuariogu: string;
+  contrasena: string;
+  estadogu: string;
+  roles: number[];
+  rolesasignadosgu?: string;
+}

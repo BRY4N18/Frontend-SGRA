@@ -21,6 +21,7 @@ export class AdminUserCreateModalComponent implements OnInit{
   createUserForm: FormGroup;
   isSubmitting: boolean = false;
   isEditing: boolean = false;
+  currentUserId: number | null = null;
 
   private fb = inject(FormBuilder);
   private userService = inject(AdminUserManagementService);
@@ -65,17 +66,21 @@ export class AdminUserCreateModalComponent implements OnInit{
     }
 
     this.isSubmitting = true;
-
     const formValues = this.createUserForm.value;
 
     const requestPayLoad ={
+      userGId: this.isEditing ? (this.currentUserId ?? undefined) : undefined,
       user: formValues.username,
       password: formValues.password,
       state: formValues.status === 'activo',
       roles: formValues.roleIds
     }
 
-    this.userService.createUser(requestPayLoad).subscribe({
+    const request$ = this.isEditing
+      ? this.userService.updateUser(requestPayLoad)
+      : this.userService.createUser(requestPayLoad);
+
+    request$.subscribe({
       next: (response) => {
         if (response.success) {
           alert(response.message);
@@ -97,7 +102,7 @@ export class AdminUserCreateModalComponent implements OnInit{
       },
       error: () => {
         this.isSubmitting = false;
-        alert('Error al crear usuario');
+        alert(this.isEditing ? 'Error al actualizar usuario' : 'Error al crear usuario');
       }
     });
   }
@@ -106,14 +111,16 @@ export class AdminUserCreateModalComponent implements OnInit{
     const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
 
     if (id) {
+      this.isEditing = true;
       roleIdsArray.clear();
+      this.currentUserId = id;
 
       this.userService.getUserById(id).subscribe({
         next: (userData) => {
           this.createUserForm.patchValue({
-            username: userData.user,
-            password: userData.password,
-            status: userData.state ? 'activo' : 'inactivo'
+            username: userData.usuariogu,
+            password: userData.contrasena,
+            status: userData.estadogu.toLowerCase() === 'activo' ? 'activo' : 'inactivo'
           });
 
           if (userData.roles && Array.isArray(userData.roles)) {
@@ -132,6 +139,7 @@ export class AdminUserCreateModalComponent implements OnInit{
 
     } else {
       this.isEditing = false;
+      this.currentUserId = null;
       this.createUserForm.reset({ status: 'activo' });
       if (roleIdsArray) roleIdsArray.clear();
     }
