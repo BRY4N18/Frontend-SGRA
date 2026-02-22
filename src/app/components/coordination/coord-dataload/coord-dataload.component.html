@@ -17,27 +17,17 @@
         <p class="text-muted small mb-0">Selecciona el tipo de datos y arrastra o selecciona tu archivo Excel.</p>
       </div>
       <div class="dropdown">
-        <button class="btn btn-success rounded-3 px-4 fw-medium shadow-sm dropdown-toggle d-flex align-items-center gap-2"
-                type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-          <i class="bi" [ngClass]="selectedUploadType === 'students' ? 'bi-mortarboard' : 'bi-person-badge'"></i>
-          {{ selectedUploadType === 'students' ? 'Estudiantes' : 'Docentes' }}
+        <button class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i [class]="selectedOption.icon"></i>
+          {{ selectedOption.label }}
         </button>
-        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-          <li>
-            <button class="dropdown-item d-flex align-items-center gap-2 py-2"
-                    [class.active]="selectedUploadType === 'students'"
-                    (click)="selectUploadType('students')">
-              <i class="bi bi-mortarboard"></i> Estudiantes
-            </button>
-          </li>
-          <li>
-            <button class="dropdown-item d-flex align-items-center gap-2 py-2"
-                    [class.active]="selectedUploadType === 'teachers'"
-                    (click)="selectUploadType('teachers')">
-              <i class="bi bi-person-badge"></i> Docentes
-            </button>
+
+        <ul class="dropdown-menu shadow">
+          <li *ngFor="let option of uploadOptions">
+            <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0)" (click)="selectOption(option)">
+              <i [class]="option.icon"></i>
+              {{ option.label }}
+            </a>
           </li>
         </ul>
       </div>
@@ -73,11 +63,10 @@
       </div>
 
       <!-- Botón de Subida -->
-      <button class="btn btn-success w-100 mt-3 py-2 fw-medium rounded-3 shadow-sm opacity-75"
-              (click)="uploadFile()"
-              [disabled]="!selectedFile || isUploading">
-        <i class="bi bi-cloud-arrow-up me-2"></i>
-        {{ isUploading ? 'Subiendo...' : 'Subir datos' }}
+      <button class="btn btn-success w-100 mt-3" (click)="uploadData()" [disabled]="isLoading || !selectedFile">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        <i *ngIf="!isLoading" class="bi bi-cloud-arrow-up me-2"></i>
+        {{ isLoading ? 'Procesando...' : 'Subir datos' }}
       </button>
     </div>
   </div>
@@ -217,16 +206,19 @@
          (change)="onFileSelected($event)"
          accept=".xlsx,.xls,.csv"
          style="display: none;">
+</div>
 
-  <!-- Legacy inputs for compatibility -->
-  <input type="file"
-         #fileInputStudents
-         (change)="onFileSelectedStudents($event)"
-         accept=".xlsx,.xls,.csv"
-         style="display: none;">
-  <input type="file"
-         #fileInputTeachers
-         (change)="onFileSelectedTeachers($event)"
-         accept=".xlsx,.xls,.csv"
-         style="display: none;">
+<!-- MODAL DE ALERTA DE PRERREQUISITO -->
+<div *ngIf="showPrerequisiteModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.15); position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1050; display: flex; align-items: center; justify-content: center;">
+  <div class="modal-dialog modal-dialog-centered" style="margin: 0 auto;">
+    <div class="modal-content border-2" style="border-color: #198754; background: #fff; min-width: 350px; max-width: 90vw;">
+      <div class="modal-body text-center py-4">
+        <div class="fw-bold text-success mb-2">
+          <i class="bi bi-exclamation-circle me-2"></i> Atención
+        </div>
+        <div class="text-dark mb-3" style="font-size: 1.1rem;">{{ prerequisiteMessage }}</div>
+        <button class="btn btn-success px-4 py-2 rounded-pill fw-bold" (click)="closePrerequisiteModal()">Aceptar</button>
+      </div>
+    </div>
+  </div>
 </div>
