@@ -84,8 +84,15 @@ export class AdminMasterTablesComponent implements OnInit{
   }
 
   reloadCurrentCatalog(): void {
-    if (this.selectedCatalogSchema) {
-      this.onCatalogSelected(this.selectedCatalogSchema);
-    }
+    if (!this.selectedCatalogSchema) return;
+    this.catalogService.getRecordsByCatalog(this.selectedCatalogSchema).subscribe({
+      next: (data) => {
+        this.currentRecords = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error recargando la tabla', err);
+      }
+    });
   }
 }
