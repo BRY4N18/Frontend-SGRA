@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of} from 'rxjs';
-import { GRole } from '../../../models/administration/admin-role-management/GRole.model';
+import { Observable} from 'rxjs';
+import { GRole, GRoleCUD } from '../../../models/administration/admin-role-management/GRole.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+import { SpResponse } from '../../../models/administration/SpResponse.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +20,8 @@ export class AdminRoleManagementService {
     return this.http.get<GRole[]>(`${this.apiUrl}/security/role-managements/list-roles`,{ params });
   }
 
-  createRole(roleData: any): Observable<boolean> {
+  createRole(roleData: GRoleCUD): Observable<SpResponse> {
     console.log('Enviando rol al backend:', roleData);
-    return of(true);
+    return this.http.post<SpResponse>(`${this.apiUrl}/security/role-managements/create-role`, roleData);
   }
 }

@@ -36,19 +36,32 @@ export class AdminRoleCreateModalComponent {
     }
 
     this.isSubmitting = true;
-    this.roleService.createRole(this.createRoleForm.value).subscribe({
-      next: (success) => {
-        if (success) {
+    const formValues = this.createRoleForm.value;
+
+    const requestPayload = {
+      roleG: formValues.name,
+      description: formValues.description,
+      state: formValues.status === 'activo'
+    };
+
+    this.roleService.createRole(requestPayload).subscribe({
+      next: (response) => {
+        if (response.success) {
+          alert(response.message);
+
           const modalElement = document.getElementById('createRoleModal');
           if (modalElement) {
             bootstrap.Modal.getInstance(modalElement)?.hide();
           }
           this.createRoleForm.reset({ status: 'activo' });
           this.roleCreated.emit();
+        } else {
+          alert(response.message);
         }
         this.isSubmitting = false;
       },
-      error: () => {
+      error: (error) => {
+        console.error('Error creando rol:', error);
         this.isSubmitting = false;
         alert('Error al crear el rol');
       }

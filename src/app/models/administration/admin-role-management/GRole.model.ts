@@ -6,3 +6,10 @@ export interface GRole {
   estadog: 'activo' | 'inactivo';
   fechacreaciong: Date;
 }
+
+export interface GRoleCUD {
+  roleGId?: number;
+  roleG: string;
+  description: string;
+  state: boolean;
+}
