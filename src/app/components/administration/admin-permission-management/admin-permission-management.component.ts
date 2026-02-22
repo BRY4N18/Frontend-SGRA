@@ -45,29 +45,58 @@ export class AdminPermissionManagementComponent implements OnInit{
     this.selectedRoleId = roleFound.roleGId;
     this.selectedRole = roleFound.roleG;
 
-    this.permissionService.getMetricsByRoleId(role).subscribe({
-
-    });
-
     this.permissionService.getPermissionsByRole(role).subscribe(data => {
       this.schemas = data;
       this.cdr.detectChanges();
+      this.calculateMetrics();
     });
+  }
+
+  calculateMetrics(): void {
+    let schemasCount = 0;
+    let tablesWithAccess = 0;
+    let fullAccess = 0;
+
+    this.schemas.forEach(schema => {
+      let schemaHasAccess = false;
+
+      schema.tablas.forEach(table => {
+        const hasAny = table.ppselect || table.ppinsert || table.ppupdate || table.ppdelete;
+        const hasAll = table.ppselect && table.ppinsert && table.ppupdate && table.ppdelete;
+
+        if (hasAny) {
+          schemaHasAccess = true;
+          tablesWithAccess++;
+        }
+        if (hasAll) {
+          fullAccess++;
+        }
+      });
+
+      if (schemaHasAccess) {
+        schemasCount++;
+      }
+    });
+
+    this.metrics = {
+      totalSchemas: schemasCount,
+      totalTablesWithAccess: tablesWithAccess,
+      fullAccessTables: fullAccess
+    };
+    this.cdr.detectChanges();
   }
 
   saveConfiguration(): void {
     if (!this.selectedRole || !this.selectedRoleId) return;
 
-    this.isSaving = false;
-
     this.permissionService.savePermissions(this.selectedRoleId, this.schemas).subscribe({
       next: () => {
-        this.isSaving = true;
         alert('Permisos guardados con éxito');
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.isSaving = false;
         alert('Error al guardar los permisos.');
+        this.cdr.detectChanges();
       }
     });
   }

@@ -36,7 +36,7 @@
 
   <div class="card border-0 rounded-4 shadow-sm bg-transparent">
     <div class="card-body p-0">
-      <app-admin-permission-matrix [schemas]="schemas"></app-admin-permission-matrix>
+      <app-admin-permission-matrix [schemas]="schemas" (permissionChanged)="calculateMetrics()"></app-admin-permission-matrix>
     </div>
   </div>
 

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GSchemaPermission } from '../../../../models/administration/admin-permission-management/GSchemaPermission';
@@ -12,4 +12,8 @@ import { GSchemaPermission } from '../../../../models/administration/admin-permi
 })
 export class AdminPermissionMatrixComponent {
   @Input() schemas: GSchemaPermission[] = [];
+  @Output() permissionChanged = new EventEmitter<void>();
+  onToggleChange(): void {
+    this.permissionChanged.emit();
+  }
 }
