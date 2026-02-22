@@ -1,5 +1,5 @@
 export interface GCatalog {
-  pesquematabla: string;  
+  pesquematabla: string;
   pnombre: string;
   pdescripcion: string;
 }

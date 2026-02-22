@@ -2,6 +2,7 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AdminMasterTablesService } from '../../../../services/administration/admin-master-tables/admin-master-tables.service';
+import { GCatalogRecordCUD } from './../../../../models/administration/admin-master-tables/GCatalogRecord';
 import { GCatalogRecord } from '../../../../models/administration/admin-master-tables/GCatalogRecord';
 
 declare var bootstrap: any;
@@ -56,15 +57,18 @@ export class AdminMasterCreateModalComponent {
     this.isSubmitting = true;
     const formValues = this.masterForm.value;
 
-    const requestPayload = {
-      id: this.isEditing ? this.currentRecordId : undefined,
+    const requestPayload: GCatalogRecordCUD ={
+      esquematabla: this.currentSchema,
+      id: this.isEditing ? (this.currentRecordId ?? undefined) : undefined,
       nombre: formValues.name,
       estado: formValues.status === 'activo'
     };
 
     const request$ = this.isEditing
-      ? this.masterService.updateRecord(this.currentSchema, requestPayload)
-      : this.masterService.createRecord(this.currentSchema, requestPayload);
+      ? this.masterService.updateRecord(requestPayload)
+      : this.masterService.createRecord(requestPayload);
+
+      console.log(requestPayload);
 
     request$.subscribe({
       next: (response: any) => {

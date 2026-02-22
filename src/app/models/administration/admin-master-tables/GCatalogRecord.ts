@@ -3,3 +3,10 @@ export interface GCatalogRecord {
   mnombre: string;
   mestado: 'activo' | 'inactivo';
 }
+
+export interface GCatalogRecordCUD {
+  esquematabla: string;
+  id?: number;
+  nombre: string
+  estado: boolean;
+}

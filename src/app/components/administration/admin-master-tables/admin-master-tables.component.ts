@@ -71,7 +71,7 @@ export class AdminMasterTablesComponent implements OnInit{
   }
 
   prepareEdit(record: GCatalogRecord) {
-    this.selectedRecordToEdit = { ...record }; // Clonamos el registro
+    this.selectedRecordToEdit = { ...record };
     this.openModal();
   }
 
