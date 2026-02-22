@@ -7,15 +7,19 @@ import { AdminMasterTablesService } from '../../../services/administration/admin
 import { AdminMasterKpisComponent } from './admin-master-kpis/admin-master-kpis.component';
 import { AdminMasterSiderbarTablesComponent } from './admin-master-siderbar-tables/admin-master-siderbar-tables.component';
 import { AdminMasterTableListComponent } from './admin-master-table-list/admin-master-table-list.component';
+import { AdminMasterCreateModalComponent } from "./admin-master-create-modal/admin-master-create-modal.component";
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-admin-master-tables',
   standalone: true,
-  imports: [CommonModule, AdminMasterKpisComponent, AdminMasterSiderbarTablesComponent, AdminMasterTableListComponent],
+  imports: [CommonModule, AdminMasterKpisComponent, AdminMasterSiderbarTablesComponent, AdminMasterTableListComponent, AdminMasterCreateModalComponent],
   templateUrl: './admin-master-tables.component.html',
   styleUrl: './admin-master-tables.component.css',
 })
 export class AdminMasterTablesComponent implements OnInit{
+  selectedRecordToEdit: GCatalogRecord | null = null;
   catalogs: GCatalog[] = [];
   metrics: GCatalogMetrics | null = null;
 
@@ -59,5 +63,29 @@ export class AdminMasterTablesComponent implements OnInit{
       this.isLoadingRecords = false;
       this.cdr.detectChanges();
     });
+  }
+
+  prepareCreate() {
+    this.selectedRecordToEdit = null;
+    this.openModal();
+  }
+
+  prepareEdit(record: GCatalogRecord) {
+    this.selectedRecordToEdit = { ...record }; // Clonamos el registro
+    this.openModal();
+  }
+
+  openModal(): void {
+    const modalElement = document.getElementById('createMasterModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  reloadCurrentCatalog(): void {
+    if (this.selectedCatalogSchema) {
+      this.onCatalogSelected(this.selectedCatalogSchema);
+    }
   }
 }

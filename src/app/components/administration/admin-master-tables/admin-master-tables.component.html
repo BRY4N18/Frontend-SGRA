@@ -23,9 +23,15 @@
       <app-admin-master-table-list
         [records]="currentRecords"
         [catalogName]="selectedCatalogName"
-        [isLoading]="isLoadingRecords">
+        [isLoading]="isLoadingRecords"
+        (editRecord)="prepareEdit($event)"
+        (createRecord)="prepareCreate()">
       </app-admin-master-table-list>
     </div>
+
+    <app-admin-master-create-modal [currentSchema]="selectedCatalogSchema" [recordToEdit]="selectedRecordToEdit"
+      (recordSaved)="reloadCurrentCatalog()">
+    </app-admin-master-create-modal>
 
   </div>
 

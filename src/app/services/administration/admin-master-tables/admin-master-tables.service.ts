@@ -27,4 +27,14 @@ export class AdminMasterTablesService {
   getMetrics(): Observable<GCatalogMetrics> {
     return of({ totalCatalogs: 12, activeRecords: 145, totalRecords: 156 });
   }
+
+  createRecord(schemaTable: string, data: any): Observable<any> {
+    let params = new HttpParams().set('schemaTable', schemaTable);
+    return this.http.post<any>(`${this.apiUrl}/security/module-managements/create-master-record`, data, { params });
+  }
+
+  updateRecord(schemaTable: string, data: any): Observable<any> {
+    let params = new HttpParams().set('schemaTable', schemaTable);
+    return this.http.put<any>(`${this.apiUrl}/security/module-managements/update-master-record`, data, { params });
+  }
 }

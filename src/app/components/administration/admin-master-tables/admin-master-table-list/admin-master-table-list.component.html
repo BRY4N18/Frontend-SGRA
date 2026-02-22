@@ -7,7 +7,7 @@
       </h5>
       <p class="text-muted small mb-0">Gestión de registros vinculados al catálogo seleccionado.</p>
     </div>
-    <button class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2">
+    <button class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2" (click)="onCreateClick()">
       <i class="bi bi-plus-lg"></i> Nuevo registro
     </button>
   </div>
@@ -50,7 +50,7 @@
               </td>
               <td class="text-end pe-4">
                 <div class="d-inline-flex gap-2">
-                  <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" title="Editar">
+                  <button class="btn btn-sm btn-outline-primary border-0 bg-light-hover" (click)="onEditClick(record)" title="Editar">
                     <i class="bi bi-pencil"></i>
                   </button>
                   <button class="btn btn-sm btn-outline-danger border-0 bg-light-hover" title="Cambiar Estado">
