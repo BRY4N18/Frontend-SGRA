@@ -47,7 +47,7 @@ export class AdminUserManagementService {
   }
 
   updateUser(userData: GUserCUD): Observable<SpResponse> {
-    console.log('Enviando actualización al backend:', userData);
-    return this.http.put<SpResponse>(`${this.apiUrl}/security/security/user-managements/update-user`, userData);
+    console.log('ojecto enviado:', userData);
+    return this.http.put<SpResponse>(`${this.apiUrl}/security/user-managements/update-user`, userData);
   }
 }

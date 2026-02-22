@@ -109,11 +109,16 @@ export class AdminUserCreateModalComponent implements OnInit{
 
   @Input() set userIdToEdit(id: number | null) {
     const roleIdsArray = this.createUserForm.get('roleIds') as FormArray;
+    const passwordControl = this.createUserForm.get('password');
 
     if (id) {
       this.isEditing = true;
       roleIdsArray.clear();
       this.currentUserId = id;
+
+      passwordControl?.clearValidators();
+      passwordControl?.setValidators([Validators.minLength(6)]);
+      passwordControl?.updateValueAndValidity();
 
       this.userService.getUserById(id).subscribe({
         next: (userData) => {
@@ -142,6 +147,9 @@ export class AdminUserCreateModalComponent implements OnInit{
       this.currentUserId = null;
       this.createUserForm.reset({ status: 'activo' });
       if (roleIdsArray) roleIdsArray.clear();
+
+      passwordControl?.setValidators([Validators.required, Validators.minLength(6)]);
+      passwordControl?.updateValueAndValidity();
     }
   }
 
