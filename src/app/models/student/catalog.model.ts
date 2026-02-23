@@ -38,3 +38,13 @@ export interface TimeSlotItem {
   timeSlotJson: string;
 }
 
+/**
+ * Franja horaria disponible para un docente específico.
+ * Retornada por GET /api/student/catalogs/timeSlots/available
+ */
+export interface AvailableTimeSlotItem {
+  timeSlotId: number;
+  label: string;
+  timeSlotJson: string;
+}
+
