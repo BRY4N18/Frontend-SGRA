@@ -40,16 +40,17 @@ export interface AvailabilitySlot {
   status: SlotStatus;
 }
 
-/** Response from the API with teacher's current availability */
-export interface TeacherAvailabilityResponse {
-  days: DayOfWeek[];
-  timeBlocks: TimeBlock[];
-  slots: AvailabilitySlot[];
+/** Single saved availability slot from the API */
+export interface TeacherAvailabilityItem {
+  dayOfWeek: number;
+  timeSlotId: number;
 }
 
 /** Payload to save/update teacher availability */
 export interface SaveAvailabilityPayload {
-  slots: { dayId: number; timeBlockId: number }[];
+  userId: number;
+  periodId: number;
+  slots: { dayOfWeek: number; timeSlotId: number }[];
 }
 
 /** Generic API response */

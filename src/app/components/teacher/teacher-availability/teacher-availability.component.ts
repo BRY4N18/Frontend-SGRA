@@ -1,14 +1,16 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TeacherClassScheduleService } from '../../../services/teacher';
+import { forkJoin } from 'rxjs';
+import { TeacherClassScheduleService, TeacherAvailabilityService } from '../../../services/teacher';
 import { AuthService } from '../../../services/auth/auth.service';
 import {
   DayOfWeek,
   TimeBlock,
   SlotStatus,
   ScheduleSection,
-  SectionInfo
+  SectionInfo,
+  TeacherAvailabilityItem
 } from '../../../models/teacher';
 import { ClassScheduleDetail } from '../../../models/teacher';
 
@@ -21,6 +23,7 @@ import { ClassScheduleDetail } from '../../../models/teacher';
 })
 export class TeacherAvailabilityComponent implements OnInit {
   private scheduleSvc = inject(TeacherClassScheduleService);
+  private availabilitySvc = inject(TeacherAvailabilityService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -54,9 +57,9 @@ export class TeacherAvailabilityComponent implements OnInit {
 
   /** Section definitions */
   readonly sections: SectionInfo[] = [
-    { key: 'matutina',   label: 'Matutina',   icon: 'bi-sunrise',    range: '7:30 - 12:30',  colorClass: 'section-matutina' },
-    { key: 'vespertina', label: 'Vespertina', icon: 'bi-sun',        range: '12:30 - 17:30', colorClass: 'section-vespertina' },
-    { key: 'nocturna',   label: 'Nocturna',   icon: 'bi-moon-stars', range: '19:00 - 00:00', colorClass: 'section-nocturna' },
+    { key: 'matutina', label: 'Matutina', icon: 'bi-sunrise', range: '7:30 - 12:30', colorClass: 'section-matutina' },
+    { key: 'vespertina', label: 'Vespertina', icon: 'bi-sun', range: '12:30 - 17:30', colorClass: 'section-vespertina' },
+    { key: 'nocturna', label: 'Nocturna', icon: 'bi-moon-stars', range: '19:00 - 00:00', colorClass: 'section-nocturna' },
   ];
 
   /** Default data when API is not connected */
@@ -72,16 +75,16 @@ export class TeacherAvailabilityComponent implements OnInit {
 
   private readonly defaultTimeBlocks: TimeBlock[] = [
     // Matutina: 7:30 - 12:30
-    { timeBlockId: 1,  startTime: '07:30', endTime: '08:30', section: 'matutina' },
-    { timeBlockId: 2,  startTime: '08:30', endTime: '09:30', section: 'matutina' },
-    { timeBlockId: 3,  startTime: '09:30', endTime: '10:30', section: 'matutina' },
-    { timeBlockId: 4,  startTime: '10:30', endTime: '11:30', section: 'matutina' },
-    { timeBlockId: 5,  startTime: '11:30', endTime: '12:30', section: 'matutina' },
+    { timeBlockId: 1, startTime: '07:30', endTime: '08:30', section: 'matutina' },
+    { timeBlockId: 2, startTime: '08:30', endTime: '09:30', section: 'matutina' },
+    { timeBlockId: 3, startTime: '09:30', endTime: '10:30', section: 'matutina' },
+    { timeBlockId: 4, startTime: '10:30', endTime: '11:30', section: 'matutina' },
+    { timeBlockId: 5, startTime: '11:30', endTime: '12:30', section: 'matutina' },
     // Vespertina: 12:30 - 17:30
-    { timeBlockId: 6,  startTime: '12:30', endTime: '13:30', section: 'vespertina' },
-    { timeBlockId: 7,  startTime: '13:30', endTime: '14:30', section: 'vespertina' },
-    { timeBlockId: 8,  startTime: '14:30', endTime: '15:30', section: 'vespertina' },
-    { timeBlockId: 9,  startTime: '15:30', endTime: '16:30', section: 'vespertina' },
+    { timeBlockId: 6, startTime: '12:30', endTime: '13:30', section: 'vespertina' },
+    { timeBlockId: 7, startTime: '13:30', endTime: '14:30', section: 'vespertina' },
+    { timeBlockId: 8, startTime: '14:30', endTime: '15:30', section: 'vespertina' },
+    { timeBlockId: 9, startTime: '15:30', endTime: '16:30', section: 'vespertina' },
     { timeBlockId: 10, startTime: '16:30', endTime: '17:30', section: 'vespertina' },
     // Nocturna: 19:00 - 00:00
     { timeBlockId: 11, startTime: '19:00', endTime: '20:00', section: 'nocturna' },
@@ -99,7 +102,7 @@ export class TeacherAvailabilityComponent implements OnInit {
 
   ngOnInit(): void {
     this.initGrid();
-    this.loadClassSchedules();
+    this.loadData();
   }
 
   /** Get the day name from its number */
@@ -120,8 +123,8 @@ export class TeacherAvailabilityComponent implements OnInit {
     }
   }
 
-  /** Load class schedules for the current teacher */
-  loadClassSchedules(): void {
+  /** Load class schedules and saved availability in parallel */
+  private loadData(): void {
     const userId = this.authService.currentUser()?.userId;
     if (!userId) {
       this.loading = false;
@@ -131,11 +134,14 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    this.scheduleSvc.getSchedulesByTeacherId(userId).subscribe({
-      next: (data) => {
-        console.log(data);
-        this.classSchedules = data;
+    forkJoin({
+      schedules: this.scheduleSvc.getSchedulesByTeacherId(userId),
+      availability: this.availabilitySvc.getAvailabilityByUser(userId)
+    }).subscribe({
+      next: ({ schedules, availability }) => {
+        this.classSchedules = schedules;
         this.applySchedulesToGrid();
+        this.applyAvailabilityToGrid(availability);
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -145,6 +151,17 @@ export class TeacherAvailabilityComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  /** Apply saved availability slots to the grid */
+  private applyAvailabilityToGrid(items: TeacherAvailabilityItem[]): void {
+    for (const item of items) {
+      const k = this.key(item.dayOfWeek, item.timeSlotId);
+      // Only mark as available if the cell is not already scheduled
+      if (this.grid.has(k) && this.grid.get(k) !== 'scheduled') {
+        this.grid.set(k, 'available');
+      }
+    }
   }
 
   /** Normalize time string to HH:mm for comparison */
@@ -157,6 +174,14 @@ export class TeacherAvailabilityComponent implements OnInit {
     return `${hh}:${mm}`;
   }
 
+  /** Convert "HH:mm" to total minutes for range comparison */
+  private timeToMinutes(time: string): number {
+    const normalized = this.normalizeTime(time);
+    const [hh, mm] = normalized.split(':').map(Number);
+    // Handle midnight (00:00) as 1440 so it's treated as end-of-day
+    return hh === 0 && mm === 0 ? 1440 : hh * 60 + mm;
+  }
+
   /** Map class schedules onto the availability grid */
   private applySchedulesToGrid(): void {
     this.scheduleInfo.clear();
@@ -164,15 +189,17 @@ export class TeacherAvailabilityComponent implements OnInit {
     for (const schedule of this.classSchedules) {
       if (!schedule.active) continue;
 
-      const scheduleStart = this.normalizeTime(schedule.startTime);
+      const schedStart = this.timeToMinutes(schedule.startTime);
+      const schedEnd = this.timeToMinutes(schedule.endTime);
 
-      // Find matching time block by comparing normalized start time
-      const matchingBlock = this.timeBlocks.find(
-        b => this.normalizeTime(b.startTime) === scheduleStart
-      );
+      // Find ALL time blocks whose startTime falls within [schedStart, schedEnd)
+      const matchingBlocks = this.timeBlocks.filter(b => {
+        const blockStart = this.timeToMinutes(b.startTime);
+        return blockStart >= schedStart && blockStart < schedEnd;
+      });
 
-      if (matchingBlock) {
-        const k = this.key(schedule.day, matchingBlock.timeBlockId);
+      for (const block of matchingBlocks) {
+        const k = this.key(schedule.day, block.timeBlockId);
         this.grid.set(k, 'scheduled');
         this.scheduleInfo.set(k, schedule);
       }
@@ -191,10 +218,10 @@ export class TeacherAvailabilityComponent implements OnInit {
     return `${info.subjectName} — ${info.section} (Sem. ${info.semester})`;
   }
 
-  /** Reload grid: reset and re-fetch schedules */
+  /** Reload grid: reset and re-fetch data */
   reloadGrid(): void {
     this.initGrid();
-    this.loadClassSchedules();
+    this.loadData();
   }
 
   /** Build a map key from dayId + timeBlockId */
@@ -232,8 +259,8 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.selectedDayFilter = this.selectedDayFilter === dayId ? null : dayId;
     const allAvailable = this.timeBlocks.every(
       b => this.getStatus(dayId, b.timeBlockId) === 'available' ||
-           this.getStatus(dayId, b.timeBlockId) === 'conflict' ||
-           this.getStatus(dayId, b.timeBlockId) === 'scheduled'
+        this.getStatus(dayId, b.timeBlockId) === 'conflict' ||
+        this.getStatus(dayId, b.timeBlockId) === 'scheduled'
     );
 
     for (const block of this.timeBlocks) {
@@ -248,8 +275,8 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.selectedBlockFilter = timeBlockId;
     const allAvailable = this.days.every(
       d => this.getStatus(d.dayId, timeBlockId) === 'available' ||
-           this.getStatus(d.dayId, timeBlockId) === 'conflict' ||
-           this.getStatus(d.dayId, timeBlockId) === 'scheduled'
+        this.getStatus(d.dayId, timeBlockId) === 'conflict' ||
+        this.getStatus(d.dayId, timeBlockId) === 'scheduled'
     );
 
     for (const day of this.days) {
@@ -292,30 +319,51 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.activeSection = section;
   }
 
-  /** Save availability (placeholder — implement when save API is available) */
+  /** Save availability via batch API */
   onSave(): void {
+    const userId = this.authService.currentUser()?.userId;
+    if (!userId) {
+      this.errorMessage = 'No se pudo identificar al usuario. Inicia sesión nuevamente.';
+      return;
+    }
+
+    // Get periodId from loaded class schedules (first active schedule)
+    const periodId = this.classSchedules.find(s => s.active)?.periodId;
+    if (!periodId) {
+      this.errorMessage = 'No se encontró un periodo académico activo.';
+      return;
+    }
+
     this.saving = true;
     this.errorMessage = null;
     this.successMessage = null;
 
-    const slots: { dayId: number; timeBlockId: number }[] = [];
+    // Collect all 'available' slots from the grid
+    const slots: { dayOfWeek: number; timeSlotId: number }[] = [];
     this.grid.forEach((status, k) => {
       if (status === 'available') {
-        const [dayId, timeBlockId] = k.split('-').map(Number);
-        slots.push({ dayId, timeBlockId });
+        const [dayOfWeek, timeSlotId] = k.split('-').map(Number);
+        slots.push({ dayOfWeek, timeSlotId });
       }
     });
 
-    // TODO: Call save API when available
-    console.log('[TeacherAvailability] Slots to save:', slots);
-    this.saving = false;
-    this.successMessage = `Se seleccionaron ${slots.length} bloques de disponibilidad.`;
-    this.cdr.detectChanges();
+    this.availabilitySvc.saveAvailability({ userId: userId, periodId, slots }).subscribe({
+      next: (res) => {
+        this.saving = false;
+        this.successMessage = res.message || `Se guardaron ${slots.length} bloques de disponibilidad.`;
+        this.cdr.detectChanges();
 
-    setTimeout(() => {
-      this.successMessage = null;
-      this.cdr.detectChanges();
-    }, 5000);
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 5000);
+      },
+      error: (err) => {
+        this.saving = false;
+        this.errorMessage = err.message;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   /** Clear all selections */
