@@ -19,8 +19,14 @@ export class AdminMasterTablesService {
     return this.http.get<GCatalog[]>(`${this.apiUrl}/security/module-managements/list-master-tables`);
   }
 
-  getRecordsByCatalog(pschematable: string): Observable<GCatalogRecord[]> {
-    let params = new HttpParams().set('schemaTable',pschematable);
+  getRecordsByCatalog(pschematable: string, filter?: string): Observable<GCatalogRecord[]> {
+    let params = new HttpParams();
+
+    params = params.set('p_esquematabla',pschematable);
+
+    if(filter){
+      params = params.set('p_filtro',filter);
+    }
     return this.http.get<any[]>(`${this.apiUrl}/security/module-managements/list-data-master-table`, { params });
   }
 
