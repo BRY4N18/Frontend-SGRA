@@ -9,7 +9,8 @@ import {
   TeacherItem,
   ModalityItem,
   SessionTypeItem,
-  TimeSlotItem
+  TimeSlotItem,
+  AvailableTimeSlotItem
 } from '../../../models/student/catalog.model';
 import { CreateRequestPayload } from '../../../models/student/request.model';
 
@@ -105,7 +106,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Docente <span class="text-danger">*</span></label>
                 <select class="form-select" [(ngModel)]="form.teacherId" name="teacherId"
-                        required [disabled]="loadingTeachers">
+                        (ngModelChange)="onTeacherOrDayChange()" required [disabled]="loadingTeachers">
                   <option [ngValue]="null">{{ loadingTeachers ? 'Cargando...' : 'Selecciona docente' }}</option>
                   @for (t of teachers; track t.teacherId) {
                     <option [ngValue]="t.teacherId">{{ t.fullName }}</option>
@@ -116,12 +117,25 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Franja Horaria <span class="text-danger">*</span></label>
                 <select class="form-select" [(ngModel)]="form.timeSlotId" name="timeSlotId"
-                        required [disabled]="loadingCatalogs">
-                  <option [ngValue]="null">Selecciona franja horaria</option>
-                  @for (ts of timeSlots; track ts.timeSlotId) {
-                    <option [ngValue]="ts.timeSlotId">{{ ts.label }}</option>
+                        required [disabled]="loadingTimeSlots || !canLoadTimeSlots()">
+                  @if (loadingTimeSlots) {
+                    <option [ngValue]="null">Cargando franjas...</option>
+                  } @else if (!canLoadTimeSlots()) {
+                    <option [ngValue]="null">Selecciona docente y día primero</option>
+                  } @else if (availableTimeSlots.length === 0) {
+                    <option [ngValue]="null">Sin franjas disponibles</option>
+                  } @else {
+                    <option [ngValue]="null">Selecciona franja horaria</option>
+                    @for (ts of availableTimeSlots; track ts.timeSlotId) {
+                      <option [ngValue]="ts.timeSlotId">{{ ts.label }}</option>
+                    }
                   }
                 </select>
+                @if (noTimeSlotsMessage) {
+                  <small class="text-warning">
+                    <i class="bi bi-exclamation-triangle me-1"></i>{{ noTimeSlotsMessage }}
+                  </small>
+                }
               </div>
             </div>
 
@@ -129,7 +143,8 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <label class="form-label fw-semibold">Día Solicitado <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.requestedDay" name="requestedDay" required>
+                <select class="form-select" [(ngModel)]="form.requestedDay" name="requestedDay"
+                        (ngModelChange)="onTeacherOrDayChange()" required>
                   <option [ngValue]="null">Selecciona día</option>
                   <option [ngValue]="1">Lunes</option>
                   <option [ngValue]="2">Martes</option>
@@ -192,17 +207,20 @@ export class StudentNewRequestComponent implements AfterViewInit {
   teachers: TeacherItem[] = [];
   modalities: ModalityItem[] = [];
   sessionTypes: SessionTypeItem[] = [];
-  timeSlots: TimeSlotItem[] = [];
+  timeSlots: TimeSlotItem[] = [];  // Catálogo completo (fallback)
+  availableTimeSlots: AvailableTimeSlotItem[] = [];  // Franjas disponibles filtradas
 
   // Loading states
   loadingCatalogs = false;
   loadingSyllabi = false;
   loadingTeachers = false;
+  loadingTimeSlots = false;
   submitting = false;
 
   // Messages
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  noTimeSlotsMessage: string | null = null;  // Mensaje cuando no hay franjas disponibles
 
   // Form model
   form: {
@@ -286,10 +304,15 @@ export class StudentNewRequestComponent implements AfterViewInit {
     // Optionally filter teachers by modality
     if (this.form.modalityId) {
       this.loadingTeachers = true;
+      // Reset teacher and time slots when modality changes
+      this.form.teacherId = null;
+      this.form.timeSlotId = null;
+      this.availableTimeSlots = [];
+      this.noTimeSlotsMessage = null;
+
       this.svc.getTeachers(this.form.modalityId).subscribe({
         next: (data) => {
           this.teachers = data || [];
-          this.form.teacherId = null; // Reset selection
           this.loadingTeachers = false;
           this.cdr.detectChanges();
         },
@@ -300,6 +323,73 @@ export class StudentNewRequestComponent implements AfterViewInit {
         }
       });
     }
+  }
+
+  /**
+   * Verifica si se pueden cargar las franjas disponibles
+   * (requiere docente y día seleccionados)
+   */
+  canLoadTimeSlots(): boolean {
+    return !!(this.form.teacherId && this.form.requestedDay && this.form.periodId);
+  }
+
+  /**
+   * Handler cuando cambia el docente o el día solicitado.
+   * Carga las franjas disponibles para esa combinación.
+   */
+  onTeacherOrDayChange(): void {
+    // Guardar selección previa para verificar si aún es válida
+    const previousTimeSlotId = this.form.timeSlotId;
+
+    // Reset state
+    this.form.timeSlotId = null;
+    this.availableTimeSlots = [];
+    this.noTimeSlotsMessage = null;
+
+    // Verificar que tenemos los datos necesarios
+    if (!this.canLoadTimeSlots()) {
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.loadingTimeSlots = true;
+    this.cdr.detectChanges();
+
+    this.svc.getAvailableTimeSlots(
+      this.form.teacherId!,
+      this.form.requestedDay!,
+      this.form.periodId
+    ).subscribe({
+      next: (data) => {
+        this.availableTimeSlots = data || [];
+        this.loadingTimeSlots = false;
+
+        // Verificar si la franja previamente seleccionada aún está disponible
+        if (previousTimeSlotId) {
+          const stillAvailable = this.availableTimeSlots.some(
+            ts => ts.timeSlotId === previousTimeSlotId
+          );
+          if (stillAvailable) {
+            this.form.timeSlotId = previousTimeSlotId;
+          } else if (this.availableTimeSlots.length > 0) {
+            this.noTimeSlotsMessage = 'La franja seleccionada ya no está disponible. Selecciona otra.';
+          }
+        }
+
+        // Mostrar mensaje si no hay franjas
+        if (this.availableTimeSlots.length === 0) {
+          this.noTimeSlotsMessage = 'El docente no tiene franjas disponibles para el día seleccionado.';
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMessage = err?.message || 'Error al cargar las franjas disponibles';
+        this.loadingTimeSlots = false;
+        this.availableTimeSlots = [];
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   onSubmit(): void {
@@ -337,6 +427,14 @@ export class StudentNewRequestComponent implements AfterViewInit {
       error: (err) => {
         this.errorMessage = err?.message || 'Error al crear la solicitud';
         this.submitting = false;
+
+        // Si el error indica que la franja no está disponible, refrescar la lista
+        if (err?.message?.includes('no está disponible') ||
+            err?.message?.includes('not available')) {
+          this.form.timeSlotId = null;
+          this.onTeacherOrDayChange();  // Refrescar franjas disponibles
+        }
+
         this.cdr.detectChanges();
       }
     });

@@ -9,7 +9,8 @@ import {
   TeacherItem,
   ModalityItem,
   SessionTypeItem,
-  TimeSlotItem
+  TimeSlotItem,
+  AvailableTimeSlotItem
 } from '../../models/student/catalog.model';
 import {
   CreateRequestPayload,
@@ -75,6 +76,23 @@ export class StudentNewRequestService {
     ).pipe(catchError(this.handleError));
   }
 
+  /**
+   * Obtiene las franjas horarias disponibles para un docente específico.
+   * Filtra por disponibilidad del docente y excluye franjas ocupadas.
+   *
+   * @param teacherId ID del docente
+   * @param dayOfWeek Día de la semana (1=Lunes, 7=Domingo)
+   * @param periodId ID del período académico
+   * @returns Observable con lista de franjas disponibles
+   */
+  getAvailableTimeSlots(teacherId: number, dayOfWeek: number, periodId: number): Observable<AvailableTimeSlotItem[]> {
+    const params = `teacherId=${teacherId}&dayOfWeek=${dayOfWeek}&periodId=${periodId}`;
+    return this.http.get<AvailableTimeSlotItem[]>(
+      `${this.baseUrl}/student/catalogs/timeSlots/available?${params}`,
+      this.httpOptions
+    ).pipe(catchError(this.handleError));
+  }
+
   // ==================== REQUEST ACTIONS ====================
 
   previewRequest(payload: RequestPreviewPayload): Observable<RequestPreviewResponse> {
@@ -104,6 +122,9 @@ export class StudentNewRequestService {
       message = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
     } else if (error.status === 400) {
       message = error.error?.message || 'Datos inválidos.';
+    } else if (error.status === 409) {
+      // Conflict: La franja horaria no está disponible
+      message = error.error?.message || 'La franja horaria seleccionada ya no está disponible.';
     } else if (error.status >= 500) {
       message = 'Error en el servidor. Intenta más tarde.';
     } else if (error.error?.message) {
