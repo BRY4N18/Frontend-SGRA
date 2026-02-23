@@ -44,7 +44,9 @@ export class AdminUserCreateModalComponent implements OnInit{
     const isChecked = (event.target as HTMLInputElement).checked;
 
     if (isChecked) {
-      roleIdsArray.push(new FormControl(roleId));
+      if (!this.isRoleSelected(roleId)) {
+        roleIdsArray.push(new FormControl(roleId));
+      }
     } else {
       const index = roleIdsArray.controls.findIndex(ctrl => ctrl.value === roleId);
       if (index !== -1) {
@@ -129,7 +131,8 @@ export class AdminUserCreateModalComponent implements OnInit{
           });
 
           if (userData.roles && Array.isArray(userData.roles)) {
-            userData.roles.forEach((roleId: number) => {
+            const uniqueRoles = [...new Set(userData.roles)] as number[];
+            uniqueRoles.forEach((roleId: number) => {
               roleIdsArray.push(new FormControl(roleId));
             });
           }
@@ -137,7 +140,6 @@ export class AdminUserCreateModalComponent implements OnInit{
           this.createUserForm.updateValueAndValidity();
         },
         error: (err) => {
-          console.error('Error al traer los detalles del usuario', err);
           alert('No se pudo cargar la información del usuario.');
         }
       });
