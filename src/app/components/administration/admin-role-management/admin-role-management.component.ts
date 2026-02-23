@@ -4,32 +4,54 @@ import { GRole } from '../../../models/administration/admin-role-management/GRol
 import { AdminRoleManagementService } from '../../../services/administration/admin-role-management/admin-role-management.service';
 import { AdminRoleTableComponent } from './admin-role-table/admin-role-table.component';
 import { AdminRoleCreateModalComponent } from './admin-role-create-modal/admin-role-create-modal.component';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, combineLatest, startWith } from 'rxjs';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-admin-role-management',
   standalone: true,
-  imports: [CommonModule, AdminRoleTableComponent, AdminRoleCreateModalComponent],
+  imports: [
+    CommonModule,
+    AdminRoleTableComponent,
+    AdminRoleCreateModalComponent,
+    ReactiveFormsModule,
+  ],
   templateUrl: './admin-role-management.component.html',
   styleUrl: './admin-role-management.component.css',
 })
-export class AdminRoleManagementComponent implements OnInit{
+export class AdminRoleManagementComponent implements OnInit {
   roles: GRole[] = [];
   isLoading: boolean = true;
-
   selectedRoleToEdit: GRole | null = null;
+
+  searchControl = new FormControl('');
+  statusControl = new FormControl('');
 
   private cdr = inject(ChangeDetectorRef);
   private roleService = inject(AdminRoleManagementService);
 
   ngOnInit(): void {
-    this.loadRoles();
+    combineLatest([
+      this.searchControl.valueChanges.pipe(
+        startWith(''),
+        debounceTime(200),
+        distinctUntilChanged(),
+      ),
+      this.statusControl.valueChanges.pipe(startWith('')),
+    ]).subscribe(([filterValue, statusValue]) => {
+      let stateParam: boolean | undefined = undefined;
+      if (statusValue === 'true') stateParam = true;
+      if (statusValue === 'false') stateParam = false;
+
+      this.loadRoles(filterValue || '', stateParam);
+    });
   }
 
-  loadRoles(): void {
+  loadRoles(filter: string = '', state?: boolean): void {
     this.isLoading = true;
-    this.roleService.getRoles().subscribe({
+    this.roleService.getRoles(filter,state).subscribe({
       next: (data) => {
         this.roles = data;
         this.isLoading = false;
@@ -37,7 +59,8 @@ export class AdminRoleManagementComponent implements OnInit{
       },
       error: (err) => {
         console.error('Error', err);
-      }
+        this.isLoading = false;
+      },
     });
   }
 
