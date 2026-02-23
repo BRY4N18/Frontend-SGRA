@@ -1,0 +1,258 @@
+/* ── Grid wrapper ── */
+.grid-wrapper {
+  overflow-x: auto;
+}
+
+/* ── Table ── */
+.availability-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  table-layout: fixed;
+}
+
+/* ── Time column ── */
+.time-header {
+  width: 70px;
+}
+
+.time-cell {
+  width: 70px;
+  padding: 8px 4px;
+  text-align: right;
+  vertical-align: middle;
+  user-select: none;
+}
+
+.time-start {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.time-end {
+  display: block;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+/* ── Day headers ── */
+.day-header {
+  text-align: center;
+  padding: 0;
+}
+
+.day-header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a237e;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 8px;
+  min-height: 56px;
+}
+
+.day-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.day-slots {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+/* ── Slot cells ── */
+.slot-cell {
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 8px;
+  height: 44px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+  position: relative;
+}
+
+.slot-cell.empty {
+  background-color: #e9ecef;
+}
+
+.slot-cell.empty:hover {
+  background-color: #d4edda;
+  box-shadow: 0 0 0 2px #28a74580;
+}
+
+.slot-cell.available {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.slot-cell.available:hover {
+  background-color: #218838;
+}
+
+.slot-cell.conflict {
+  background-color: #9c27b0;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.slot-cell.scheduled {
+  background-color: #263238;
+  color: #fff;
+  cursor: not-allowed;
+  font-size: 0.7rem;
+}
+
+.slot-cell.scheduled:hover {
+  background-color: #1a2327;
+}
+
+.scheduled-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.65rem;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
+.slot-icon {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* ── Quick day buttons ── */
+.btn-day {
+  background-color: #e8eaf6;
+  color: #1a237e;
+  border: 1px solid #c5cae9;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-weight: 600;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.btn-day:hover {
+  background-color: #1a237e;
+  color: #fff;
+  border-color: #1a237e;
+}
+
+.btn-day.active {
+  background-color: #1a237e;
+  color: #fff;
+  border-color: #1a237e;
+}
+
+/* ── Block select ── */
+.select-block {
+  width: 200px;
+  font-size: 0.85rem;
+}
+
+/* ── Legend dots ── */
+.legend-dot {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-dot.available {
+  background-color: #28a745;
+}
+
+.legend-dot.conflict {
+  background-color: #9c27b0;
+}
+
+.legend-dot.empty {
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+}
+
+.legend-dot.scheduled {
+  background-color: #263238;
+}
+
+/* ── Section tabs ── */
+.section-tab {
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 2px solid transparent;
+  color: #555;
+  background-color: #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.section-tab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Matutina - Naranja/Amanecer */
+.section-tab.section-matutina.active {
+  background-color: #ff9800;
+  color: #fff;
+  border-color: #e65100;
+}
+
+.section-tab.section-matutina:not(.active):hover {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+/* Vespertina - Azul/Sol */
+.section-tab.section-vespertina.active {
+  background-color: #1976d2;
+  color: #fff;
+  border-color: #0d47a1;
+}
+
+.section-tab.section-vespertina:not(.active):hover {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+/* Nocturna - Índigo/Luna */
+.section-tab.section-nocturna.active {
+  background-color: #303f9f;
+  color: #fff;
+  border-color: #1a237e;
+}
+
+.section-tab.section-nocturna:not(.active):hover {
+  background-color: #e8eaf6;
+  color: #1a237e;
+}
+
+/* ── Section alert banners ── */
+.section-alert {
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.section-matutina-bg {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.section-vespertina-bg {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.section-nocturna-bg {
+  background-color: #e8eaf6;
+  color: #1a237e;
+}

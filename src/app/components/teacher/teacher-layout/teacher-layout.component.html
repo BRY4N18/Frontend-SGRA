@@ -1,0 +1,47 @@
+<div class="d-flex vh-100 bg-light">
+
+  <aside class="teacher-sidebar d-flex flex-column text-white shadow">
+    <div class="sidebar-header text-center p-4 border-bottom border-light border-opacity-25">
+      <i class="bi bi-mortarboard display-6 mb-2"></i>
+      <h6 class="m-0 fw-bold">Gestión de Refuerzos Académicos</h6>
+    </div>
+
+    <ul class="nav nav-pills flex-column mb-auto p-3 gap-2">
+      <li class="nav-item">
+        <a routerLink="/teacher/dashboard" routerLinkActive="active-link" class="nav-link text-white">
+          <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a routerLink="/teacher/availability" routerLinkActive="active-link" class="nav-link text-white">
+          <i class="bi bi-calendar-check me-2"></i> Disponibilidad
+        </a>
+      </li>
+    </ul>
+
+    <div class="p-3 border-top border-light border-opacity-25 mt-auto">
+      <button type="button" (click)="logout()" class="btn btn-logout text-white w-100 text-start d-flex align-items-center nav-link logout-link">
+        <i class="bi bi-box-arrow-left me-2"></i> Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="flex-grow-1 d-flex flex-column overflow-hidden content-area">
+
+    <header class="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center z-1">
+      <h5 class="m-0 text-secondary fw-semibold">SGRA | Sistema de Gestión de Refuerzos Académicos</h5>
+
+      <button type="button" class="btn btn-profile d-flex align-items-center gap-3 border-0">
+        <span class="fw-medium text-dark">{{ userName }}</span>
+        <div class="teacher-avatar rounded-circle text-white d-flex justify-content-center align-items-center shadow-sm">
+          <i class="bi bi-person-fill"></i>
+        </div>
+      </button>
+    </header>
+
+    <main class="flex-grow-1 p-4 overflow-auto">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

@@ -42,8 +42,19 @@ export const routes: Routes = [
   },
   {
     path: 'teacher',
-    loadComponent: () => import('./components/teacher/teacher-dashboard.component').then(m => m.TeacherDashboardComponent),
-    canActivate: [authGuard, roleGuard(['teacher', 'docente'])]
+    loadComponent: () => import('./components/teacher/teacher-layout/teacher-layout.component').then(m => m.TeacherLayoutComponent),
+    canActivate: [authGuard, roleGuard(['teacher', 'docente'])],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/teacher/teacher-dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
+      },
+      {
+        path: 'availability',
+        loadComponent: () => import('./components/teacher/teacher-availability/teacher-availability.component').then(m => m.TeacherAvailabilityComponent)
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
   },
   {
     path: 'student',
