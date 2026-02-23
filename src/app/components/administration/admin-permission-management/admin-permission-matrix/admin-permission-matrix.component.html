@@ -36,26 +36,26 @@
                       <div class="d-flex flex-wrap gap-4 justify-content-md-end">
 
                         <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" [id]="'read-'+schema.pesquema+'-'+table.ptabla"
-                                [(ngModel)]="table.ppselect">
+                          <input class="form-check-input" type="checkbox" role="switch" [id]="'read-'+schema.pesquema+'-'+table.ptabla "
+                                [(ngModel)]="table.ppselect" (ngModelChange)="onToggleChange()">
                           <label class="form-check-label small fw-medium text-muted" [for]="'read-'+schema.pesquema+'-'+table.ptabla">Ver</label>
                         </div>
 
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" role="switch" [id]="'create-'+schema.pesquema+'-'+table.ptabla"
-                                [(ngModel)]="table.ppinsert">
+                                [(ngModel)]="table.ppinsert" (ngModelChange)="onToggleChange()">
                           <label class="form-check-label small fw-medium text-muted" [for]="'create-'+schema.pesquema+'-'+table.ptabla">Crear</label>
                         </div>
 
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" role="switch" [id]="'update-'+schema.pesquema+'-'+table.ptabla"
-                                [(ngModel)]="table.ppupdate">
+                                [(ngModel)]="table.ppupdate" (ngModelChange)="onToggleChange()">
                           <label class="form-check-label small fw-medium text-muted" [for]="'update-'+schema.pesquema+'-'+table.ptabla">Editar</label>
                         </div>
 
                         <div class="form-check form-switch">
                           <input class="form-check-input" type="checkbox" role="switch" [id]="'delete-'+schema.pesquema+'-'+table.ptabla"
-                                [(ngModel)]="table.ppdelete">
+                                [(ngModel)]="table.ppdelete" (ngModelChange)="onToggleChange()">
                           <label class="form-check-label small fw-medium text-danger" [for]="'delete-'+schema.pesquema+'-'+table.ptabla">Eliminar</label>
                         </div>
 

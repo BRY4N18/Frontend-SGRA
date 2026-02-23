@@ -1,25 +1,30 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
-import { KpiMetric } from '../../../models/administration/admin-dashboard/KpiMetric.model';
+import { Injectable, inject } from '@angular/core';
+import { Observable, map, of} from 'rxjs';
+import { KpiMetric, KpiCard } from '../../../models/administration/admin-dashboard/KpiMetric.model';
 import { AuditLog } from '../../../models/administration/admin-dashboard/AuditLog.model';
 import { QuickAction } from '../../../models/administration/admin-dashboard/QuickAction.model';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminDashboardService {
 
-  constructor() { }
+  private http = inject(HttpClient);
+  private readonly apiUrl = environment.apiUrl;
 
-
-  getKpis(): Observable<KpiMetric[]> {
-    const kpis: KpiMetric[] = [
-      { id: '1', value: 0, label: 'Usuarios activos', icon: 'bi-people', theme: 'blue' },
-      { id: '2', value: 0, label: 'Roles vigentes', icon: 'bi-shield-check', theme: 'purple' },
-      { id: '3', value: 0, label: 'Modulos con permiso', icon: 'bi-grid', theme: 'green' },
-      { id: '4', value: 0, label: 'Cuentas inactivas', icon: 'bi-person-exclamation', theme: 'orange' }
-    ];
-    return of(kpis);
+  getKpis(): Observable<KpiCard[]> {
+    return this.http.get<KpiMetric>(`${this.apiUrl}/security/user-role-managements/kpi-dashboard-management`).pipe(
+      map((data: KpiMetric) => {
+        return [
+          { id: '1', value: data.userActive, label: 'Usuarios Activos', icon: 'bi-people', theme: 'primary' },
+          { id: '2', value: data.userIncative, label: 'Usuarios Inactivos', icon: 'bi-person-exclamation', theme: 'danger' },
+          { id: '3', value: data.rolesActive, label: 'Roles Activos', icon: 'bi-shield-check', theme: 'success' },
+          { id: '4', value: data.rolesInactive, label: 'Roles Inactivos', icon: 'bi-shield-x', theme: 'secondary' }
+        ];
+      })
+    );
   }
 
   getRecentLogs(): Observable<AuditLog[]> {

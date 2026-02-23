@@ -21,7 +21,7 @@ declare var bootstrap: any;
 export class AdminMasterTablesComponent implements OnInit{
   selectedRecordToEdit: GCatalogRecord | null = null;
   catalogs: GCatalog[] = [];
-  metrics: GCatalogMetrics | null = null;
+  metrics: GCatalogMetrics = { totalCatalogs: 0, activeRecords: 0, totalRecords: 0 };
 
   currentRecords: GCatalogRecord[] = [];
   selectedCatalogSchema: string | null = null;
@@ -34,11 +34,13 @@ export class AdminMasterTablesComponent implements OnInit{
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
-    this.catalogService.getMetrics().subscribe(data => this.metrics = data);
+    this.loadGlobalMetrics();
+    //this.catalogService.getMetrics().subscribe(data => this.metrics = data);
 
     this.catalogService.getCatalogs().subscribe(data => {
       this.catalogs = data;
       this.isLoadingCatalogs = false;
+      this.metrics.totalCatalogs = this.catalogs.length;
       this.cdr.detectChanges();
 
       if (this.catalogs.length > 0) {
@@ -47,11 +49,20 @@ export class AdminMasterTablesComponent implements OnInit{
     });
   }
 
+  loadGlobalMetrics(): void {
+    this.catalogService.getMetrics().subscribe(data => {
+      if (data) {
+        this.metrics.activeRecords = data.activeRecords;
+        this.metrics.totalRecords = data.totalRecords;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   onCatalogSelected(pschematable: string): void {
     if (this.selectedCatalogSchema === pschematable) return;
 
     this.selectedCatalogSchema = pschematable;
-
     this.currentRecords = [];
     this.isLoadingRecords = true;
 
@@ -94,5 +105,6 @@ export class AdminMasterTablesComponent implements OnInit{
         console.error('Error recargando la tabla', err);
       }
     });
+    this.loadGlobalMetrics();
   }
 }
