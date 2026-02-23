@@ -34,6 +34,17 @@
             }
           </div>
 
+          <div>
+            <div class="form-floating">
+              <select class="form-select bg-light border-0 shadow-none" id="status" formControlName="status"
+                      [ngClass]="{'is-invalid': f['status'].invalid && f['status'].touched}">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+              <label for="status" class="text-muted fw-medium">Estado Inicial *</label>
+            </div>
+          </div>
+
           <div class="mt-2">
             <label class="text-muted fw-medium small mb-2">Roles Asignados *</label>
 

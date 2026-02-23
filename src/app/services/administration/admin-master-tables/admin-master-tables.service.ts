@@ -25,7 +25,7 @@ export class AdminMasterTablesService {
   }
 
   getMetrics(): Observable<GCatalogMetrics> {
-    return of({ totalCatalogs: 12, activeRecords: 145, totalRecords: 156 });
+    return this.http.get<GCatalogMetrics>(`${this.apiUrl}/security/module-managements/master-metrics`);
   }
 
   createRecord(data: GCatalogRecordCUD): Observable<any> {
