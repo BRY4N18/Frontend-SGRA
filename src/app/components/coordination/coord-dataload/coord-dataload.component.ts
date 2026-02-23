@@ -23,7 +23,7 @@ export class CoordDataloadComponent {
   selectedOption = {
     id: 'students',
     label: 'Estudiantes',
-    icon: 'bi bi-mortarboard'
+    icon: 'bi bi-mortarboard',
   };
 
   // Estado de carga
@@ -44,31 +44,31 @@ export class CoordDataloadComponent {
     }
     // Validaciones de prerrequisitos según el orden correcto
     let mensaje = '';
-    switch (this.selectedOption.id) {
-      case 'careers':
-        mensaje = 'Primero debes cargar los Periodos Académicos.';
-        break;
-      case 'subjects':
-        mensaje = 'Primero debes cargar las Carreras.';
-        break;
-      case 'syllabi':
-        mensaje = 'Primero debes cargar las Asignaturas.';
-        break;
-      case 'students':
-        mensaje = 'Primero debes cargar los Periodos Académicos.';
-        break;
-      case 'teachers':
-        mensaje = 'Primero debes cargar los Periodos Académicos.';
-        break;
-      case 'registrations':
-        mensaje = 'Primero debes cargar Estudiantes, Asignaturas y Periodos Académicos.';
-        break;
-      case 'schedules':
-        mensaje = 'Primero debes cargar Docentes, Asignaturas, Periodos Académicos y Matrículas.';
-        break;
-      default:
-        mensaje = '';
-    }
+    // switch (this.selectedOption.id) {
+    //   case 'careers':
+    //     mensaje = 'Primero debes cargar los Periodos Académicos.';
+    //     break;
+    //   case 'subjects':
+    //     mensaje = 'Primero debes cargar las Carreras.';
+    //     break;
+    //   case 'syllabi':
+    //     mensaje = 'Primero debes cargar las Asignaturas.';
+    //     break;
+    //   case 'students':
+    //     mensaje = 'Primero debes cargar los Periodos Académicos.';
+    //     break;
+    //   case 'teachers':
+    //     mensaje = 'Primero debes cargar los Periodos Académicos.';
+    //     break;
+    //   case 'registrations':
+    //     mensaje = 'Primero debes cargar Estudiantes, Asignaturas y Periodos Académicos.';
+    //     break;
+    //   case 'schedules':
+    //     mensaje = 'Primero debes cargar Docentes, Asignaturas, Periodos Académicos y Matrículas.';
+    //     break;
+    //   default:
+    //     mensaje = '';
+    // }
     if (mensaje) {
       this.showPrerequisiteAlert(mensaje);
       return;
@@ -76,25 +76,41 @@ export class CoordDataloadComponent {
     this.isLoading = true;
     let uploadObservable;
     switch (this.selectedOption.id) {
-      case 'periods': uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile); break;
-      case 'careers': uploadObservable = this.dataloadService.uploadCareers(this.selectedFile); break;
-      case 'subjects': uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile); break;
-      case 'syllabi': uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile); break;
-      case 'students': uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile); break;
-      case 'teachers': uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile); break;
-      case 'registrations': uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile); break;
-      case 'schedules': uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile); break;
+      case 'periods':
+        uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile);
+        break;
+      case 'careers':
+        uploadObservable = this.dataloadService.uploadCareers(this.selectedFile);
+        break;
+      case 'subjects':
+        uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile);
+        break;
+      case 'syllabi':
+        uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile);
+        break;
+      case 'students':
+        uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile);
+        break;
+      case 'teachers':
+        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
+        break;
+      case 'registrations':
+        uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile);
+        break;
+      case 'schedules':
+        uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile);
+        break;
       default:
         this.isLoading = false;
         return;
     }
     uploadObservable.subscribe({
       next: (response: string[]) => {
-        this.uploadResults = response.map(msg => ({
+        this.uploadResults = response.map((msg) => ({
           tipo: this.selectedOption.label as any,
           status: msg.toLowerCase().includes('error') ? 'error' : 'success',
           message: msg,
-          timestamp: new Date()
+          timestamp: new Date(),
         }));
         this.updateCounters();
         this.currentPage = 1;
@@ -109,13 +125,13 @@ export class CoordDataloadComponent {
       error: () => {
         alert('Hubo un error al procesar el archivo.');
         this.isLoading = false;
-      }
+      },
     });
   }
 
   constructor(
     private dataloadService: CoordDataloadService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // ===== NUEVO SISTEMA UNIFICADO =====
@@ -128,8 +144,12 @@ export class CoordDataloadComponent {
     { id: 'syllabi' as UploadType, label: 'Temarios', icon: 'bi bi-card-text' },
     { id: 'students' as UploadType, label: 'Estudiantes', icon: 'bi bi-mortarboard' },
     { id: 'teachers' as UploadType, label: 'Docentes', icon: 'bi bi-person-badge' },
-    { id: 'registrations' as UploadType, label: 'Matrículas de Estudiantes', icon: 'bi bi-journal-check' },
-    { id: 'schedules' as UploadType, label: 'Horarios de Clases', icon: 'bi bi-clock' }
+    {
+      id: 'registrations' as UploadType,
+      label: 'Matrículas de Estudiantes',
+      icon: 'bi bi-journal-check',
+    },
+    { id: 'schedules' as UploadType, label: 'Horarios de Clases', icon: 'bi bi-clock' },
   ];
 
   selectedUploadType: UploadType = 'students';
@@ -156,7 +176,7 @@ export class CoordDataloadComponent {
 
   // Obtiene el label en español de la opción seleccionada (ej. "Periodos Académicos")
   get selectedUploadLabel(): string {
-    return this.uploadOptions.find(o => o.id === this.selectedUploadType)?.label || 'Estudiantes';
+    return this.uploadOptions.find((o) => o.id === this.selectedUploadType)?.label || 'Estudiantes';
   }
 
   selectUploadType(type: UploadType | any): void {
@@ -229,7 +249,8 @@ export class CoordDataloadComponent {
     }
     // Validación de prerrequisitos solo para Matrículas y Horarios
     if (['registrations', 'schedules'].includes(this.selectedUploadType)) {
-      const tipoLabel = this.uploadOptions.find(opt => opt.id === this.selectedUploadType)?.label || '';
+      const tipoLabel =
+        this.uploadOptions.find((opt) => opt.id === this.selectedUploadType)?.label || '';
       const mensaje = `¿Ya subiste todos los datos previos (periodos, carreras, asignaturas, temarios, estudiantes, docentes) para "${tipoLabel}"?\n\nSi no lo hiciste, la carga puede fallar. ¿Deseas continuar?`;
       if (!window.confirm(mensaje)) {
         this.showError('Carga cancelada. Por favor, sube primero los datos previos.');
@@ -240,14 +261,30 @@ export class CoordDataloadComponent {
     this.uploadProgress = 0;
     let uploadObservable;
     switch (this.selectedUploadType) {
-      case 'periods': uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile); break;
-      case 'careers': uploadObservable = this.dataloadService.uploadCareers(this.selectedFile); break;
-      case 'subjects': uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile); break;
-      case 'syllabi': uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile); break;
-      case 'students': uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile); break;
-      case 'teachers': uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile); break;
-      case 'registrations': uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile); break;
-      case 'schedules': uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile); break;
+      case 'periods':
+        uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile);
+        break;
+      case 'careers':
+        uploadObservable = this.dataloadService.uploadCareers(this.selectedFile);
+        break;
+      case 'subjects':
+        uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile);
+        break;
+      case 'syllabi':
+        uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile);
+        break;
+      case 'students':
+        uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile);
+        break;
+      case 'teachers':
+        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
+        break;
+      case 'registrations':
+        uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile);
+        break;
+      case 'schedules':
+        uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile);
+        break;
       default:
         this.isUploading = false;
         return;
@@ -265,12 +302,14 @@ export class CoordDataloadComponent {
         this.cdr.detectChanges();
       },
       error: (error: any) => {
-        this.uploadResults = [{
-          tipo: this.selectedUploadLabel as any,
-          status: 'error',
-          message: error.message || `Error al cargar el archivo de ${this.selectedUploadLabel}.`,
-          timestamp: new Date()
-        }];
+        this.uploadResults = [
+          {
+            tipo: this.selectedUploadLabel as any,
+            status: 'error',
+            message: error.message || `Error al cargar el archivo de ${this.selectedUploadLabel}.`,
+            timestamp: new Date(),
+          },
+        ];
         this.updateCounters();
         this.filterResults();
         this.isUploading = false;
@@ -281,27 +320,55 @@ export class CoordDataloadComponent {
           this.fileInput.nativeElement.value = '';
         }
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
   private processUploadReport(reporte: string[], tipo: string): void {
     this.uploadResults = [];
     const errorKeywords = [
-      'error', 'falló', 'fallo', 'failure', 'exception', '500',
-      'invalid', 'not found', 'no encontrado', 'incorrecto', 'incorrect',
-      'missing', 'faltante', 'null', 'nulo', 'parse', 'parsing', 'format', 'formato',
-      'denied', 'denegado', 'unauthorized', 'no autorizado', 'forbidden', 'prohibido',
-      'timeout', 'tiempo', 'expired', 'expirado', 'duplicate', 'duplicado', 'conflict', 'conflicto'
+      'error',
+      'falló',
+      'fallo',
+      'failure',
+      'exception',
+      '500',
+      'invalid',
+      'not found',
+      'no encontrado',
+      'incorrecto',
+      'incorrect',
+      'missing',
+      'faltante',
+      'null',
+      'nulo',
+      'parse',
+      'parsing',
+      'format',
+      'formato',
+      'denied',
+      'denegado',
+      'unauthorized',
+      'no autorizado',
+      'forbidden',
+      'prohibido',
+      'timeout',
+      'tiempo',
+      'expired',
+      'expirado',
+      'duplicate',
+      'duplicado',
+      'conflict',
+      'conflicto',
     ];
     reporte.forEach((mensaje: string) => {
       const texto = mensaje.toLowerCase();
-      const isError = errorKeywords.some(keyword => texto.includes(keyword));
+      const isError = errorKeywords.some((keyword) => texto.includes(keyword));
       const result: UploadResult = {
         tipo: tipo as any,
         status: isError ? 'error' : 'success',
         message: mensaje,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       this.uploadResults.push(result);
     });
@@ -316,18 +383,18 @@ export class CoordDataloadComponent {
 
   private updateCounters(): void {
     this.uploadedItems = this.uploadResults.length;
-    this.errorCount = this.uploadResults.filter(r => r.status === 'error').length;
-    this.successCount = this.uploadResults.filter(r => r.status === 'success').length;
+    this.errorCount = this.uploadResults.filter((r) => r.status === 'error').length;
+    this.successCount = this.uploadResults.filter((r) => r.status === 'success').length;
   }
 
   filterResults(): void {
     let filtered = [...this.uploadResults];
     if (this.currentFilterStatus !== 'all') {
-      filtered = filtered.filter(r => r.status === this.currentFilterStatus);
+      filtered = filtered.filter((r) => r.status === this.currentFilterStatus);
     }
     if (this.searchTerm.trim()) {
-      filtered = filtered.filter(r =>
-        r.message.toLowerCase().includes(this.searchTerm.toLowerCase())
+      filtered = filtered.filter((r) =>
+        r.message.toLowerCase().includes(this.searchTerm.toLowerCase()),
       );
     }
     this.filteredResults = filtered;
@@ -357,7 +424,7 @@ export class CoordDataloadComponent {
   }
 
   hasNextPage(): boolean {
-    return (this.currentPage * this.pageSize) < this.filteredResults.length;
+    return this.currentPage * this.pageSize < this.filteredResults.length;
   }
 
   getTotalPages(): number {
@@ -375,12 +442,12 @@ export class CoordDataloadComponent {
     const validTypes = [
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'application/vnd.ms-excel',
-      'text/csv'
+      'text/csv',
     ];
     const validExtensions = ['.xlsx', '.xls', '.csv'];
     const maxSize = 10 * 1024 * 1024; // 10 MB
     const fileName = file.name.toLowerCase();
-    const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+    const hasValidExtension = validExtensions.some((ext) => fileName.endsWith(ext));
     return (validTypes.includes(file.type) || hasValidExtension) && file.size <= maxSize;
   }
 
@@ -421,8 +488,12 @@ export class CoordDataloadComponent {
   studentUploadSuccess = false;
   teacherUploadSuccess = false;
 
-  openFileSelectStudents(): void { this.fileInputStudents.nativeElement.click(); }
-  openFileSelectTeachers(): void { this.fileInputTeachers.nativeElement.click(); }
+  openFileSelectStudents(): void {
+    this.fileInputStudents.nativeElement.click();
+  }
+  openFileSelectTeachers(): void {
+    this.fileInputTeachers.nativeElement.click();
+  }
 
   // ... (Aquí irían el resto de tus métodos antiguos como uploadStudents, uploadTeachers, onDropStudents, etc.
   // No los he borrado, puedes copiarlos y pegarlos aquí al final del archivo tal y como los tenías si aún los necesitas).
