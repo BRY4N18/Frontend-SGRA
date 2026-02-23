@@ -2,21 +2,20 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, AfterViewInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { TeacherRequestsService } from '../../../services/teacher/teacher-requests.service';
 import {
-    TeacherRequestsService
-} from '../../../services/teacher/teacher-requests.service';
-import {
-    TeacherRequestRowDTO,
-    TeacherRequestsPageDTO
+  ReinforcementRequestDTO,
+  ReinforcementRequestStatusDTO
 } from '../../../models/teacher/teacher-request.model';
+import { forkJoin } from 'rxjs';
 
 type Option = { value: number | null; label: string };
 
 @Component({
-    selector: 'app-teacher-requests',
-    standalone: true,
-    imports: [CommonModule, FormsModule, RouterModule],
-    template: `
+  selector: 'app-teacher-requests',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  template: `
     <div class="container-fluid">
 
       <!-- Header -->
@@ -55,7 +54,7 @@ type Option = { value: number | null; label: string };
             <div class="modal-content border">
               <div class="modal-header border-bottom">
                 <h5 class="modal-title fw-bold">
-                  <i class="bi bi-file-earmark-text me-2"></i>Detalle de Solicitud #{{ selectedRequest.requestId }}
+                  <i class="bi bi-file-earmark-text me-2"></i>Solicitud #{{ selectedRequest.reinforcementRequestId }}
                 </h5>
                 <button type="button" class="btn-close" (click)="closeDetailModal()"></button>
               </div>
@@ -63,52 +62,48 @@ type Option = { value: number | null; label: string };
                 <div class="row g-3">
                   <div class="col-6">
                     <label class="form-label text-muted small mb-0">Fecha</label>
-                    <div class="fw-semibold">{{ formatDate(selectedRequest.requestDateTime) }}</div>
+                    <div class="fw-semibold">{{ formatDate(selectedRequest.createdAt) }}</div>
                   </div>
                   <div class="col-6">
                     <label class="form-label text-muted small mb-0">Hora</label>
-                    <div class="fw-semibold">{{ formatTime(selectedRequest.requestDateTime) }}</div>
+                    <div class="fw-semibold">{{ formatTime(selectedRequest.createdAt) }}</div>
                   </div>
                   <div class="col-12">
-                    <label class="form-label text-muted small mb-0">Estudiante</label>
-                    <div class="fw-semibold">{{ selectedRequest.studentName }}</div>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label text-muted small mb-0">Asignatura</label>
-                    <div class="fw-semibold">{{ selectedRequest.subjectName }}</div>
-                    <small class="text-muted">{{ selectedRequest.subjectCode }}</small>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label text-muted small mb-0">Tema</label>
-                    <div class="fw-semibold">{{ selectedRequest.topic }}</div>
+                    <label class="form-label text-muted small mb-0">Motivo</label>
+                    <div class="fw-semibold">{{ selectedRequest.reason }}</div>
                   </div>
                   <div class="col-6">
-                    <label class="form-label text-muted small mb-0">Tipo de Sesión</label>
-                    <div class="fw-semibold">{{ selectedRequest.sessionType }}</div>
+                    <label class="form-label text-muted small mb-0">Día solicitado</label>
+                    <div class="fw-semibold">{{ getDayName(selectedRequest.requestedDay) }}</div>
                   </div>
                   <div class="col-6">
                     <label class="form-label text-muted small mb-0">Estado</label>
                     <div>
                       <span class="badge rounded-pill"
-                            [class.bg-warning]="isPending(selectedRequest.status)"
-                            [class.text-dark]="isPending(selectedRequest.status)"
-                            [class.bg-success]="isAccepted(selectedRequest.status)"
-                            [class.bg-danger]="isRejected(selectedRequest.status)"
-                            [class.bg-secondary]="isCancelled(selectedRequest.status)"
-                            [class.bg-dark]="isFinished(selectedRequest.status)">
-                        {{ selectedRequest.status }}
+                            [ngClass]="getStatusBadgeClass(selectedRequest.requestStatusId)">
+                        {{ getStatusName(selectedRequest.requestStatusId) }}
                       </span>
                     </div>
                   </div>
+                  @if (selectedRequest.fileUrl) {
+                    <div class="col-12">
+                      <label class="form-label text-muted small mb-0">Archivo adjunto</label>
+                      <div>
+                        <a [href]="selectedRequest.fileUrl" target="_blank" class="text-success">
+                          <i class="bi bi-paperclip me-1"></i>Ver archivo
+                        </a>
+                      </div>
+                    </div>
+                  }
                 </div>
               </div>
               <div class="modal-footer border-top">
-                @if (canRespond(selectedRequest.status)) {
-                  <button type="button" class="btn btn-outline-danger" (click)="closeDetailModal(); confirmReject(selectedRequest)">
+                @if (isPendingStatus(selectedRequest.requestStatusId)) {
+                  <button type="button" class="btn btn-outline-danger" (click)="openConfirmReject()">
                     <i class="bi bi-x-circle me-1"></i> Rechazar
                   </button>
-                  <button type="button" class="btn btn-success" (click)="closeDetailModal(); confirmAccept(selectedRequest)">
-                    <i class="bi bi-check-circle me-1"></i> Aceptar
+                  <button type="button" class="btn btn-success" (click)="openConfirmAccept()">
+                    <i class="bi bi-check-circle me-1"></i> Aprobar
                   </button>
                 } @else {
                   <button type="button" class="btn btn-secondary" (click)="closeDetailModal()">Cerrar</button>
@@ -122,7 +117,7 @@ type Option = { value: number | null; label: string };
       <!-- Accept Confirmation Modal -->
       @if (showAcceptModal && selectedRequest) {
         <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-          <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border">
               <div class="modal-header border-bottom">
                 <div class="d-flex align-items-center gap-3">
@@ -130,24 +125,23 @@ type Option = { value: number | null; label: string };
                        style="width: 48px; height: 48px; font-size: 1.3rem;">
                     <i class="bi bi-check-circle"></i>
                   </div>
-                  <h5 class="modal-title fw-bold">Confirmar Aceptación</h5>
+                  <h5 class="modal-title fw-bold">Confirmar Aprobación</h5>
                 </div>
                 <button type="button" class="btn-close" (click)="closeAcceptModal()" [disabled]="updating"></button>
               </div>
               <div class="modal-body">
                 <p class="text-muted mb-0">
-                  ¿Estás seguro de que deseas <strong>aceptar</strong> la solicitud de refuerzo
-                  <strong>#{{ selectedRequest.requestId }}</strong> del estudiante
-                  <strong>{{ selectedRequest.studentName }}</strong>?
+                  ¿Estás seguro de que deseas <strong>aprobar</strong> la solicitud
+                  <strong>#{{ selectedRequest.reinforcementRequestId }}</strong>?
                 </p>
               </div>
               <div class="modal-footer border-top">
                 <button type="button" class="btn btn-outline-secondary" (click)="closeAcceptModal()" [disabled]="updating">Cancelar</button>
                 <button type="button" class="btn btn-success" (click)="doUpdateStatus(2)" [disabled]="updating">
                   @if (updating) {
-                    <span class="spinner-border spinner-border-sm me-2"></span> Aceptando...
+                    <span class="spinner-border spinner-border-sm me-2"></span> Aprobando...
                   } @else {
-                    <i class="bi bi-check-circle me-1"></i> Sí, aceptar
+                    <i class="bi bi-check-circle me-1"></i> Sí, aprobar
                   }
                 </button>
               </div>
@@ -159,7 +153,7 @@ type Option = { value: number | null; label: string };
       <!-- Reject Confirmation Modal -->
       @if (showRejectModal && selectedRequest) {
         <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
-          <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content border">
               <div class="modal-header border-bottom">
                 <div class="d-flex align-items-center gap-3">
@@ -173,9 +167,8 @@ type Option = { value: number | null; label: string };
               </div>
               <div class="modal-body">
                 <p class="text-muted mb-0">
-                  ¿Estás seguro de que deseas <strong>rechazar</strong> la solicitud de refuerzo
-                  <strong>#{{ selectedRequest.requestId }}</strong> del estudiante
-                  <strong>{{ selectedRequest.studentName }}</strong>?
+                  ¿Estás seguro de que deseas <strong>rechazar</strong> la solicitud
+                  <strong>#{{ selectedRequest.reinforcementRequestId }}</strong>?
                 </p>
               </div>
               <div class="modal-footer border-top">
@@ -196,7 +189,7 @@ type Option = { value: number | null; label: string };
       <!-- Summary Chips -->
       <div class="row g-2 mb-3">
         @for (chip of summaryChips; track chip.label) {
-          <div class="col-6 col-lg-3">
+          <div class="col-6 col-lg-4">
             <div class="chip-box p-3 bg-white shadow-sm border rounded-3 d-flex justify-content-between align-items-center">
               <div>
                 <div class="text-muted small">{{ chip.label }}</div>
@@ -222,11 +215,11 @@ type Option = { value: number | null; label: string };
               </label>
               <input class="form-control border"
                      [(ngModel)]="filters.search"
-                     placeholder="Buscar por estudiante, tema o asignatura"
+                     placeholder="Buscar por motivo o ID"
                      (keyup.enter)="applyFilters()"/>
             </div>
 
-            <div class="col-6 col-lg-2">
+            <div class="col-6 col-lg-3">
               <label class="form-label mb-1 small fw-semibold">
                 <i class="bi bi-funnel me-1"></i>Estado
               </label>
@@ -237,18 +230,7 @@ type Option = { value: number | null; label: string };
               </select>
             </div>
 
-            <div class="col-6 col-lg-2">
-              <label class="form-label mb-1 small fw-semibold">
-                <i class="bi bi-people me-1"></i>Tipo
-              </label>
-              <select class="form-select border" [(ngModel)]="filters.sessionTypeId" (change)="applyFilters()">
-                @for (o of sessionTypeOptions; track o.label) {
-                  <option [ngValue]="o.value">{{ o.label }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="col-12 col-lg-3 d-flex gap-2">
+            <div class="col-6 col-lg-4 d-flex gap-2">
               <button class="btn btn-outline-secondary border w-100" (click)="clearFilters()">
                 <i class="bi bi-arrow-counterclockwise me-1"></i> Limpiar
               </button>
@@ -274,11 +256,10 @@ type Option = { value: number | null; label: string };
               <table class="table align-middle mb-0">
                 <thead class="table-light">
                 <tr>
+                  <th>ID</th>
                   <th>FECHA</th>
-                  <th>ESTUDIANTE</th>
-                  <th>ASIGNATURA</th>
-                  <th>TEMA</th>
-                  <th>TIPO</th>
+                  <th>DÍA</th>
+                  <th>MOTIVO</th>
                   <th>ESTADO</th>
                   <th class="text-end">ACCIONES</th>
                 </tr>
@@ -287,65 +268,37 @@ type Option = { value: number | null; label: string };
                 <tbody>
                   @if (rows.length === 0) {
                     <tr>
-                      <td colspan="7" class="text-center py-5 text-muted">
+                      <td colspan="6" class="text-center py-5 text-muted">
                         <i class="bi bi-inbox display-4 d-block mb-2 opacity-25"></i>
                         Sin solicitudes para mostrar.
                       </td>
                     </tr>
                   } @else {
-                    @for (r of rows; track r.requestId) {
-                      <tr>
+                    @for (r of rows; track r.reinforcementRequestId) {
+                      <tr class="clickable-row" (click)="viewDetail(r)">
+                        <td class="fw-semibold text-muted">#{{ r.reinforcementRequestId }}</td>
+
                         <td class="fw-semibold">
-                          {{ formatDate(r.requestDateTime) }}
-                          <div class="text-muted small">{{ formatTime(r.requestDateTime) }}</div>
+                          {{ formatDate(r.createdAt) }}
+                          <div class="text-muted small">{{ formatTime(r.createdAt) }}</div>
                         </td>
 
-                        <td>
-                          <div class="fw-semibold">{{ r.studentName }}</div>
-                        </td>
+                        <td>{{ getDayName(r.requestedDay) }}</td>
 
-                        <td>
-                          <div class="fw-semibold">{{ r.subjectName }}</div>
-                          <div class="text-muted small">{{ r.subjectCode }}</div>
-                        </td>
-
-                        <td>{{ r.topic }}</td>
-
-                        <td>
-                          <span class="badge rounded-pill bg-light text-dark border">
-                            {{ r.sessionType }}
-                          </span>
-                        </td>
+                        <td>{{ r.reason }}</td>
 
                         <td>
                           <span class="badge rounded-pill"
-                                [class.bg-warning]="isPending(r.status)"
-                                [class.text-dark]="isPending(r.status)"
-                                [class.bg-success]="isAccepted(r.status)"
-                                [class.bg-danger]="isRejected(r.status)"
-                                [class.bg-secondary]="isCancelled(r.status)"
-                                [class.bg-dark]="isFinished(r.status)">
-                            {{ r.status }}
+                                [ngClass]="getStatusBadgeClass(r.requestStatusId)">
+                            {{ getStatusName(r.requestStatusId) }}
                           </span>
                         </td>
 
                         <td class="text-end">
-                          <div class="d-flex gap-1 justify-content-end">
-                            <button class="btn btn-sm btn-outline-secondary border" type="button"
-                                    title="Ver detalle" (click)="viewDetail(r)">
-                              <i class="bi bi-eye"></i>
-                            </button>
-                            @if (canRespond(r.status)) {
-                              <button class="btn btn-sm btn-outline-success border" type="button"
-                                      title="Aceptar" (click)="confirmAccept(r)">
-                                <i class="bi bi-check-lg"></i>
-                              </button>
-                              <button class="btn btn-sm btn-outline-danger border" type="button"
-                                      title="Rechazar" (click)="confirmReject(r)">
-                                <i class="bi bi-x-lg"></i>
-                              </button>
-                            }
-                          </div>
+                          <button class="btn btn-sm btn-outline-success border" type="button"
+                                  title="Ver detalle" (click)="$event.stopPropagation(); viewDetail(r)">
+                            <i class="bi bi-eye me-1"></i>Ver
+                          </button>
                         </td>
                       </tr>
                     }
@@ -380,7 +333,7 @@ type Option = { value: number | null; label: string };
 
     </div>
   `,
-    styles: [`
+  styles: [`
     :host {
       font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -402,221 +355,306 @@ type Option = { value: number | null; label: string };
     .table thead th { border-bottom: 2px solid #e0e0e0; }
     .table tbody tr { border-bottom: 1px solid #f0f0f0; }
     .table tbody tr:hover { background-color: #f8fdf5; }
+    .clickable-row { cursor: pointer; transition: background-color 0.15s; }
+    .clickable-row:hover { background-color: #edf7e8 !important; }
   `]
 })
 export class TeacherRequestsComponent implements AfterViewInit {
-    private svc = inject(TeacherRequestsService);
-    private cdr = inject(ChangeDetectorRef);
+  private svc = inject(TeacherRequestsService);
+  private cdr = inject(ChangeDetectorRef);
 
-    loading = false;
-    errorMessage: string | null = null;
-    successMessage: string | null = null;
+  loading = false;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
-    rows: TeacherRequestRowDTO[] = [];
-    totalCount = 0;
+  rows: ReinforcementRequestDTO[] = [];
+  allRequests: ReinforcementRequestDTO[] = [];
+  totalCount = 0;
 
-    page = 1;
-    size = 10;
-    totalPages = 1;
+  page = 1;
+  size = 10;
+  totalPages = 1;
 
-    filters: {
-        statusId?: number | null;
-        sessionTypeId?: number | null;
-        search?: string;
-    } = {
-            statusId: null,
-            sessionTypeId: null,
-            search: ''
-        };
+  filters: {
+    statusId?: number | null;
+    search?: string;
+  } = {
+      statusId: null,
+      search: ''
+    };
 
-    // Status IDs: 1=Pendiente, 2=Aceptada, 3=Rechazada, 4=Cancelada, 5=Finalizada
-    statusOptions: Option[] = [
-        { value: null, label: 'Todos' },
-        { value: 1, label: 'Pendiente' },
-        { value: 2, label: 'Aceptada' },
-        { value: 3, label: 'Rechazada' },
-        { value: 4, label: 'Cancelada' },
-        { value: 5, label: 'Finalizada' },
-    ];
+  // Loaded dynamically from /api/reinforcement/reinforcement-request-statuses
+  requestStatuses: ReinforcementRequestStatusDTO[] = [];
+  statusOptions: Option[] = [
+    { value: null, label: 'Todos' },
+  ];
 
-    sessionTypeOptions: Option[] = [
-        { value: null, label: 'Todos' },
-        { value: 1, label: 'Individual' },
-        { value: 2, label: 'Grupal' },
-    ];
+  summaryChips: { label: string; value: number; icon: string; color: string; bgColor: string }[] = [
+    { label: 'Pendientes', value: 0, icon: 'bi-clock-history', color: '#ed6c02', bgColor: '#fff3e0' },
+    { label: 'Aprobadas', value: 0, icon: 'bi-check-circle', color: '#1B7505', bgColor: '#e8f5e9' },
+    { label: 'Rechazadas', value: 0, icon: 'bi-x-circle', color: '#d32f2f', bgColor: '#ffebee' },
+  ];
 
-    summaryChips: { label: string; value: number; icon: string; color: string; bgColor: string }[] = [
-        { label: 'Pendientes', value: 0, icon: 'bi-clock-history', color: '#ed6c02', bgColor: '#fff3e0' },
-        { label: 'Aceptadas', value: 0, icon: 'bi-check-circle', color: '#1B7505', bgColor: '#e8f5e9' },
-        { label: 'Rechazadas', value: 0, icon: 'bi-x-circle', color: '#d32f2f', bgColor: '#ffebee' },
-        { label: 'Finalizadas', value: 0, icon: 'bi-flag', color: '#424242', bgColor: '#f5f5f5' },
-    ];
+  // Modal states
+  showDetailModal = false;
+  showAcceptModal = false;
+  showRejectModal = false;
+  selectedRequest: ReinforcementRequestDTO | null = null;
+  updating = false;
 
-    // Modal states
-    showDetailModal = false;
-    showAcceptModal = false;
-    showRejectModal = false;
-    selectedRequest: TeacherRequestRowDTO | null = null;
-    updating = false;
+  private readonly dayNames: Record<number, string> = {
+    1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo'
+  };
 
-    ngAfterViewInit(): void {
-        Promise.resolve().then(() => {
-            this.load();
-            this.loadSummary();
-        });
-    }
+  ngAfterViewInit(): void {
+    Promise.resolve().then(() => {
+      this.loadStatuses();
+    });
+  }
 
-    applyFilters(): void {
-        this.page = 1;
+  loadStatuses(): void {
+    this.svc.getRequestStatuses().subscribe({
+      next: (statuses) => {
+        this.requestStatuses = statuses.filter(s => s.state);
+        this.statusOptions = [
+          { value: null, label: 'Todos' },
+          ...this.requestStatuses.map(s => ({
+            value: s.idReinforcementRequestStatus,
+            label: s.nameState
+          }))
+        ];
+        this.cdr.detectChanges();
+        // Now load requests after statuses are available
         this.load();
-        this.loadSummary();
-    }
-
-    clearFilters(): void {
-        this.filters = { statusId: null, sessionTypeId: null, search: '' };
-        this.applyFilters();
-    }
-
-    goTo(p: number): void {
-        this.page = p;
+      },
+      error: (err) => {
+        console.error('[TeacherRequests] Error loading statuses:', err);
+        // Still try to load with defaults
         this.load();
+      }
+    });
+  }
+
+  applyFilters(): void {
+    this.page = 1;
+    this.load();
+  }
+
+  clearFilters(): void {
+    this.filters = { statusId: null, search: '' };
+    this.applyFilters();
+  }
+
+  goTo(p: number): void {
+    this.page = p;
+    this.applyLocalFilters();
+    this.cdr.detectChanges();
+  }
+
+  load(): void {
+    this.loading = true;
+    this.errorMessage = null;
+
+    const statusId = this.filters.statusId;
+
+    if (statusId) {
+      // Filter by specific status
+      this.svc.getRequestsByStatus(statusId).subscribe({
+        next: (data) => {
+          this.allRequests = data ?? [];
+          this.applyLocalFilters();
+          this.updateSummaryFromData();
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.errorMessage = err?.message || 'Error al cargar solicitudes';
+          this.allRequests = [];
+          this.rows = [];
+          this.totalCount = 0;
+          this.totalPages = 1;
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      // No status filter: load all active statuses
+      const activeStatuses = this.requestStatuses.length > 0
+        ? this.requestStatuses
+        : [{ idReinforcementRequestStatus: 1, nameState: 'Pendiente', state: true }];
+
+      const requests$ = activeStatuses.map(s =>
+        this.svc.getRequestsByStatus(s.idReinforcementRequestStatus)
+      );
+
+      forkJoin(requests$).subscribe({
+        next: (results) => {
+          this.allRequests = results.flat();
+          this.applyLocalFilters();
+          this.updateSummaryFromData();
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.errorMessage = err?.message || 'Error al cargar solicitudes';
+          this.allRequests = [];
+          this.rows = [];
+          this.totalCount = 0;
+          this.totalPages = 1;
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+
+  /** Apply search and pagination locally on already-fetched data */
+  private applyLocalFilters(): void {
+    let filtered = [...this.allRequests];
+
+    // Search filter
+    const search = (this.filters.search ?? '').trim().toLowerCase();
+    if (search) {
+      filtered = filtered.filter(r =>
+        r.reason.toLowerCase().includes(search) ||
+        r.reinforcementRequestId.toString().includes(search)
+      );
     }
 
-    load(): void {
-        this.loading = true;
-        this.errorMessage = null;
+    // Sort by createdAt descending (newest first)
+    filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-        this.svc.getRequests({
-            statusId: this.filters.statusId ?? undefined,
-            sessionTypeId: this.filters.sessionTypeId ?? undefined,
-            search: (this.filters.search ?? '').trim() || undefined,
-            page: this.page,
-            size: this.size,
-        }).subscribe({
-            next: (res: TeacherRequestsPageDTO) => {
-                this.rows = res.items ?? [];
-                this.totalCount = res.totalCount ?? 0;
-                this.page = res.page ?? this.page;
-                this.size = res.size ?? this.size;
-                this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.size));
-                this.loading = false;
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                this.errorMessage = err?.message || 'Error al cargar solicitudes';
-                this.rows = [];
-                this.totalCount = 0;
-                this.totalPages = 1;
-                this.loading = false;
-                this.cdr.detectChanges();
-            }
-        });
+    this.totalCount = filtered.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalCount / this.size));
+
+    // Paginate
+    const start = (this.page - 1) * this.size;
+    this.rows = filtered.slice(start, start + this.size);
+  }
+
+  /** Update summary chips from the loaded data */
+  private updateSummaryFromData(): void {
+    // Count by statusId across ALL loaded requests
+    const countByStatus = new Map<number, number>();
+    for (const r of this.allRequests) {
+      countByStatus.set(r.requestStatusId, (countByStatus.get(r.requestStatusId) ?? 0) + 1);
     }
 
-    loadSummary(): void {
-        this.svc.getRequestsSummary().subscribe({
-            next: (data) => {
-                const map = new Map<number, number>();
-                for (const s of data ?? []) map.set(Number(s.statusId), Number(s.total ?? 0));
+    this.summaryChips = [
+      { label: 'Pendientes', value: countByStatus.get(1) ?? 0, icon: 'bi-clock-history', color: '#ed6c02', bgColor: '#fff3e0' },
+      { label: 'Aprobadas', value: countByStatus.get(2) ?? 0, icon: 'bi-check-circle', color: '#1B7505', bgColor: '#e8f5e9' },
+      { label: 'Rechazadas', value: countByStatus.get(3) ?? 0, icon: 'bi-x-circle', color: '#d32f2f', bgColor: '#ffebee' },
+    ];
+  }
 
-                this.summaryChips = [
-                    { label: 'Pendientes', value: map.get(1) ?? 0, icon: 'bi-clock-history', color: '#ed6c02', bgColor: '#fff3e0' },
-                    { label: 'Aceptadas', value: map.get(2) ?? 0, icon: 'bi-check-circle', color: '#1B7505', bgColor: '#e8f5e9' },
-                    { label: 'Rechazadas', value: map.get(3) ?? 0, icon: 'bi-x-circle', color: '#d32f2f', bgColor: '#ffebee' },
-                    { label: 'Finalizadas', value: map.get(5) ?? 0, icon: 'bi-flag', color: '#424242', bgColor: '#f5f5f5' },
-                ];
+  // --- Status helpers ---
 
-                this.cdr.detectChanges();
-            },
-            error: () => { /* silent */ }
-        });
+  getStatusName(statusId: number): string {
+    const found = this.requestStatuses.find(s => s.idReinforcementRequestStatus === statusId);
+    return found?.nameState ?? 'Desconocido';
+  }
+
+  getStatusBadgeClass(statusId: number): string {
+    switch (statusId) {
+      case 1: return 'bg-warning text-dark';  // Pendiente
+      case 2: return 'bg-success';             // Aprobada
+      case 3: return 'bg-danger';              // Rechazada
+      default: return 'bg-secondary';
     }
+  }
 
-    // --- Modal actions ---
+  isPendingStatus(statusId: number): boolean {
+    return statusId === 1;
+  }
 
-    viewDetail(row: TeacherRequestRowDTO): void {
-        this.selectedRequest = row;
-        this.showDetailModal = true;
-    }
+  getDayName(day: number): string {
+    return this.dayNames[day] ?? `Día ${day}`;
+  }
 
-    closeDetailModal(): void {
-        this.showDetailModal = false;
-        this.selectedRequest = null;
-    }
+  // --- Modal actions ---
 
-    confirmAccept(row: TeacherRequestRowDTO): void {
-        this.selectedRequest = row;
-        this.showAcceptModal = true;
-    }
+  viewDetail(row: ReinforcementRequestDTO): void {
+    this.selectedRequest = row;
+    this.showDetailModal = true;
+  }
 
-    closeAcceptModal(): void {
-        this.showAcceptModal = false;
-        this.selectedRequest = null;
-    }
+  closeDetailModal(): void {
+    this.showDetailModal = false;
+    this.selectedRequest = null;
+  }
 
-    confirmReject(row: TeacherRequestRowDTO): void {
-        this.selectedRequest = row;
-        this.showRejectModal = true;
-    }
+  /** Transition from detail modal → accept confirm (keeps selectedRequest) */
+  openConfirmAccept(): void {
+    this.showDetailModal = false;
+    this.showAcceptModal = true;
+  }
 
-    closeRejectModal(): void {
-        this.showRejectModal = false;
-        this.selectedRequest = null;
-    }
+  /** Transition from detail modal → reject confirm (keeps selectedRequest) */
+  openConfirmReject(): void {
+    this.showDetailModal = false;
+    this.showRejectModal = true;
+  }
 
-    doUpdateStatus(statusId: number): void {
-        if (!this.selectedRequest) return;
+  confirmAccept(row: ReinforcementRequestDTO): void {
+    this.selectedRequest = row;
+    this.showAcceptModal = true;
+  }
 
-        this.updating = true;
-        this.errorMessage = null;
+  closeAcceptModal(): void {
+    this.showAcceptModal = false;
+    this.selectedRequest = null;
+  }
 
-        this.svc.updateRequestStatus(this.selectedRequest.requestId, statusId).subscribe({
-            next: (response) => {
-                this.updating = false;
-                const action = statusId === 2 ? 'aceptada' : 'rechazada';
-                this.successMessage = response.message || `Solicitud ${action} exitosamente`;
-                this.closeAcceptModal();
-                this.closeRejectModal();
-                this.load();
-                this.loadSummary();
-                this.cdr.detectChanges();
+  confirmReject(row: ReinforcementRequestDTO): void {
+    this.selectedRequest = row;
+    this.showRejectModal = true;
+  }
 
-                setTimeout(() => {
-                    this.successMessage = null;
-                    this.cdr.detectChanges();
-                }, 5000);
-            },
-            error: (err) => {
-                this.updating = false;
-                this.closeAcceptModal();
-                this.closeRejectModal();
-                this.errorMessage = err?.message || 'Error al actualizar el estado';
-                this.cdr.detectChanges();
-            }
-        });
-    }
+  closeRejectModal(): void {
+    this.showRejectModal = false;
+    this.selectedRequest = null;
+  }
 
-    canRespond(status: string): boolean {
-        return this.isPending(status);
-    }
+  doUpdateStatus(statusId: number): void {
+    if (!this.selectedRequest) return;
 
-    // --- Helpers ---
+    this.updating = true;
+    this.errorMessage = null;
 
-    formatDate(dt: string): string {
-        const d = new Date(dt);
-        return isNaN(d.getTime()) ? dt : d.toLocaleDateString();
-    }
+    this.svc.updateRequestStatus(this.selectedRequest.reinforcementRequestId, statusId).subscribe({
+      next: (updated) => {
+        this.updating = false;
+        const action = statusId === 2 ? 'aprobada' : 'rechazada';
+        this.successMessage = `Solicitud #${updated.reinforcementRequestId} ${action} exitosamente`;
+        this.closeAcceptModal();
+        this.closeRejectModal();
+        this.load();
+        this.cdr.detectChanges();
 
-    formatTime(dt: string): string {
-        const d = new Date(dt);
-        return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 5000);
+      },
+      error: (err) => {
+        this.updating = false;
+        this.closeAcceptModal();
+        this.closeRejectModal();
+        this.errorMessage = err?.message || 'Error al actualizar el estado';
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
-    private norm(s: string): string { return (s || '').toLowerCase(); }
+  // --- Helpers ---
 
-    isPending(status: string): boolean { return this.norm(status).includes('pend'); }
-    isAccepted(status: string): boolean { return this.norm(status).includes('acept'); }
-    isRejected(status: string): boolean { return this.norm(status).includes('rech'); }
-    isCancelled(status: string): boolean { return this.norm(status).includes('cancel'); }
-    isFinished(status: string): boolean { return this.norm(status).includes('final'); }
+  formatDate(dt: string): string {
+    const d = new Date(dt);
+    return isNaN(d.getTime()) ? dt : d.toLocaleDateString();
+  }
+
+  formatTime(dt: string): string {
+    const d = new Date(dt);
+    return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 }

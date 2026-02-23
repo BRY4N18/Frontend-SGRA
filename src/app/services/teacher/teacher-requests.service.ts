@@ -6,7 +6,9 @@ import { environment } from '../../environments/environment';
 import {
     TeacherRequestsPageDTO,
     StatusSummaryDTO,
-    UpdateStatusResponseDTO
+    UpdateStatusResponseDTO,
+    ReinforcementRequestStatusDTO,
+    ReinforcementRequestDTO
 } from '../../models/teacher/teacher-request.model';
 
 function buildHttpParams(params: Record<string, unknown>): HttpParams {
@@ -47,22 +49,38 @@ export class TeacherRequestsService {
         return this.http.get<TeacherRequestsPageDTO>(
             `${this.baseUrl}/teacher/requests`,
             { ...this.httpOptions, params }
-        ).pipe(catchError(this.handleError));
+        ).pipe(catchError((err) => this.handleError(err)));
     }
 
     getRequestsSummary(): Observable<StatusSummaryDTO[]> {
         return this.http.get<StatusSummaryDTO[]>(
             `${this.baseUrl}/teacher/requests/summary`,
             this.httpOptions
-        ).pipe(catchError(this.handleError));
+        ).pipe(catchError((err) => this.handleError(err)));
     }
 
-    updateRequestStatus(requestId: number, statusId: number): Observable<UpdateStatusResponseDTO> {
-        return this.http.put<UpdateStatusResponseDTO>(
-            `${this.baseUrl}/teacher/requests/${requestId}/status`,
-            { statusId },
+    updateRequestStatus(requestId: number, statusId: number): Observable<ReinforcementRequestDTO> {
+        const url = `${this.baseUrl}/reinforcement/reinforcement-requests/${requestId}/status/${statusId}`;
+        console.log('[TeacherRequestsService] Updating status (PATCH):', url);
+        return this.http.patch<ReinforcementRequestDTO>(
+            url,
+            {},
             this.httpOptions
-        ).pipe(catchError(this.handleError));
+        ).pipe(catchError((err) => this.handleError(err)));
+    }
+
+    getRequestStatuses(): Observable<ReinforcementRequestStatusDTO[]> {
+        return this.http.get<ReinforcementRequestStatusDTO[]>(
+            `${this.baseUrl}/reinforcement/reinforcement-request-statuses`,
+            this.httpOptions
+        ).pipe(catchError((err) => this.handleError(err)));
+    }
+
+    getRequestsByStatus(statusId: number): Observable<ReinforcementRequestDTO[]> {
+        return this.http.get<ReinforcementRequestDTO[]>(
+            `${this.baseUrl}/reinforcement/reinforcement-requests/by-status/${statusId}`,
+            this.httpOptions
+        ).pipe(catchError((err) => this.handleError(err)));
     }
 
     private handleError(error: HttpErrorResponse): Observable<never> {

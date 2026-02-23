@@ -10,10 +10,10 @@
     "Frontend": {
       "projectType": "application",
       "schematics": {
-      "@schematics/angular:component": {
-      "type": "component"
-      }
-    },
+        "@schematics/angular:component": {
+          "type": "component"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -66,7 +66,8 @@
               "buildTarget": "Frontend:build:production"
             },
             "development": {
-              "buildTarget": "Frontend:build:development"
+              "buildTarget": "Frontend:build:development",
+              "proxyConfig": "proxy.conf.js"
             }
           },
           "defaultConfiguration": "development"

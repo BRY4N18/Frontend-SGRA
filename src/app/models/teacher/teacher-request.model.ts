@@ -33,3 +33,25 @@ export interface UpdateStatusResponseDTO {
     status: string;
     message: string;
 }
+
+export interface ReinforcementRequestStatusDTO {
+    idReinforcementRequestStatus: number;
+    nameState: string;
+    state: boolean;
+}
+
+export interface ReinforcementRequestDTO {
+    reinforcementRequestId: number;
+    requestedDay: number;
+    reason: string;
+    fileUrl: string;
+    createdAt: string;
+    studentId: number;
+    teacherId: number;
+    topicId: number;
+    timeSlotId: number;
+    modalityId: number;
+    sessionTypeId: number;
+    requestStatusId: number;
+    periodId: number;
+}
