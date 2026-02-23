@@ -37,7 +37,7 @@ export const routes: Routes = [
         path: 'roles',
         loadComponent: () => import('./components/administration/admin-role-management/admin-role-management.component').then(m => m.AdminRoleManagementComponent)
       },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
   {
@@ -52,6 +52,10 @@ export const routes: Routes = [
       {
         path: 'availability',
         loadComponent: () => import('./components/teacher/teacher-availability/teacher-availability.component').then(m => m.TeacherAvailabilityComponent)
+      },
+      {
+        path: 'requests',
+        loadComponent: () => import('./components/teacher/teacher-requests/teacher-requests.component').then(m => m.TeacherRequestsComponent)
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
@@ -108,7 +112,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/coordination/coord-physicalspaces/coord-physicalspaces.component').then(m => m.CoordPhysicalspacesComponent)
       },
 
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
 
 

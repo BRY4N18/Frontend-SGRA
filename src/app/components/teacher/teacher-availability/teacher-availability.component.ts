@@ -10,7 +10,8 @@ import {
   SlotStatus,
   ScheduleSection,
   SectionInfo,
-  TeacherAvailabilityItem
+  TeacherAvailabilityItem,
+  TimeSlotDTO
 } from '../../../models/teacher';
 import { ClassScheduleDetail } from '../../../models/teacher';
 
@@ -73,26 +74,7 @@ export class TeacherAvailabilityComponent implements OnInit {
     { dayId: 7, dayName: 'Domingo', dayFullName: 'Dom' }
   ];
 
-  private readonly defaultTimeBlocks: TimeBlock[] = [
-    // Matutina: 7:30 - 12:30
-    { timeBlockId: 1, startTime: '07:30', endTime: '08:30', section: 'matutina' },
-    { timeBlockId: 2, startTime: '08:30', endTime: '09:30', section: 'matutina' },
-    { timeBlockId: 3, startTime: '09:30', endTime: '10:30', section: 'matutina' },
-    { timeBlockId: 4, startTime: '10:30', endTime: '11:30', section: 'matutina' },
-    { timeBlockId: 5, startTime: '11:30', endTime: '12:30', section: 'matutina' },
-    // Vespertina: 12:30 - 17:30
-    { timeBlockId: 6, startTime: '12:30', endTime: '13:30', section: 'vespertina' },
-    { timeBlockId: 7, startTime: '13:30', endTime: '14:30', section: 'vespertina' },
-    { timeBlockId: 8, startTime: '14:30', endTime: '15:30', section: 'vespertina' },
-    { timeBlockId: 9, startTime: '15:30', endTime: '16:30', section: 'vespertina' },
-    { timeBlockId: 10, startTime: '16:30', endTime: '17:30', section: 'vespertina' },
-    // Nocturna: 19:00 - 00:00
-    { timeBlockId: 11, startTime: '19:00', endTime: '20:00', section: 'nocturna' },
-    { timeBlockId: 12, startTime: '20:00', endTime: '21:00', section: 'nocturna' },
-    { timeBlockId: 13, startTime: '21:00', endTime: '22:00', section: 'nocturna' },
-    { timeBlockId: 14, startTime: '22:00', endTime: '23:00', section: 'nocturna' },
-    { timeBlockId: 15, startTime: '23:00', endTime: '00:00', section: 'nocturna' },
-  ];
+  // Time blocks are loaded from the API (no longer hardcoded)
 
   /** Day name mapping */
   private readonly dayNames: Record<number, string> = {
@@ -110,12 +92,15 @@ export class TeacherAvailabilityComponent implements OnInit {
     return this.dayNames[day] ?? `Día ${day}`;
   }
 
-  /** Initialize the grid with default days and time blocks */
+  /** Initialize the grid with days (time blocks loaded from API) */
   private initGrid(): void {
     this.days = [...this.defaultDays];
-    this.timeBlocks = [...this.defaultTimeBlocks];
     this.grid.clear();
+  }
 
+  /** Build the grid once time blocks are loaded */
+  private buildGrid(): void {
+    this.grid.clear();
     for (const day of this.days) {
       for (const block of this.timeBlocks) {
         this.grid.set(this.key(day.dayId, block.timeBlockId), 'empty');
@@ -123,7 +108,35 @@ export class TeacherAvailabilityComponent implements OnInit {
     }
   }
 
-  /** Load class schedules and saved availability in parallel */
+  /** Map API TimeSlotDTO[] → TimeBlock[] with auto-detected section */
+  private mapTimeSlots(slots: TimeSlotDTO[]): TimeBlock[] {
+    return slots.map(s => {
+      const start = this.normalizeTime(s.startTime);
+      return {
+        timeBlockId: s.timeSlotId,
+        startTime: start,
+        endTime: this.normalizeTime(s.endTime),
+        section: this.detectSection(start)
+      } as TimeBlock;
+    });
+  }
+
+  /** Detect section from a HH:mm start time */
+  private detectSection(startTime: string): ScheduleSection {
+    const mins = this.timeToMinutes(startTime);
+    if (mins < this.timeToMinutes('12:30')) return 'matutina';
+    if (mins < this.timeToMinutes('17:30')) return 'vespertina';
+    return 'nocturna';
+  }
+
+  /** Normalize time to HH:mm (strip seconds if present) */
+  private normalizeTime(t: string): string {
+    if (!t) return '';
+    const parts = t.split(':');
+    return `${parts[0].padStart(2, '0')}:${parts[1]}`;
+  }
+
+  /** Load time slots, then schedules + availability in parallel */
   private loadData(): void {
     const userId = this.authService.currentUser()?.userId;
     if (!userId) {
@@ -134,19 +147,33 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.loading = true;
     this.errorMessage = null;
 
-    forkJoin({
-      schedules: this.scheduleSvc.getSchedulesByTeacherId(userId),
-      availability: this.availabilitySvc.getAvailabilityByUser(userId)
-    }).subscribe({
-      next: ({ schedules, availability }) => {
-        this.classSchedules = schedules;
-        this.applySchedulesToGrid();
-        this.applyAvailabilityToGrid(availability);
-        this.loading = false;
-        this.cdr.detectChanges();
+    // Step 1: Load time slots from API
+    this.availabilitySvc.getTimeSlots().subscribe({
+      next: (slotsDTO) => {
+        this.timeBlocks = this.mapTimeSlots(slotsDTO);
+        this.buildGrid();
+
+        // Step 2: Load schedules + saved availability in parallel
+        forkJoin({
+          schedules: this.scheduleSvc.getSchedulesByTeacherId(userId),
+          availability: this.availabilitySvc.getAvailabilityByUser(userId)
+        }).subscribe({
+          next: ({ schedules, availability }) => {
+            this.classSchedules = schedules;
+            this.applySchedulesToGrid();
+            this.applyAvailabilityToGrid(availability);
+            this.loading = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.errorMessage = err.message;
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
+        });
       },
       error: (err) => {
-        this.errorMessage = err.message;
+        this.errorMessage = 'Error al cargar los bloques horarios: ' + err.message;
         this.loading = false;
         this.cdr.detectChanges();
       }
@@ -164,15 +191,7 @@ export class TeacherAvailabilityComponent implements OnInit {
     }
   }
 
-  /** Normalize time string to HH:mm for comparison */
-  private normalizeTime(time: string): string {
-    if (!time) return '';
-    // Handle "07:30:00" -> "07:30" and "7:30" -> "07:30"
-    const parts = time.split(':');
-    const hh = parts[0]?.padStart(2, '0') ?? '00';
-    const mm = parts[1]?.padStart(2, '0') ?? '00';
-    return `${hh}:${mm}`;
-  }
+
 
   /** Convert "HH:mm" to total minutes for range comparison */
   private timeToMinutes(time: string): number {
@@ -346,6 +365,8 @@ export class TeacherAvailabilityComponent implements OnInit {
         slots.push({ dayOfWeek, timeSlotId });
       }
     });
+
+    console.log(slots);
 
     this.availabilitySvc.saveAvailability({ userId: userId, periodId, slots }).subscribe({
       next: (res) => {

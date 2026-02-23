@@ -1,58 +1,63 @@
 <div class="container-fluid">
   <!-- Header -->
   <div class="mb-4">
-    <h3 class="mb-1">Disponibilidad Horaria</h3>
-    <p class="text-muted mb-0">Selecciona los bloques horarios en los que estás disponible para refuerzos académicos</p>
+    <div class="d-flex align-items-center gap-3">
+      <div class="header-icon">
+        <i class="bi bi-calendar2-week"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold text-dark mb-0">Disponibilidad Horaria</h3>
+        <p class="text-muted mb-0">Selecciona los bloques horarios en los que estás disponible para refuerzos académicos
+        </p>
+      </div>
+    </div>
   </div>
 
   <!-- Error Alert -->
   @if (errorMessage) {
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="bi bi-exclamation-triangle-fill me-2"></i>
-      {{ errorMessage }}
-      <button type="button" class="btn-close" (click)="errorMessage = null"></button>
-    </div>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+  </div>
   }
 
   <!-- Success Alert -->
   @if (successMessage) {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="bi bi-check-circle-fill me-2"></i>
-      {{ successMessage }}
-      <button type="button" class="btn-close" (click)="successMessage = null"></button>
-    </div>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = null"></button>
+  </div>
   }
 
   <!-- Loading State -->
   @if (loading) {
-    <div class="card border-0 shadow-sm">
-      <div class="card-body text-center py-5">
-        <div class="spinner-border text-success mb-3" role="status"></div>
-        <p class="text-muted mb-0">Cargando disponibilidad...</p>
-      </div>
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5">
+      <div class="spinner-border text-success mb-3" role="status"></div>
+      <p class="text-muted mb-0">Cargando disponibilidad...</p>
     </div>
+  </div>
   }
 
   @if (!loading) {
-    <!-- Section Tabs -->
-    <ul class="nav nav-pills mb-4 gap-2">
-      @for (section of sections; track section.key) {
-        <li class="nav-item">
-          <button type="button"
-                  class="btn section-tab"
-                  [class.active]="activeSection === section.key"
-                  [ngClass]="section.colorClass"
-                  (click)="setActiveSection(section.key)">
-            <i class="bi {{ section.icon }} me-2"></i>
-            {{ section.label }}
-            <span class="badge bg-white text-dark ms-2">{{ countTotalSectionSlots(section.key) }}</span>
-          </button>
-        </li>
-      }
-    </ul>
+  <!-- Section Tabs -->
+  <ul class="nav nav-pills mb-4 gap-2">
+    @for (section of sections; track section.key) {
+    <li class="nav-item">
+      <button type="button" class="btn section-tab" [class.active]="activeSection === section.key"
+        [ngClass]="section.colorClass" (click)="setActiveSection(section.key)">
+        <i class="bi {{ section.icon }} me-2"></i>
+        {{ section.label }}
+        <span class="badge bg-white text-dark ms-2">{{ countTotalSectionSlots(section.key) }}</span>
+      </button>
+    </li>
+    }
+  </ul>
 
-    <!-- Section Info -->
-    <!--
+  <!-- Section Info -->
+  <!--
     @for (section of sections; track section.key) {
       @if (activeSection === section.key) {
         <div class="alert section-alert mb-4 border-0" [ngClass]="section.colorClass + '-bg'">
@@ -62,97 +67,159 @@
       }
     }-->
 
-    <!-- Availability Grid -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body p-4">
-        <div class="grid-wrapper">
-          <table class="availability-grid">
-            <thead>
-              <tr>
-                <th class="time-header"></th>
-                @for (day of days; track day.dayId) {
-                  <th class="day-header">
-                    <div class="day-header-content">
-                      <span class="day-name">{{ day.dayName }}</span>
-                      <span class="day-slots">{{ countSlotsInSection(day.dayId, activeSection) }} slots</span>
-                    </div>
-                  </th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (block of filteredTimeBlocks; track block.timeBlockId) {
-                <tr>
-                  <td class="time-cell">
-                    <span class="time-start">{{ block.startTime }}</span>
-                    <span class="time-end">{{ block.endTime }}</span>
-                  </td>
-                  @for (day of days; track day.dayId) {
-                    <td class="slot-cell"
-                        [class.available]="getStatus(day.dayId, block.timeBlockId) === 'available'"
-                        [class.conflict]="getStatus(day.dayId, block.timeBlockId) === 'conflict'"
-                        [class.empty]="getStatus(day.dayId, block.timeBlockId) === 'empty'"
-                        [class.scheduled]="getStatus(day.dayId, block.timeBlockId) === 'scheduled'"
-                        [title]="getScheduleTooltip(day.dayId, block.timeBlockId)"
-                        (click)="toggleSlot(day.dayId, block.timeBlockId)">
-                      @if (getStatus(day.dayId, block.timeBlockId) === 'available') {
-                        <i class="bi bi-check-lg slot-icon"></i>
-                      }
-                      @if (getStatus(day.dayId, block.timeBlockId) === 'conflict') {
-                        <i class="bi bi-x-lg slot-icon"></i>
-                      }
-                      @if (getStatus(day.dayId, block.timeBlockId) === 'scheduled') {
-                        <span class="scheduled-label">{{ getScheduleInfo(day.dayId, block.timeBlockId)?.subjectName }}</span>
-                      }
-                    </td>
-                  }
-                </tr>
+  <!-- Availability Grid -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="grid-wrapper">
+        <table class="availability-grid">
+          <thead>
+            <tr>
+              <th class="time-header"></th>
+              @for (day of days; track day.dayId) {
+              <th class="day-header">
+                <div class="day-header-content">
+                  <span class="day-name">{{ day.dayName }}</span>
+                  <span class="day-slots">{{ countSlotsInSection(day.dayId, activeSection) }} slots</span>
+                </div>
+              </th>
               }
-            </tbody>
-          </table>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            @for (block of filteredTimeBlocks; track block.timeBlockId) {
+            <tr>
+              <td class="time-cell">
+                <span class="time-start">{{ block.startTime }}</span>
+                <span class="time-end">{{ block.endTime }}</span>
+              </td>
+              @for (day of days; track day.dayId) {
+              <td class="slot-cell" [class.available]="getStatus(day.dayId, block.timeBlockId) === 'available'"
+                [class.conflict]="getStatus(day.dayId, block.timeBlockId) === 'conflict'"
+                [class.empty]="getStatus(day.dayId, block.timeBlockId) === 'empty'"
+                [class.scheduled]="getStatus(day.dayId, block.timeBlockId) === 'scheduled'"
+                [title]="getScheduleTooltip(day.dayId, block.timeBlockId)"
+                (click)="toggleSlot(day.dayId, block.timeBlockId)">
+                @if (getStatus(day.dayId, block.timeBlockId) === 'available') {
+                <i class="bi bi-check-lg slot-icon"></i>
+                }
+                @if (getStatus(day.dayId, block.timeBlockId) === 'conflict') {
+                <i class="bi bi-x-lg slot-icon"></i>
+                }
+                @if (getStatus(day.dayId, block.timeBlockId) === 'scheduled') {
+                <span class="scheduled-label">{{ getScheduleInfo(day.dayId, block.timeBlockId)?.subjectName }}</span>
+                }
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
-        <!-- Legend -->
-        <div class="d-flex gap-4 mt-3 pt-3 border-top">
-          <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot available"></span>
-            <small class="text-muted">Disponible</small>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot conflict"></span>
-            <small class="text-muted">Ocupado / Conflicto</small>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot empty"></span>
-            <small class="text-muted">Sin seleccionar</small>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot scheduled"></span>
-            <small class="text-muted">Clase asignada</small>
-          </div>
+      <!-- Legend -->
+      <div class="d-flex gap-4 mt-3 pt-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <span class="legend-dot available"></span>
+          <small class="text-muted">Disponible</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="legend-dot conflict"></span>
+          <small class="text-muted">Ocupado / Conflicto</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="legend-dot empty"></span>
+          <small class="text-muted">Sin seleccionar</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="legend-dot scheduled"></span>
+          <small class="text-muted">Clase asignada</small>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Action Buttons -->
-    <div class="d-flex gap-2 mb-4">
-      <button type="button" class="btn btn-success" (click)="onSave()" [disabled]="saving">
-        @if (saving) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          Guardando...
-        } @else {
-          <i class="bi bi-check-lg me-2"></i>
-          Guardar disponibilidad
-        }
-      </button>
-      <button type="button" class="btn btn-outline-secondary" (click)="clearAll()" [disabled]="saving">
-        <i class="bi bi-arrow-counterclockwise me-2"></i>
-        Limpiar todo
-      </button>
-      <button type="button" class="btn btn-outline-secondary" (click)="reloadGrid()" [disabled]="saving">
-        <i class="bi bi-arrow-repeat me-2"></i>
-        Recargar
-      </button>
-    </div>
+  <!-- Action Buttons -->
+  <div class="d-flex gap-2 mb-4">
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmSaveModal"
+      [disabled]="saving">
+      @if (saving) {
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Guardando...
+      } @else {
+      <i class="bi bi-check-lg me-2"></i>
+      Guardar disponibilidad
+      }
+    </button>
+    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#confirmClearModal"
+      [disabled]="saving">
+      <i class="bi bi-arrow-counterclockwise me-2"></i>
+      Limpiar todo
+    </button>
+    <button type="button" class="btn btn-outline-secondary" (click)="reloadGrid()" [disabled]="saving">
+      <i class="bi bi-arrow-repeat me-2"></i>
+      Recargar
+    </button>
+  </div>
   }
+
+</div>
+
+<!-- Modal: Confirmar Guardar -->
+<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center"
+            style="width: 48px; height: 48px; font-size: 1.3rem;">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <h5 class="modal-title fw-bold" id="confirmSaveLabel">Confirmar guardado</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p class="text-muted mb-0">
+          ¿Estás seguro de que deseas guardar tu disponibilidad horaria? Los bloques seleccionados serán enviados al
+          sistema.
+        </p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" (click)="onSave()">
+          <i class="bi bi-check-lg me-1"></i> Sí, guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar Limpiar -->
+<div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <div class="d-flex align-items-center gap-3">
+          <div class="rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center"
+            style="width: 48px; height: 48px; font-size: 1.3rem;">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <h5 class="modal-title fw-bold" id="confirmClearLabel">Confirmar limpieza</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p class="text-muted mb-0">
+          ¿Estás seguro de que deseas limpiar toda tu selección? Se eliminarán todos los bloques marcados como
+          disponibles.
+        </p>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal" (click)="clearAll()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Sí, limpiar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

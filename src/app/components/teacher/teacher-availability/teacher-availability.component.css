@@ -1,4 +1,22 @@
-/* ── Grid wrapper ── */
+:host {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Header ── */
+.header-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 14px;
+  background-color: #1B7505;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  border: 1px solid #145904;
+}
+
 .grid-wrapper {
   overflow-x: auto;
 }
@@ -48,11 +66,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #1a237e;
+  background-color: #1B7505;
   color: #fff;
   border-radius: 8px;
   padding: 10px 8px;
   min-height: 56px;
+  border: 1px solid #145904;
 }
 
 .day-name {
@@ -78,27 +97,31 @@
 }
 
 .slot-cell.empty {
-  background-color: #e9ecef;
+  background-color: #f5f5f5;
+  border: 1px solid #e0e0e0;
 }
 
 .slot-cell.empty:hover {
-  background-color: #d4edda;
-  box-shadow: 0 0 0 2px #28a74580;
+  background-color: #e8f5e9;
+  border-color: #1B7505;
+  box-shadow: 0 0 0 2px rgba(27, 117, 5, 0.2);
 }
 
 .slot-cell.available {
-  background-color: #28a745;
+  background-color: #1B7505;
   color: #fff;
+  border: 1px solid #145904;
 }
 
 .slot-cell.available:hover {
-  background-color: #218838;
+  background-color: #145904;
 }
 
 .slot-cell.conflict {
   background-color: #9c27b0;
   color: #fff;
   cursor: not-allowed;
+  border: 1px solid #7b1fa2;
 }
 
 .slot-cell.scheduled {
@@ -106,6 +129,7 @@
   color: #fff;
   cursor: not-allowed;
   font-size: 0.7rem;
+  border: 1px solid #1a2327;
 }
 
 .slot-cell.scheduled:hover {
@@ -128,59 +152,33 @@
   font-weight: 700;
 }
 
-/* ── Quick day buttons ── */
-.btn-day {
-  background-color: #e8eaf6;
-  color: #1a237e;
-  border: 1px solid #c5cae9;
-  border-radius: 20px;
-  padding: 4px 14px;
-  font-weight: 600;
-  font-size: 0.82rem;
-  transition: all 0.2s ease;
-}
-
-.btn-day:hover {
-  background-color: #1a237e;
-  color: #fff;
-  border-color: #1a237e;
-}
-
-.btn-day.active {
-  background-color: #1a237e;
-  color: #fff;
-  border-color: #1a237e;
-}
-
-/* ── Block select ── */
-.select-block {
-  width: 200px;
-  font-size: 0.85rem;
-}
-
 /* ── Legend dots ── */
 .legend-dot {
   display: inline-block;
   width: 16px;
   height: 16px;
   border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .legend-dot.available {
-  background-color: #28a745;
+  background-color: #1B7505;
+  border-color: #145904;
 }
 
 .legend-dot.conflict {
   background-color: #9c27b0;
+  border-color: #7b1fa2;
 }
 
 .legend-dot.empty {
-  background-color: #e9ecef;
+  background-color: #f5f5f5;
   border: 1px solid #ced4da;
 }
 
 .legend-dot.scheduled {
   background-color: #263238;
+  border-color: #1a2327;
 }
 
 /* ── Section tabs ── */
@@ -189,9 +187,9 @@
   padding: 10px 20px;
   font-weight: 600;
   font-size: 0.9rem;
-  border: 2px solid transparent;
+  border: 2px solid #e0e0e0;
   color: #555;
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
   transition: all 0.2s ease;
 }
 
@@ -210,6 +208,7 @@
 .section-tab.section-matutina:not(.active):hover {
   background-color: #fff3e0;
   color: #e65100;
+  border-color: #ffcc02;
 }
 
 /* Vespertina - Azul/Sol */
@@ -222,6 +221,7 @@
 .section-tab.section-vespertina:not(.active):hover {
   background-color: #e3f2fd;
   color: #0d47a1;
+  border-color: #90caf9;
 }
 
 /* Nocturna - Índigo/Luna */
@@ -234,6 +234,7 @@
 .section-tab.section-nocturna:not(.active):hover {
   background-color: #e8eaf6;
   color: #1a237e;
+  border-color: #9fa8da;
 }
 
 /* ── Section alert banners ── */

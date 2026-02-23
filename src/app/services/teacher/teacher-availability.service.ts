@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { SaveAvailabilityPayload, SaveAvailabilityResponse, TeacherAvailabilityItem } from '../../models/teacher';
+import { SaveAvailabilityPayload, SaveAvailabilityResponse, TeacherAvailabilityItem, TimeSlotDTO } from '../../models/teacher';
 
 @Injectable({ providedIn: 'root' })
 export class TeacherAvailabilityService {
@@ -11,6 +11,17 @@ export class TeacherAvailabilityService {
     private readonly httpOptions = { withCredentials: true };
 
     constructor(private http: HttpClient) { }
+
+    /**
+     * GET /api/academic/time-slots
+     * Returns all configured time slots from the backend.
+     */
+    getTimeSlots(): Observable<TimeSlotDTO[]> {
+        return this.http.get<TimeSlotDTO[]>(
+            `${this.baseUrl}/academic/time-slots`,
+            this.httpOptions
+        ).pipe(catchError(this.handleError));
+    }
 
     /**
      * GET /api/reinforcement/teacher-availabilities/by-user/{userId}

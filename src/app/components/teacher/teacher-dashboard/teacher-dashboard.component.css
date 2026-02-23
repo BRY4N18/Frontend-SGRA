@@ -1,7 +1,89 @@
-.card {
-  transition: transform 0.2s ease-in-out;
+/* ── Typography ── */
+:host {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.card:hover {
+/* ── Header ── */
+.header-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background-color: #1B7505;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  border: 1px solid #145904;
+}
+
+/* ── Stat Cards ── */
+.stat-card {
+  border-radius: 14px;
+  border: 1px solid #e0e0e0 !important;
+  border-left: 4px solid #1B7505 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 12px;
+  background-color: #e8f5e9;
+  color: #1B7505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  border: 1px solid #c8e6c9;
+}
+
+.stat-value {
+  color: #1B7505;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+.stat-subtitle {
+  font-size: 0.75rem;
+}
+
+/* ── Quick Access Cards ── */
+.quick-card {
+  border-radius: 14px;
+  border: 1px solid #e0e0e0 !important;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+  border-color: #1B7505 !important;
+}
+
+.quick-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background-color: #1B7505;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 1px solid #145904;
 }

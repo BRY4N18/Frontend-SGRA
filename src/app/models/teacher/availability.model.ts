@@ -57,3 +57,11 @@ export interface SaveAvailabilityPayload {
 export interface SaveAvailabilityResponse {
   message: string;
 }
+
+/** DTO returned by GET /api/academic/time-slots */
+export interface TimeSlotDTO {
+  timeSlotId: number;
+  startTime: string;   // e.g. "07:30:00"
+  endTime: string;     // e.g. "08:30:00"
+  state?: boolean;
+}
