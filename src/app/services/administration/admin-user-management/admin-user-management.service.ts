@@ -25,8 +25,8 @@ export class AdminUserManagementService {
       params = params.set('date',date);
     }
 
-    if(state){
-      params = params.set('state',state);
+    if(state !== undefined && state !== null) {
+      params = params.set('state', state);
     }
 
     return this.http.get<GUser[]>(`${this.apiUrl}/security/user-managements/list-userG`,{ params });
