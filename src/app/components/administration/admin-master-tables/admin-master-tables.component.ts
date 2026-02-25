@@ -22,6 +22,7 @@ export class AdminMasterTablesComponent implements OnInit{
   selectedRecordToEdit: GCatalogRecord | null = null;
   catalogs: GCatalog[] = [];
   metrics: GCatalogMetrics = { totalCatalogs: 0, activeRecords: 0, totalRecords: 0 };
+  currentFilter: string = '';
 
   currentRecords: GCatalogRecord[] = [];
   selectedCatalogSchema: string | null = null;
@@ -35,7 +36,6 @@ export class AdminMasterTablesComponent implements OnInit{
 
   ngOnInit(): void {
     this.loadGlobalMetrics();
-    //this.catalogService.getMetrics().subscribe(data => this.metrics = data);
 
     this.catalogService.getCatalogs().subscribe(data => {
       this.catalogs = data;
@@ -46,6 +46,22 @@ export class AdminMasterTablesComponent implements OnInit{
       if (this.catalogs.length > 0) {
         this.onCatalogSelected(this.catalogs[0].pesquematabla);
       }
+    });
+  }
+
+  onSearch(text: string): void {
+    this.currentFilter = text;
+    if (this.selectedCatalogSchema) {
+      this.loadRecords(this.selectedCatalogSchema, this.currentFilter);
+    }
+  }
+
+  loadRecords(schema: string, filter: string): void {
+    this.isLoadingRecords = true;
+    this.catalogService.getRecordsByCatalog(schema, filter).subscribe(data => {
+      this.currentRecords = data;
+      this.isLoadingRecords = false;
+      this.cdr.detectChanges();
     });
   }
 
@@ -64,10 +80,13 @@ export class AdminMasterTablesComponent implements OnInit{
 
     this.selectedCatalogSchema = pschematable;
     this.currentRecords = [];
+    this.currentFilter = '';
     this.isLoadingRecords = true;
 
     const found = this.catalogs.find(c => c.pesquematabla === pschematable);
     this.selectedCatalogName = found ? found.pnombre : 'Catálogo';
+
+    this.loadRecords(pschematable, '');
 
     this.catalogService.getRecordsByCatalog(pschematable).subscribe(data => {
       this.currentRecords = data;

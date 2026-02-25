@@ -25,7 +25,8 @@
         [catalogName]="selectedCatalogName"
         [isLoading]="isLoadingRecords"
         (editRecord)="prepareEdit($event)"
-        (createRecord)="prepareCreate()">
+        (createRecord)="prepareCreate()"
+        (search)="onSearch($event)">
       </app-admin-master-table-list>
     </div>
 

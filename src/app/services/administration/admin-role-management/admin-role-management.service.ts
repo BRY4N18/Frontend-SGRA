@@ -13,10 +13,15 @@ export class AdminRoleManagementService {
   private http = inject(HttpClient);
   private readonly apiUrl = environment.apiUrl;
 
-  getRoles(filter: string = '', state: boolean = true): Observable<GRole[]> {
-    let params = new HttpParams().set('state',state);
-    if(filter) params = params.set('filter',filter);
-
+  getRoles(filter: string = '', state?: boolean): Observable<GRole[]> {
+    let params = new HttpParams();
+    if(filter){
+      params = params.set('filter',filter);
+    }
+    if(state !== undefined && state !== null) {
+      params = params.set('state', state);
+    }
+    console.log(params);
     return this.http.get<GRole[]>(`${this.apiUrl}/security/role-managements/list-roles`,{ params });
   }
 
