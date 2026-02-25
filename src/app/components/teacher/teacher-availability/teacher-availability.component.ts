@@ -371,7 +371,7 @@ export class TeacherAvailabilityComponent implements OnInit {
     this.availabilitySvc.saveAvailability({ userId: userId, periodId, slots }).subscribe({
       next: (res) => {
         this.saving = false;
-        this.successMessage = res.message || `Se guardaron ${slots.length} bloques de disponibilidad.`;
+        this.successMessage = res.message || `Se guardado correctamente.`;
         this.cdr.detectChanges();
 
         setTimeout(() => {
