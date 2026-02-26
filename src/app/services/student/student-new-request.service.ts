@@ -10,7 +10,8 @@ import {
   ModalityItem,
   SessionTypeItem,
   TimeSlotItem,
-  AvailableTimeSlotItem
+  AvailableTimeSlotItem,
+  ClassmateItem
 } from '../../models/student/catalog.model';
 import {
   CreateRequestPayload,
@@ -94,6 +95,20 @@ export class StudentNewRequestService {
   }
 
   // ==================== REQUEST ACTIONS ====================
+
+  /**
+   * Obtiene los compañeros matriculados en la misma asignatura.
+   * Excluye al estudiante actual.
+   *
+   * @param subjectId ID de la asignatura
+   * @returns Observable con lista de compañeros
+   */
+  getClassmatesBySubject(subjectId: number): Observable<ClassmateItem[]> {
+    return this.http.get<ClassmateItem[]>(
+      `${this.baseUrl}/student/catalogs/subjects/${subjectId}/classmates`,
+      this.httpOptions
+    ).pipe(catchError(this.handleError));
+  }
 
   previewRequest(payload: RequestPreviewPayload): Observable<RequestPreviewResponse> {
     return this.http.post<RequestPreviewResponse>(

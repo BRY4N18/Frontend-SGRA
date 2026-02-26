@@ -48,3 +48,13 @@ export interface AvailableTimeSlotItem {
   timeSlotJson: string;
 }
 
+/**
+ * Compañero matriculado en la misma asignatura.
+ * Retornado por GET /api/student/catalogs/subjects/{subjectId}/classmates
+ */
+export interface ClassmateItem {
+  studentId: number;
+  fullName: string;
+  email: string;
+}
+

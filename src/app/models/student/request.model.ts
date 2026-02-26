@@ -41,6 +41,7 @@ export interface CreateRequestPayload {
   requestedDay: number;
   fileUrl?: string | null;
   periodId: number;
+  participantIds?: number[];  // IDs de compañeros para sesiones grupales
 }
 
 export interface CreateRequestResponse {
