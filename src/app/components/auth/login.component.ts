@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoginResponse } from '../../models/auth.model';
@@ -20,7 +21,8 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
@@ -46,6 +48,11 @@ export class LoginComponent {
     this.authService.login({ username, password }).subscribe({
       next: (user: LoginResponse) => {
         this.isLoading.set(false);
+        // Si el estado es 'C', redirigir a cambio de contraseña
+        if (user.accountState === 'C') {
+          this.router.navigate(['/change-password']);
+          return;
+        }
         this.authService.redirectByRole(user);
       },
       error: (error: HttpErrorResponse) => {

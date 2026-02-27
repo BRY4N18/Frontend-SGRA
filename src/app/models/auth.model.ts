@@ -11,6 +11,7 @@ export interface LoginResponse {
   email: string;
   roles: string[];
   serverSynced: boolean;
+  accountState: string; // 'A' = Activo, 'I' = Inactivo, 'C' = Cambio contraseña
 }
 
 export interface AuthError {
