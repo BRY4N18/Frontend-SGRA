@@ -70,6 +70,12 @@ export class AuthService {
    * Prioridad: admin > coordinator > teacher > student
    */
   redirectByRole(user: LoginResponse): void {
+    // Si requiere cambio de contraseña, redirigir primero ahí
+    if (user.accountState === 'C') {
+      this.router.navigate(['/change-password']);
+      return;
+    }
+
     const roles = user.roles.map((r: string) => r.toLowerCase());
 
     if (roles.includes('admin') || roles.includes('administrador')) {
