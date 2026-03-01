@@ -7,9 +7,12 @@ import {
   StudentMyRequestsPageDTO,
   MyRequestRowDTO
 } from '../../../services/student/student-my-requests.service';
-import { StudentApiService } from '../../../services/student/student-api.service';
+import { StudentNewRequestService } from '../../../services/student/student-new-request.service';
+import { StudentInvitationsService } from '../../../services/student/student-invitations.service';
+import { InvitationItem } from '../../../models/student/invitation.model';
 
 type Option = { value: number | null; label: string };
+type TabType = 'requests' | 'invitations';
 
 @Component({
   selector: 'app-student-my-requests',
@@ -29,6 +32,23 @@ type Option = { value: number | null; label: string };
         </a>
       </div>
 
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'requests'" (click)="switchTab('requests')">
+            <i class="bi bi-card-list me-2"></i>Mis Solicitudes
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="activeTab === 'invitations'" (click)="switchTab('invitations')">
+            <i class="bi bi-people me-2"></i>Invitaciones Grupales
+            @if (invitations.length > 0) {
+              <span class="badge bg-danger ms-1">{{ invitations.length }}</span>
+            }
+          </button>
+        </li>
+      </ul>
+
       @if (errorMessage) {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -44,6 +64,9 @@ type Option = { value: number | null; label: string };
           <button type="button" class="btn-close" (click)="successMessage = null"></button>
         </div>
       }
+
+      <!-- Tab: Mis Solicitudes -->
+      @if (activeTab === 'requests') {
 
       <!-- Modal Ver Detalle -->
       @if (showDetailModal && selectedRequest) {
@@ -70,7 +93,7 @@ type Option = { value: number | null; label: string };
                     <small class="text-muted">{{ selectedRequest.subjectCode }}</small>
                   </div>
                   <div class="col-12">
-                    <label class="form-label text-muted small mb-0">Tema</label>
+                    <label class="form-label text-muted small mb-0">Motivo</label>
                     <div class="fw-semibold">{{ selectedRequest.topic }}</div>
                   </div>
                   <div class="col-6">
@@ -145,7 +168,7 @@ type Option = { value: number | null; label: string };
               <label class="form-label mb-1">Buscar</label>
               <input class="form-control"
                      [(ngModel)]="filters.search"
-                     placeholder="Buscar por tema o asignatura"
+                     placeholder="Buscar por motivo o asignatura"
                      (keyup.enter)="applyFilters()"/>
             </div>
 
@@ -211,7 +234,7 @@ type Option = { value: number | null; label: string };
               <tr>
                 <th>FECHA</th>
                 <th>ASIGNATURA</th>
-                <th>TEMA</th>
+                <th>MOTIVO</th>
                 <th>DOCENTE</th>
                 <th>TIPO</th>
                 <th>ESTADO</th>
@@ -313,19 +336,120 @@ type Option = { value: number | null; label: string };
         </div>
       </div>
 
+      } <!-- fin tab requests -->
+
+      <!-- Tab: Invitaciones Grupales -->
+      @if (activeTab === 'invitations') {
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-people me-2 text-primary"></i>
+              Invitaciones a Tutorías Grupales
+            </h5>
+            <button class="btn btn-outline-secondary btn-sm" (click)="loadInvitations()" [disabled]="loadingInvitations">
+              <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+            </button>
+          </div>
+          <div class="card-body">
+
+            @if (loadingInvitations) {
+              <div class="text-center py-5">
+                <div class="spinner-border text-success mb-3" role="status"></div>
+                <p class="text-muted mb-0">Cargando invitaciones...</p>
+              </div>
+            } @else if (invitations.length === 0) {
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox display-4 mb-3 d-block opacity-50"></i>
+                <p class="mb-0">No tienes invitaciones pendientes.</p>
+                <small>Cuando un compañero te invite a una tutoría grupal, aparecerá aquí.</small>
+              </div>
+            } @else {
+              @for (inv of invitations; track inv.participantId) {
+                <div class="card mb-3 border">
+                  <div class="card-body">
+                    <div class="row g-3">
+                      <div class="col-12 col-md-8">
+                        <h6 class="fw-bold mb-1">{{ inv.subjectName }}</h6>
+                        <small class="text-muted">Semestre {{ inv.semester }}</small>
+
+                        <div class="mt-2">
+                          <div class="mb-1">
+                            <i class="bi bi-person-fill me-1 text-muted"></i>
+                            <strong>Solicitante:</strong> {{ inv.requesterName }}
+                            <small class="text-muted">({{ inv.requesterEmail }})</small>
+                          </div>
+                          <div class="mb-1">
+                            <i class="bi bi-mortarboard me-1 text-muted"></i>
+                            <strong>Docente:</strong> {{ inv.teacherName }}
+                          </div>
+                          <div class="mb-1">
+                            <i class="bi bi-chat-text me-1 text-muted"></i>
+                            <strong>Motivo:</strong> {{ inv.reason }}
+                          </div>
+                          <div class="mb-1">
+                            <i class="bi bi-calendar me-1 text-muted"></i>
+                            <strong>Fecha:</strong> {{ formatDate(inv.requestDate) }}
+                          </div>
+                        </div>
+
+                        <div class="mt-2">
+                          <span class="badge bg-light text-dark border me-2">
+                            <i class="bi bi-people me-1"></i> {{ inv.totalAccepted }}/{{ inv.totalInvited }} aceptaron
+                          </span>
+                          <span class="badge bg-info text-dark">
+                            {{ inv.sessionType }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-md-4 d-flex flex-column justify-content-center gap-2">
+                        <button class="btn btn-success"
+                                (click)="respondInvitation(inv.participantId, true)"
+                                [disabled]="respondingInvId === inv.participantId">
+                          @if (respondingInvId === inv.participantId && respondingAccept) {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                          } @else {
+                            <i class="bi bi-check-lg me-1"></i>
+                          }
+                          Aceptar
+                        </button>
+                        <button class="btn btn-outline-danger"
+                                (click)="respondInvitation(inv.participantId, false)"
+                                [disabled]="respondingInvId === inv.participantId">
+                          @if (respondingInvId === inv.participantId && !respondingAccept) {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                          } @else {
+                            <i class="bi bi-x-lg me-1"></i>
+                          }
+                          Rechazar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+
+          </div>
+        </div>
+      } <!-- fin tab invitations -->
+
     </div>
   `,
   styles: [`
     .chip-box { min-height: 72px; }
     th { white-space: nowrap; font-size: .85rem; letter-spacing: .02em; }
     td { vertical-align: middle; }
+    .nav-link { cursor: pointer; }
   `]
 })
 export class StudentMyRequestsComponent implements AfterViewInit {
   private svc = inject(StudentMyRequestsService);
-  private catalogSvc = inject(StudentApiService);
+  private catalogSvc = inject(StudentNewRequestService);
+  private invitationsSvc = inject(StudentInvitationsService);
   private cdr = inject(ChangeDetectorRef);
 
+  activeTab: TabType = 'requests';
   loading = false;
   errorMessage: string | null = null;
 
@@ -386,7 +510,15 @@ export class StudentMyRequestsComponent implements AfterViewInit {
       this.loadSubjects();
       this.load();
       this.loadSummary();
+      this.loadInvitations();
     });
+  }
+
+  switchTab(tab: TabType): void {
+    this.activeTab = tab;
+    if (tab === 'invitations' && this.invitations.length === 0 && !this.loadingInvitations) {
+      this.loadInvitations();
+    }
   }
 
   applyFilters(): void {
@@ -556,4 +688,52 @@ export class StudentMyRequestsComponent implements AfterViewInit {
   isRejected(status: string): boolean { return this.norm(status).includes('rech'); }
   isCancelled(status: string): boolean { return this.norm(status).includes('cancel'); }
   isFinished(status: string): boolean { return this.norm(status).includes('final'); }
+
+  // ==================== INVITACIONES GRUPALES ====================
+  invitations: InvitationItem[] = [];
+  loadingInvitations = false;
+  respondingInvId: number | null = null;
+  respondingAccept = false;
+
+  loadInvitations(): void {
+    this.loadingInvitations = true;
+    this.invitationsSvc.getMyInvitations().subscribe({
+      next: (data) => {
+        this.invitations = data ?? [];
+        this.loadingInvitations = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.invitations = [];
+        this.loadingInvitations = false;
+        this.errorMessage = err?.message || 'Error al cargar invitaciones';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  respondInvitation(participantId: number, accept: boolean): void {
+    this.respondingInvId = participantId;
+    this.respondingAccept = accept;
+    this.errorMessage = null;
+
+    this.invitationsSvc.respondInvitation(participantId, accept).subscribe({
+      next: (response) => {
+        this.respondingInvId = null;
+        this.successMessage = response.message || (accept ? 'Invitación aceptada' : 'Invitación rechazada');
+        this.loadInvitations();
+        this.cdr.detectChanges();
+
+        setTimeout(() => {
+          this.successMessage = null;
+          this.cdr.detectChanges();
+        }, 5000);
+      },
+      error: (err) => {
+        this.respondingInvId = null;
+        this.errorMessage = err?.message || 'Error al responder la invitación';
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }
