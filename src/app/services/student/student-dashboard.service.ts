@@ -3,13 +3,22 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { RequestChipsDTO } from '../../models/student/request-chips.model';
 import { buildHttpParams } from './http-params.helper';
-import { SummaryRowDTO } from '../../models/student/request-summary.model';
+
+/**
+ * Respuesta de fn_sl_dashboard_estudiante_ui
+ * Contadores: pendientes, aceptadas, próximas (programadas), realizadas (completadas)
+ */
+export interface StudentDashboardData {
+  pending: number;
+  accepted: number;
+  upcoming: number;
+  completed: number;
+}
 
 /**
  * StudentDashboardService
- * Service for student dashboard data
+ * Consume GET /api/student/dashboard → fn_sl_dashboard_estudiante_ui
  */
 @Injectable({
   providedIn: 'root'
@@ -21,27 +30,20 @@ export class StudentDashboardService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Get request chips (counts by status) for dashboard
-   * @param periodId Optional period filter
+   * Obtiene los contadores del dashboard del estudiante.
+   * Endpoint: GET /api/student/dashboard?periodId=
+   * Función BD: fn_sl_dashboard_estudiante_ui(p_user_id, p_period_id)
+   * @param periodId Periodo opcional; si es null/undefined usa el activo
    */
-  getMyRequestChips(periodId?: number): Observable<RequestChipsDTO> {
+  getDashboard(periodId?: number): Observable<StudentDashboardData> {
     const params = buildHttpParams({ periodId });
-    return this.http.get<RequestChipsDTO>(
-      `${this.baseUrl}/student/requests/chips`,
+    return this.http.get<StudentDashboardData>(
+      `${this.baseUrl}/student/dashboard`,
       { ...this.httpOptions, params }
     ).pipe(catchError(this.handleError));
   }
 
-  getMyRequestsSummary(periodId?: number) {
-    const params = buildHttpParams({ periodId });
-
-    return this.http.get<SummaryRowDTO[]>(
-      `${this.baseUrl}/student/requests/summary`,
-      { ...this.httpOptions, params }
-    ).pipe(catchError(this.handleError));
-  }
-
-private handleError(error: HttpErrorResponse): Observable<never> {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     let message = 'Error al cargar los datos del dashboard';
 
     if (error.status === 0) {

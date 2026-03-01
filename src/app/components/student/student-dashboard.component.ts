@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, AfterViewInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { StudentDashboardService } from '../../services/student/student-dashboard.service';
-import { SummaryRowDTO } from '../../models/student/request-summary.model';
+import { StudentDashboardService, StudentDashboardData } from '../../services/student/student-dashboard.service';
 
 interface DashboardCard {
-  statusId: number;
+  key: keyof StudentDashboardData;
   title: string;
   subtitle: string;
   icon: string;
@@ -37,7 +36,7 @@ interface DashboardCard {
 
       <!-- Stats Cards -->
       <div class="row g-3 mb-3">
-        @for (card of cards; track card.statusId) {
+        @for (card of cards; track card.key) {
           <div class="col-12 col-sm-6 col-lg-3">
             <div class="card h-100 border-0 shadow-sm">
               <div class="card-body">
@@ -51,7 +50,7 @@ interface DashboardCard {
                 </div>
 
                 <div class="display-5 fw-bold text-dark">
-                  {{ countsByStatusId[card.statusId] ?? 0 }}
+                  {{ dashboardData[card.key] }}
                 </div>
 
                 <small class="text-muted">{{ card.subtitle }}</small>
@@ -118,8 +117,7 @@ interface DashboardCard {
 
     .bg-pending { background-color: #f59e0b; }
     .bg-accepted { background-color: #3b82f6; }
-    .bg-rejected { background-color: #dc3545; }
-    .bg-cancelled { background-color: #6c757d; }
+    .bg-upcoming { background-color: #8b5cf6; }
     .bg-finished { background-color: #198754; }
 
     .quick-card {
@@ -144,59 +142,32 @@ export class StudentDashboardComponent implements AfterViewInit {
 
   errorMessage: string | null = null;
 
-  countsByStatusId: Record<number, number | undefined> = {};
-  summaryRows: Array<{ statusId: number; total: number; statusName: string }> = [];
+  dashboardData: StudentDashboardData = { pending: 0, accepted: 0, upcoming: 0, completed: 0 };
 
   cards: DashboardCard[] = [
-    { statusId: 1, title: 'Pendientes',  subtitle: 'Esperando aprobación', icon: 'bi-hourglass',     colorClass: 'bg-pending' },
-    { statusId: 2, title: 'Aceptadas',   subtitle: 'Solicitudes aprobadas', icon: 'bi-check2',       colorClass: 'bg-accepted' },
-    { statusId: 3, title: 'Rechazadas',  subtitle: 'No aprobadas',          icon: 'bi-x-lg',         colorClass: 'bg-rejected' },
-    { statusId: 4, title: 'Canceladas',  subtitle: 'Solicitudes anuladas',  icon: 'bi-slash-circle', colorClass: 'bg-cancelled' },
-    { statusId: 5, title: 'Finalizadas', subtitle: 'Sesión finalizada',     icon: 'bi-flag',         colorClass: 'bg-finished' },
+    { key: 'pending',   title: 'Pendientes',   subtitle: 'Esperando aprobación',   icon: 'bi-hourglass',     colorClass: 'bg-pending' },
+    { key: 'accepted',  title: 'Aceptadas',    subtitle: 'Solicitudes aprobadas',  icon: 'bi-check2',        colorClass: 'bg-accepted' },
+    { key: 'upcoming',  title: 'Próximas',     subtitle: 'Sesiones programadas',   icon: 'bi-calendar-event', colorClass: 'bg-upcoming' },
+    { key: 'completed', title: 'Realizadas',   subtitle: 'Sesiones completadas',   icon: 'bi-flag',          colorClass: 'bg-finished' },
   ];
 
   ngAfterViewInit(): void {
-    // Use microtask to ensure view is fully rendered before loading data
     Promise.resolve().then(() => {
-      this.loadSummary();
+      this.loadDashboard();
     });
   }
 
-  private safeStatusName(statusJson: string): string {
-    try {
-      const obj = JSON.parse(statusJson || '{}');
-      return obj?.nombreestado ?? obj?.nombreEstado ?? '';
-    } catch {
-      return '';
-    }
-  }
-
-  loadSummary(): void {
+  loadDashboard(): void {
     this.errorMessage = null;
 
-    this.dashboardService.getMyRequestsSummary().subscribe({
-      next: (rows) => {
-        const map: Record<number, number> = {};
-
-        this.summaryRows = (rows ?? []).map((r: SummaryRowDTO) => {
-          const statusId = Number(r.statusId);
-          const total = Number(r.total ?? 0);
-          map[statusId] = total;
-
-          return {
-            statusId,
-            total,
-            statusName: this.safeStatusName(r.statusJson)
-          };
-        });
-
-        this.countsByStatusId = map;
+    this.dashboardService.getDashboard().subscribe({
+      next: (data) => {
+        this.dashboardData = data ?? { pending: 0, accepted: 0, upcoming: 0, completed: 0 };
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = err?.message || 'Error al cargar los datos';
-        this.countsByStatusId = {};
-        this.summaryRows = [];
+        this.dashboardData = { pending: 0, accepted: 0, upcoming: 0, completed: 0 };
         this.cdr.detectChanges();
       }
     });

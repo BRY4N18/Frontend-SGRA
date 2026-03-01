@@ -5,12 +5,9 @@ import { Router } from '@angular/router';
 import { StudentNewRequestService } from '../../../services/student/student-new-request.service';
 import {
   SubjectItem,
-  SyllabusItem,
-  TeacherItem,
-  ModalityItem,
   SessionTypeItem,
-  TimeSlotItem,
-  AvailableTimeSlotItem
+  StudentSubjectTeacher,
+  ClassmateItem
 } from '../../../models/student/catalog.model';
 import { CreateRequestPayload } from '../../../models/student/request.model';
 
@@ -51,7 +48,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
         <div class="card-body p-4">
           <form (ngSubmit)="onSubmit()" #requestForm="ngForm">
 
-            <!-- Row 1: Asignatura y Tema -->
+            <!-- Row 1: Asignatura y Docente -->
             <div class="row g-3 mb-3">
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Asignatura <span class="text-danger">*</span></label>
@@ -65,112 +62,104 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
               </div>
 
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Tema/Temario <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.syllabusId" name="syllabusId"
-                        required [disabled]="!form.subjectId || loadingSyllabi">
-                  <option [ngValue]="null">{{ loadingSyllabi ? 'Cargando...' : 'Selecciona un tema' }}</option>
-                  @for (sy of syllabi; track sy.syllabusId) {
-                    <option [ngValue]="sy.syllabusId">Unidad {{ sy.unit }}: {{ sy.syllabusName }}</option>
-                  }
-                </select>
+                <label class="form-label fw-semibold">Docente</label>
+                @if (loadingTeacher) {
+                  <div class="form-control bg-light text-muted">
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    Cargando docente...
+                  </div>
+                } @else if (teacherInfo) {
+                  <input type="text" class="form-control bg-light" [value]="teacherInfo.fullName" readonly>
+                  <small class="text-muted">{{ teacherInfo.email }}</small>
+                } @else if (form.subjectId && !loadingTeacher) {
+                  <div class="form-control bg-light text-danger">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    No hay docente asignado para esta asignatura
+                  </div>
+                } @else {
+                  <input type="text" class="form-control bg-light" value="Selecciona una asignatura primero" readonly disabled>
+                }
               </div>
             </div>
 
-            <!-- Row 2: Modalidad y Tipo Sesión -->
+            <!-- Row 2: Tipo de Sesión -->
             <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Modalidad <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.modalityId" name="modalityId"
-                        (change)="onModalityChange()" required [disabled]="loadingCatalogs">
-                  <option [ngValue]="null">Selecciona modalidad</option>
-                  @for (m of modalities; track m.modalityId) {
-                    <option [ngValue]="m.modalityId">{{ m.modalityName }}</option>
-                  }
-                </select>
-              </div>
-
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Tipo de Sesión <span class="text-danger">*</span></label>
                 <select class="form-select" [(ngModel)]="form.sessionTypeId" name="sessionTypeId"
-                        required [disabled]="loadingCatalogs">
+                        (ngModelChange)="onSessionTypeChange()" required [disabled]="loadingCatalogs">
                   <option [ngValue]="null">Selecciona tipo de sesión</option>
                   @for (st of sessionTypes; track st.sessionTypeId) {
                     <option [ngValue]="st.sessionTypeId">{{ st.sessionTypeName }}</option>
                   }
                 </select>
               </div>
-            </div>
-
-            <!-- Row 3: Docente y Franja Horaria -->
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Docente <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.teacherId" name="teacherId"
-                        (ngModelChange)="onTeacherOrDayChange()" required [disabled]="loadingTeachers">
-                  <option [ngValue]="null">{{ loadingTeachers ? 'Cargando...' : 'Selecciona docente' }}</option>
-                  @for (t of teachers; track t.teacherId) {
-                    <option [ngValue]="t.teacherId">{{ t.fullName }}</option>
-                  }
-                </select>
-              </div>
 
               <div class="col-md-6">
-                <label class="form-label fw-semibold">Franja Horaria <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.timeSlotId" name="timeSlotId"
-                        required [disabled]="loadingTimeSlots || !canLoadTimeSlots()">
-                  @if (loadingTimeSlots) {
-                    <option [ngValue]="null">Cargando franjas...</option>
-                  } @else if (!canLoadTimeSlots()) {
-                    <option [ngValue]="null">Selecciona docente y día primero</option>
-                  } @else if (availableTimeSlots.length === 0) {
-                    <option [ngValue]="null">Sin franjas disponibles</option>
-                  } @else {
-                    <option [ngValue]="null">Selecciona franja horaria</option>
-                    @for (ts of availableTimeSlots; track ts.timeSlotId) {
-                      <option [ngValue]="ts.timeSlotId">{{ ts.label }}</option>
-                    }
-                  }
-                </select>
-                @if (noTimeSlotsMessage) {
-                  <small class="text-warning">
-                    <i class="bi bi-exclamation-triangle me-1"></i>{{ noTimeSlotsMessage }}
-                  </small>
-                }
+                <!-- Placeholder para mantener layout equilibrado -->
               </div>
             </div>
 
-            <!-- Row 4: Día y Motivo -->
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <label class="form-label fw-semibold">Día Solicitado <span class="text-danger">*</span></label>
-                <select class="form-select" [(ngModel)]="form.requestedDay" name="requestedDay"
-                        (ngModelChange)="onTeacherOrDayChange()" required>
-                  <option [ngValue]="null">Selecciona día</option>
-                  <option [ngValue]="1">Lunes</option>
-                  <option [ngValue]="2">Martes</option>
-                  <option [ngValue]="3">Miércoles</option>
-                  <option [ngValue]="4">Jueves</option>
-                  <option [ngValue]="5">Viernes</option>
-                  <option [ngValue]="6">Sábado</option>
-                </select>
+            <!-- Compañeros seleccionados (visible solo en Grupal) -->
+            @if (isGroupSession() && selectedClassmates.length > 0) {
+              <div class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <i class="bi bi-people-fill me-2"></i>
+                  <strong>{{ selectedClassmates.length }}</strong> compañero{{ selectedClassmates.length > 1 ? 's' : '' }} seleccionado{{ selectedClassmates.length > 1 ? 's' : '' }}
+                  <span class="text-muted ms-2">
+                    ({{ getSelectedNames() }})
+                  </span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openClassmatesModal()">
+                  <i class="bi bi-pencil me-1"></i>Editar
+                </button>
               </div>
+            }
 
-              <div class="col-md-8">
+            <!-- Row 3: Motivo -->
+            <div class="row g-3 mb-3">
+              <div class="col-12">
                 <label class="form-label fw-semibold">Motivo <span class="text-danger">*</span></label>
                 <textarea class="form-control" [(ngModel)]="form.reason" name="reason"
-                          rows="2" required minlength="10" maxlength="500"
-                          placeholder="Describe brevemente el motivo de tu solicitud..."></textarea>
-                <small class="text-muted">Mínimo 10 caracteres</small>
+                          rows="3" required minlength="10" maxlength="500"
+                          placeholder="Describe brevemente el motivo de tu solicitud de refuerzo..."></textarea>
+                <small class="text-muted">Mínimo 10 caracteres ({{ form.reason.length }}/500)</small>
               </div>
             </div>
 
-            <!-- Row 5: URL de archivo (opcional) -->
+            <!-- Row 4: Subida de Archivos -->
             <div class="row g-3 mb-4">
               <div class="col-12">
-                <label class="form-label fw-semibold">URL de Archivo (opcional)</label>
-                <input type="url" class="form-control" [(ngModel)]="form.fileUrl" name="fileUrl"
-                       placeholder="https://ejemplo.com/archivo.pdf">
-                <small class="text-muted">Si tienes material de apoyo, puedes compartir el enlace</small>
+                <label class="form-label fw-semibold">Archivos de Apoyo (opcional)</label>
+                <div class="input-group">
+                  <input type="file" class="form-control" multiple
+                         (change)="onFilesSelected($event)"
+                         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.zip,.rar">
+                  @if (selectedFiles.length > 0) {
+                    <button type="button" class="btn btn-outline-danger" (click)="clearFiles()">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </div>
+                <small class="text-muted">Máximo 10MB por archivo. Formatos: PDF, documentos Office, imágenes, ZIP</small>
+
+                <!-- Lista de archivos seleccionados -->
+                @if (selectedFiles.length > 0) {
+                  <div class="mt-2">
+                    @for (file of selectedFiles; track $index) {
+                      <div class="d-flex align-items-center justify-content-between bg-light rounded px-3 py-2 mb-1">
+                        <div>
+                          <i class="bi bi-file-earmark me-2"></i>
+                          <span class="fw-semibold">{{ file.name }}</span>
+                          <small class="text-muted ms-2">({{ formatFileSize(file.size) }})</small>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger border-0" (click)="removeFile($index)">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
 
@@ -179,7 +168,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
               <button type="button" class="btn btn-outline-secondary" (click)="goBack()" [disabled]="submitting">
                 Cancelar
               </button>
-              <button type="submit" class="btn btn-success" [disabled]="!requestForm.valid || submitting">
+              <button type="submit" class="btn btn-success" [disabled]="!isFormValid() || submitting">
                 @if (submitting) {
                   <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                   Creando...
@@ -193,6 +182,100 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
           </form>
         </div>
       </div>
+
+      <!-- ====== Modal Compañeros (Sesión Grupal) ====== -->
+      @if (showClassmatesModal) {
+        <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;">
+          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">
+                  <i class="bi bi-people-fill me-2"></i>Seleccionar Compañeros
+                </h5>
+                <button type="button" class="btn-close" (click)="closeClassmatesModal()"></button>
+              </div>
+
+              <div class="modal-body">
+                @if (loadingClassmates) {
+                  <div class="text-center py-4">
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <p class="text-muted mt-2">Cargando compañeros...</p>
+                  </div>
+                } @else if (classmates.length === 0) {
+                  <div class="text-center py-4">
+                    <i class="bi bi-person-x fs-1 text-muted"></i>
+                    <p class="text-muted mt-2">No se encontraron compañeros matriculados en esta asignatura.</p>
+                  </div>
+                } @else {
+                  <!-- Buscador y botón seleccionar todos -->
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="input-group" style="max-width: 300px;">
+                      <span class="input-group-text"><i class="bi bi-search"></i></span>
+                      <input type="text" class="form-control" placeholder="Buscar compañero..."
+                             [(ngModel)]="classmateSearch" [ngModelOptions]="{standalone: true}">
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-primary"
+                              (click)="selectAllClassmates()">
+                        <i class="bi bi-check-all me-1"></i>Seleccionar Todos
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary"
+                              (click)="deselectAllClassmates()"
+                              [disabled]="tempSelectedIds.size === 0">
+                        <i class="bi bi-x-lg me-1"></i>Quitar Todos
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Info de selección -->
+                  <div class="mb-3">
+                    <small class="text-muted">
+                      {{ tempSelectedIds.size }} de {{ filteredClassmates().length }} seleccionado(s)
+                    </small>
+                  </div>
+
+                  <!-- Lista de compañeros -->
+                  <div class="list-group" style="max-height: 350px; overflow-y: auto;">
+                    @for (c of filteredClassmates(); track c.studentId) {
+                      <label class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                             [class.active]="tempSelectedIds.has(c.studentId)"
+                             style="cursor: pointer;">
+                        <input type="checkbox" class="form-check-input m-0"
+                               [checked]="tempSelectedIds.has(c.studentId)"
+                               (change)="toggleClassmate(c.studentId)">
+                        <div class="flex-grow-1">
+                          <div class="fw-semibold" [class.text-white]="tempSelectedIds.has(c.studentId)">
+                            {{ c.fullName }}
+                          </div>
+                          <small [class.text-white-50]="tempSelectedIds.has(c.studentId)"
+                                 [class.text-muted]="!tempSelectedIds.has(c.studentId)">
+                            {{ c.email }}
+                          </small>
+                        </div>
+                        @if (tempSelectedIds.has(c.studentId)) {
+                          <i class="bi bi-check-circle-fill text-white"></i>
+                        }
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeClassmatesModal()">
+                  Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" (click)="confirmClassmatesSelection()"
+                        [disabled]="loadingClassmates">
+                  <i class="bi bi-check-lg me-1"></i>
+                  Confirmar ({{ tempSelectedIds.size }})
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
     </div>
   `
 })
@@ -201,50 +284,43 @@ export class StudentNewRequestComponent implements AfterViewInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  // Catalogs
+  // Catálogos
   subjects: SubjectItem[] = [];
-  syllabi: SyllabusItem[] = [];
-  teachers: TeacherItem[] = [];
-  modalities: ModalityItem[] = [];
   sessionTypes: SessionTypeItem[] = [];
-  timeSlots: TimeSlotItem[] = [];  // Catálogo completo (fallback)
-  availableTimeSlots: AvailableTimeSlotItem[] = [];  // Franjas disponibles filtradas
 
-  // Loading states
+  // Docente (auto-cargado por paralelo)
+  teacherInfo: StudentSubjectTeacher | null = null;
+  loadingTeacher = false;
+
+  // Compañeros (sesión grupal)
+  classmates: ClassmateItem[] = [];
+  selectedClassmates: ClassmateItem[] = [];
+  selectedClassmateIds: Set<number> = new Set();
+  tempSelectedIds: Set<number> = new Set();
+  showClassmatesModal = false;
+  loadingClassmates = false;
+  classmateSearch = '';
+
+  // Archivos
+  selectedFiles: File[] = [];
+
+  // Estados de carga
   loadingCatalogs = false;
-  loadingSyllabi = false;
-  loadingTeachers = false;
-  loadingTimeSlots = false;
   submitting = false;
 
-  // Messages
+  // Mensajes
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  noTimeSlotsMessage: string | null = null;  // Mensaje cuando no hay franjas disponibles
 
-  // Form model
+  // Modelo del formulario (simplificado)
   form: {
     subjectId: number | null;
-    syllabusId: number | null;
-    teacherId: number | null;
-    modalityId: number | null;
     sessionTypeId: number | null;
-    timeSlotId: number | null;
-    requestedDay: number | null;
     reason: string;
-    fileUrl: string;
-    periodId: number;
   } = {
     subjectId: null,
-    syllabusId: null,
-    teacherId: null,
-    modalityId: null,
     sessionTypeId: null,
-    timeSlotId: null,
-    requestedDay: null,
-    reason: '',
-    fileUrl: '',
-    periodId: 1  // Default period, adjust as needed
+    reason: ''
   };
 
   ngAfterViewInit(): void {
@@ -253,23 +329,18 @@ export class StudentNewRequestComponent implements AfterViewInit {
     });
   }
 
+  // ==================== CARGA DE CATÁLOGOS ====================
+
   loadCatalogs(): void {
     this.loadingCatalogs = true;
     this.errorMessage = null;
 
-    // Load all catalogs in parallel
     Promise.all([
       this.svc.getSubjects().toPromise(),
-      this.svc.getModalities().toPromise(),
-      this.svc.getSessionTypes().toPromise(),
-      this.svc.getTimeSlots().toPromise(),
-      this.svc.getTeachers().toPromise()
-    ]).then(([subjects, modalities, sessionTypes, timeSlots, teachers]) => {
+      this.svc.getSessionTypes().toPromise()
+    ]).then(([subjects, sessionTypes]) => {
       this.subjects = subjects || [];
-      this.modalities = modalities || [];
       this.sessionTypes = sessionTypes || [];
-      this.timeSlots = timeSlots || [];
-      this.teachers = teachers || [];
       this.loadingCatalogs = false;
       this.cdr.detectChanges();
     }).catch(err => {
@@ -279,118 +350,179 @@ export class StudentNewRequestComponent implements AfterViewInit {
     });
   }
 
+  // ==================== CAMBIO DE ASIGNATURA ====================
+
   onSubjectChange(): void {
-    this.form.syllabusId = null;
-    this.syllabi = [];
+    // Resetear docente y compañeros
+    this.teacherInfo = null;
+    this.classmates = [];
+    this.selectedClassmates = [];
+    this.selectedClassmateIds.clear();
 
-    if (this.form.subjectId) {
-      this.loadingSyllabi = true;
-      this.svc.getSyllabiBySubject(this.form.subjectId).subscribe({
-        next: (data) => {
-          this.syllabi = data || [];
-          this.loadingSyllabi = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.errorMessage = err?.message || 'Error al cargar los temas';
-          this.loadingSyllabi = false;
-          this.cdr.detectChanges();
-        }
-      });
-    }
-  }
-
-  onModalityChange(): void {
-    // Optionally filter teachers by modality
-    if (this.form.modalityId) {
-      this.loadingTeachers = true;
-      // Reset teacher and time slots when modality changes
-      this.form.teacherId = null;
-      this.form.timeSlotId = null;
-      this.availableTimeSlots = [];
-      this.noTimeSlotsMessage = null;
-
-      this.svc.getTeachers(this.form.modalityId).subscribe({
-        next: (data) => {
-          this.teachers = data || [];
-          this.loadingTeachers = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.errorMessage = err?.message || 'Error al cargar los docentes';
-          this.loadingTeachers = false;
-          this.cdr.detectChanges();
-        }
-      });
-    }
-  }
-
-  /**
-   * Verifica si se pueden cargar las franjas disponibles
-   * (requiere docente y día seleccionados)
-   */
-  canLoadTimeSlots(): boolean {
-    return !!(this.form.teacherId && this.form.requestedDay && this.form.periodId);
-  }
-
-  /**
-   * Handler cuando cambia el docente o el día solicitado.
-   * Carga las franjas disponibles para esa combinación.
-   */
-  onTeacherOrDayChange(): void {
-    // Guardar selección previa para verificar si aún es válida
-    const previousTimeSlotId = this.form.timeSlotId;
-
-    // Reset state
-    this.form.timeSlotId = null;
-    this.availableTimeSlots = [];
-    this.noTimeSlotsMessage = null;
-
-    // Verificar que tenemos los datos necesarios
-    if (!this.canLoadTimeSlots()) {
+    if (!this.form.subjectId) {
       this.cdr.detectChanges();
       return;
     }
 
-    this.loadingTimeSlots = true;
+    // Cargar el docente del paralelo del estudiante para esta asignatura
+    this.loadingTeacher = true;
     this.cdr.detectChanges();
 
-    this.svc.getAvailableTimeSlots(
-      this.form.teacherId!,
-      this.form.requestedDay!,
-      this.form.periodId
-    ).subscribe({
-      next: (data) => {
-        this.availableTimeSlots = data || [];
-        this.loadingTimeSlots = false;
-
-        // Verificar si la franja previamente seleccionada aún está disponible
-        if (previousTimeSlotId) {
-          const stillAvailable = this.availableTimeSlots.some(
-            ts => ts.timeSlotId === previousTimeSlotId
-          );
-          if (stillAvailable) {
-            this.form.timeSlotId = previousTimeSlotId;
-          } else if (this.availableTimeSlots.length > 0) {
-            this.noTimeSlotsMessage = 'La franja seleccionada ya no está disponible. Selecciona otra.';
-          }
+    this.svc.getTeacherBySubject(this.form.subjectId).subscribe({
+      next: (data: any) => {
+        this.loadingTeacher = false;
+        // Si el backend retorna { found: false, message: "..." } significa que no hay docente
+        if (data && data.found === false) {
+          this.teacherInfo = null;
+        } else if (data && data.teacherId) {
+          this.teacherInfo = data as StudentSubjectTeacher;
+        } else {
+          this.teacherInfo = null;
         }
-
-        // Mostrar mensaje si no hay franjas
-        if (this.availableTimeSlots.length === 0) {
-          this.noTimeSlotsMessage = 'El docente no tiene franjas disponibles para el día seleccionado.';
-        }
-
         this.cdr.detectChanges();
+
+        // Si ya está en sesión grupal, abrir modal de compañeros
+        if (this.isGroupSession()) {
+          this.openClassmatesModal();
+        }
       },
       error: (err) => {
-        this.errorMessage = err?.message || 'Error al cargar las franjas disponibles';
-        this.loadingTimeSlots = false;
-        this.availableTimeSlots = [];
+        this.loadingTeacher = false;
+        this.teacherInfo = null;
+        this.errorMessage = err?.message || 'Error al cargar el docente';
         this.cdr.detectChanges();
       }
     });
   }
+
+  // ==================== SESIÓN GRUPAL / COMPAÑEROS ====================
+
+  isGroupSession(): boolean {
+    return this.form.sessionTypeId === 2;
+  }
+
+  onSessionTypeChange(): void {
+    if (this.isGroupSession() && this.form.subjectId) {
+      this.openClassmatesModal();
+    } else if (!this.isGroupSession()) {
+      this.selectedClassmates = [];
+      this.selectedClassmateIds.clear();
+    }
+  }
+
+  openClassmatesModal(): void {
+    if (!this.form.subjectId) {
+      this.errorMessage = 'Selecciona una asignatura primero para ver los compañeros';
+      return;
+    }
+
+    this.showClassmatesModal = true;
+    this.classmateSearch = '';
+    this.tempSelectedIds = new Set(this.selectedClassmateIds);
+
+    this.loadingClassmates = true;
+    this.cdr.detectChanges();
+
+    this.svc.getClassmatesBySubject(this.form.subjectId).subscribe({
+      next: (data) => {
+        this.classmates = data || [];
+        this.loadingClassmates = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMessage = err?.message || 'Error al cargar compañeros';
+        this.loadingClassmates = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  closeClassmatesModal(): void {
+    this.showClassmatesModal = false;
+    this.classmateSearch = '';
+  }
+
+  filteredClassmates(): ClassmateItem[] {
+    if (!this.classmateSearch.trim()) {
+      return this.classmates;
+    }
+    const search = this.classmateSearch.toLowerCase().trim();
+    return this.classmates.filter(c =>
+      c.fullName.toLowerCase().includes(search) ||
+      c.email.toLowerCase().includes(search)
+    );
+  }
+
+  toggleClassmate(studentId: number): void {
+    if (this.tempSelectedIds.has(studentId)) {
+      this.tempSelectedIds.delete(studentId);
+    } else {
+      this.tempSelectedIds.add(studentId);
+    }
+  }
+
+  selectAllClassmates(): void {
+    for (const c of this.filteredClassmates()) {
+      this.tempSelectedIds.add(c.studentId);
+    }
+    this.cdr.detectChanges();
+  }
+
+  deselectAllClassmates(): void {
+    this.tempSelectedIds.clear();
+    this.cdr.detectChanges();
+  }
+
+  confirmClassmatesSelection(): void {
+    this.selectedClassmateIds = new Set(this.tempSelectedIds);
+    this.selectedClassmates = this.classmates.filter(c => this.selectedClassmateIds.has(c.studentId));
+    this.showClassmatesModal = false;
+    this.classmateSearch = '';
+    this.cdr.detectChanges();
+  }
+
+  getSelectedNames(): string {
+    return this.selectedClassmates.map(c => c.fullName.split(' ')[0]).join(', ');
+  }
+
+  // ==================== ARCHIVOS ====================
+
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      const newFiles = Array.from(input.files);
+
+      // Validar tamaño (max 10MB por archivo)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      for (const file of newFiles) {
+        if (file.size > maxSize) {
+          this.errorMessage = `El archivo "${file.name}" excede el tamaño máximo de 10MB`;
+          return;
+        }
+      }
+
+      this.selectedFiles = [...this.selectedFiles, ...newFiles];
+      this.cdr.detectChanges();
+    }
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.cdr.detectChanges();
+  }
+
+  clearFiles(): void {
+    this.selectedFiles = [];
+    this.cdr.detectChanges();
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  // ==================== ENVIAR SOLICITUD ====================
 
   onSubmit(): void {
     if (!this.isFormValid()) {
@@ -402,24 +534,18 @@ export class StudentNewRequestComponent implements AfterViewInit {
     this.errorMessage = null;
 
     const payload: CreateRequestPayload = {
-      syllabusId: this.form.syllabusId!,
-      teacherId: this.form.teacherId!,
-      timeSlotId: this.form.timeSlotId!,
-      modalityId: this.form.modalityId!,
+      subjectId: this.form.subjectId!,
       sessionTypeId: this.form.sessionTypeId!,
       reason: this.form.reason.trim(),
-      requestedDay: this.form.requestedDay!,
-      fileUrl: this.form.fileUrl?.trim() || null,
-      periodId: this.form.periodId
+      participantIds: this.isGroupSession() ? Array.from(this.selectedClassmateIds) : undefined
     };
 
-    this.svc.createRequest(payload).subscribe({
+    this.svc.createRequest(payload, this.selectedFiles).subscribe({
       next: (response) => {
         this.submitting = false;
         this.successMessage = `Solicitud #${response.requestId} creada exitosamente`;
         this.cdr.detectChanges();
 
-        // Redirect after a brief delay to show success message
         setTimeout(() => {
           this.router.navigate(['/student/my-requests']);
         }, 1500);
@@ -427,14 +553,6 @@ export class StudentNewRequestComponent implements AfterViewInit {
       error: (err) => {
         this.errorMessage = err?.message || 'Error al crear la solicitud';
         this.submitting = false;
-
-        // Si el error indica que la franja no está disponible, refrescar la lista
-        if (err?.message?.includes('no está disponible') ||
-            err?.message?.includes('not available')) {
-          this.form.timeSlotId = null;
-          this.onTeacherOrDayChange();  // Refrescar franjas disponibles
-        }
-
         this.cdr.detectChanges();
       }
     });
@@ -442,12 +560,9 @@ export class StudentNewRequestComponent implements AfterViewInit {
 
   isFormValid(): boolean {
     return !!(
-      this.form.syllabusId &&
-      this.form.teacherId &&
-      this.form.timeSlotId &&
-      this.form.modalityId &&
+      this.form.subjectId &&
       this.form.sessionTypeId &&
-      this.form.requestedDay &&
+      this.teacherInfo &&                    // Debe haber docente asignado
       this.form.reason?.trim().length >= 10
     );
   }

@@ -1,6 +1,6 @@
 /**
  * Student Catalog Models
- * DTOs for catalog endpoints in the student module
+ * DTOs para los endpoints de catálogo del módulo estudiante (simplificado)
  */
 
 export interface SubjectItem {
@@ -9,22 +9,14 @@ export interface SubjectItem {
   semester: number;
 }
 
-export interface SyllabusItem {
-  syllabusId: number;
-  syllabusName: string;
-  unit: number;
-}
-
-export interface TeacherItem {
+/**
+ * Docente asignado al paralelo del estudiante para una asignatura.
+ * Retornado por GET /api/student/catalogs/subjects/{subjectId}/teacher
+ */
+export interface StudentSubjectTeacher {
   teacherId: number;
-  fullName: string;      // Backend uses fullName, not teacherName
-  email: string;         // Backend uses email, not teacherEmail
-  modalityId?: number;
-}
-
-export interface ModalityItem {
-  modalityId: number;
-  modalityName: string;
+  fullName: string;
+  email: string;
 }
 
 export interface SessionTypeItem {
@@ -32,19 +24,22 @@ export interface SessionTypeItem {
   sessionTypeName: string;
 }
 
-export interface TimeSlotItem {
-  timeSlotId: number;
-  label: string;          // Backend uses label, not timeSlotLabel
-  timeSlotJson: string;
+/**
+ * Periodo académico activo.
+ * Retornado por GET /api/student/catalogs/active-period
+ */
+export interface ActivePeriod {
+  periodId: number;
+  periodName: string;
 }
 
 /**
- * Franja horaria disponible para un docente específico.
- * Retornada por GET /api/student/catalogs/timeSlots/available
+ * Compañero matriculado en la misma asignatura.
+ * Retornado por GET /api/student/catalogs/subjects/{subjectId}/classmates
  */
-export interface AvailableTimeSlotItem {
-  timeSlotId: number;
-  label: string;
-  timeSlotJson: string;
+export interface ClassmateItem {
+  studentId: number;
+  fullName: string;
+  email: string;
 }
 

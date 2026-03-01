@@ -1,46 +1,14 @@
 /**
  * Student Request Models
- * DTOs for request creation and preview endpoints
+ * DTOs para creación de solicitudes de refuerzo (simplificado)
  */
 
-// Preview Request
-export interface RequestPreviewPayload {
-  syllabusId: number;
-  teacherId: number;
-  timeSlotId: number;
-  modalityId: number;
-  sessionTypeId: number;
-}
-
-export interface RequestPreviewResponse {
-  subjectId: number;
-  subjectName: string;
-  syllabusId: number;
-  syllabusName: string;
-  unit: number;
-  teacherId: number;
-  teacherName: string;
-  teacherEmail: string;
-  modalityId: number;
-  modalityName: string;
-  sessionTypeId: number;
-  sessionTypeName: string;
-  timeSlotId: number;
-  timeSlotLabel: string;
-  timeSlotJson: string;
-}
-
-// Create Request
+// Create Request (simplificado - docente y periodo se resuelven en backend)
 export interface CreateRequestPayload {
-  syllabusId: number;
-  teacherId: number;
-  timeSlotId: number;
-  modalityId: number;
+  subjectId: number;
   sessionTypeId: number;
   reason: string;
-  requestedDay: number;
-  fileUrl?: string | null;
-  periodId: number;
+  participantIds?: number[];  // IDs de compañeros para sesiones grupales
 }
 
 export interface CreateRequestResponse {

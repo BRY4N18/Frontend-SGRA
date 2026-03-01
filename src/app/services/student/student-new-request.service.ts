@@ -5,23 +5,20 @@ import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import {
   SubjectItem,
-  SyllabusItem,
-  TeacherItem,
-  ModalityItem,
   SessionTypeItem,
-  TimeSlotItem,
-  AvailableTimeSlotItem
+  StudentSubjectTeacher,
+  ActivePeriod,
+  ClassmateItem
 } from '../../models/student/catalog.model';
 import {
   CreateRequestPayload,
-  CreateRequestResponse,
-  RequestPreviewPayload,
-  RequestPreviewResponse
+  CreateRequestResponse
 } from '../../models/student/request.model';
 
 /**
  * StudentNewRequestService
- * Service for creating new reinforcement requests
+ * Servicio simplificado para crear solicitudes de refuerzo.
+ * El estudiante solo elige: asignatura, tipo de sesión, motivo y archivos.
  */
 @Injectable({
   providedIn: 'root'
@@ -32,8 +29,9 @@ export class StudentNewRequestService {
 
   constructor(private http: HttpClient) {}
 
-  // ==================== CATALOGS ====================
+  // ==================== CATÁLOGOS ====================
 
+  /** Obtiene las asignaturas en las que el estudiante está matriculado (periodo activo) */
   getSubjects(): Observable<SubjectItem[]> {
     return this.http.get<SubjectItem[]>(
       `${this.baseUrl}/student/catalogs/subjects`,
@@ -41,27 +39,15 @@ export class StudentNewRequestService {
     ).pipe(catchError(this.handleError));
   }
 
-  getSyllabiBySubject(subjectId: number): Observable<SyllabusItem[]> {
-    return this.http.get<SyllabusItem[]>(
-      `${this.baseUrl}/student/catalogs/subjects/${subjectId}/syllabi`,
+  /** Obtiene el docente asignado al paralelo del estudiante para una asignatura */
+  getTeacherBySubject(subjectId: number): Observable<StudentSubjectTeacher> {
+    return this.http.get<StudentSubjectTeacher>(
+      `${this.baseUrl}/student/catalogs/subjects/${subjectId}/teacher`,
       this.httpOptions
     ).pipe(catchError(this.handleError));
   }
 
-  getTeachers(modalityId?: number): Observable<TeacherItem[]> {
-    const url = modalityId
-      ? `${this.baseUrl}/student/catalogs/teachers?modalityId=${modalityId}`
-      : `${this.baseUrl}/student/catalogs/teachers`;
-    return this.http.get<TeacherItem[]>(url, this.httpOptions).pipe(catchError(this.handleError));
-  }
-
-  getModalities(): Observable<ModalityItem[]> {
-    return this.http.get<ModalityItem[]>(
-      `${this.baseUrl}/student/catalogs/modalities`,
-      this.httpOptions
-    ).pipe(catchError(this.handleError));
-  }
-
+  /** Lista los tipos de sesión (Individual, Grupal) */
   getSessionTypes(): Observable<SessionTypeItem[]> {
     return this.http.get<SessionTypeItem[]>(
       `${this.baseUrl}/student/catalogs/sessionTypes`,
@@ -69,49 +55,50 @@ export class StudentNewRequestService {
     ).pipe(catchError(this.handleError));
   }
 
-  getTimeSlots(): Observable<TimeSlotItem[]> {
-    return this.http.get<TimeSlotItem[]>(
-      `${this.baseUrl}/student/catalogs/timeSlots`,
+  /** Obtiene el periodo académico activo */
+  getActivePeriod(): Observable<ActivePeriod> {
+    return this.http.get<ActivePeriod>(
+      `${this.baseUrl}/student/catalogs/active-period`,
       this.httpOptions
     ).pipe(catchError(this.handleError));
   }
+
+  /** Obtiene los compañeros matriculados en la misma asignatura */
+  getClassmatesBySubject(subjectId: number): Observable<ClassmateItem[]> {
+    return this.http.get<ClassmateItem[]>(
+      `${this.baseUrl}/student/catalogs/subjects/${subjectId}/classmates`,
+      this.httpOptions
+    ).pipe(catchError(this.handleError));
+  }
+
+  // ==================== CREAR SOLICITUD ====================
 
   /**
-   * Obtiene las franjas horarias disponibles para un docente específico.
-   * Filtra por disponibilidad del docente y excluye franjas ocupadas.
+   * Crea una nueva solicitud de refuerzo.
+   * Envía los datos como multipart/form-data (JSON + archivos).
    *
-   * @param teacherId ID del docente
-   * @param dayOfWeek Día de la semana (1=Lunes, 7=Domingo)
-   * @param periodId ID del período académico
-   * @returns Observable con lista de franjas disponibles
+   * @param payload Datos de la solicitud (subjectId, sessionTypeId, reason, participantIds)
+   * @param files   Archivos opcionales a adjuntar
    */
-  getAvailableTimeSlots(teacherId: number, dayOfWeek: number, periodId: number): Observable<AvailableTimeSlotItem[]> {
-    const params = `teacherId=${teacherId}&dayOfWeek=${dayOfWeek}&periodId=${periodId}`;
-    return this.http.get<AvailableTimeSlotItem[]>(
-      `${this.baseUrl}/student/catalogs/timeSlots/available?${params}`,
-      this.httpOptions
-    ).pipe(catchError(this.handleError));
-  }
+  createRequest(payload: CreateRequestPayload, files: File[] = []): Observable<CreateRequestResponse> {
+    const formData = new FormData();
 
-  // ==================== REQUEST ACTIONS ====================
+    // Agregar el JSON como parte "request"
+    formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
 
-  previewRequest(payload: RequestPreviewPayload): Observable<RequestPreviewResponse> {
-    return this.http.post<RequestPreviewResponse>(
-      `${this.baseUrl}/student/requests/preview`,
-      payload,
-      this.httpOptions
-    ).pipe(catchError(this.handleError));
-  }
+    // Agregar archivos
+    for (const file of files) {
+      formData.append('files', file);
+    }
 
-  createRequest(payload: CreateRequestPayload): Observable<CreateRequestResponse> {
     return this.http.post<CreateRequestResponse>(
       `${this.baseUrl}/student/requests`,
-      payload,
-      this.httpOptions
+      formData,
+      { withCredentials: true }
     ).pipe(catchError(this.handleError));
   }
 
-  // ==================== ERROR HANDLING ====================
+  // ==================== MANEJO DE ERRORES ====================
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let message = 'Ha ocurrido un error inesperado';
@@ -122,9 +109,6 @@ export class StudentNewRequestService {
       message = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
     } else if (error.status === 400) {
       message = error.error?.message || 'Datos inválidos.';
-    } else if (error.status === 409) {
-      // Conflict: La franja horaria no está disponible
-      message = error.error?.message || 'La franja horaria seleccionada ya no está disponible.';
     } else if (error.status >= 500) {
       message = 'Error en el servidor. Intenta más tarde.';
     } else if (error.error?.message) {

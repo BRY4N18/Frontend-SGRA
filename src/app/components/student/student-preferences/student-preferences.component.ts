@@ -50,6 +50,22 @@ import {
 
       <!-- Preferences Form -->
       @if (!loading) {
+
+        <!-- Welcome message for new users -->
+        @if (isNewUser) {
+          <div class="alert alert-info border-0 shadow-sm mb-3">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+              <div>
+                <h6 class="fw-bold mb-1">¡Bienvenido! Configura tus preferencias</h6>
+                <p class="mb-0 text-muted">
+                  Aún no tienes preferencias de notificación configuradas. Selecciona cómo deseas recibir
+                  avisos sobre tus solicitudes de refuerzo y guarda los cambios.
+                </p>
+              </div>
+            </div>
+          </div>
+        }
         <div class="card border-0 shadow-sm">
           <div class="card-header bg-white border-0 py-3">
             <h5 class="mb-0">
@@ -164,6 +180,7 @@ export class StudentPreferencesComponent implements AfterViewInit {
   // State
   loading = true;
   saving = false;
+  isNewUser = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
@@ -190,13 +207,14 @@ export class StudentPreferencesComponent implements AfterViewInit {
     // Load channels and current preference in parallel
     Promise.all([
       this.svc.getActiveChannels().toPromise(),
-      this.svc.getMyPreference().toPromise()
+      this.svc.getMyPreference().toPromise().catch(() => null)
     ]).then(([channels, preference]) => {
       this.channels = channels || [];
 
-      // Handle the case where preference comes as { preference: null }
-      if (preference && 'preference' in preference) {
+      // Handle null/empty/wrapper responses - student has no preference yet
+      if (!preference || (typeof preference === 'object' && 'preference' in preference)) {
         this.currentPreference = null;
+        this.isNewUser = true;
       } else {
         this.currentPreference = preference as StudentPreferenceDTO | null;
       }
@@ -248,6 +266,7 @@ export class StudentPreferencesComponent implements AfterViewInit {
     this.svc.saveMyPreference(this.form).subscribe({
       next: (response) => {
         this.saving = false;
+        this.isNewUser = false;
         this.successMessage = response.message || 'Preferencias guardadas exitosamente';
 
         // Update current preference to reflect saved values

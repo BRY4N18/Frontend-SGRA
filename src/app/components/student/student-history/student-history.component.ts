@@ -75,7 +75,7 @@ type TabType = 'requests' | 'sessions';
                   <tr>
                     <th>FECHA</th>
                     <th>ASIGNATURA</th>
-                    <th>TEMA</th>
+                    <th>MOTIVO</th>
                     <th>DOCENTE</th>
                     <th>TIPO</th>
                     <th>ESTADO</th>
@@ -104,8 +104,8 @@ type TabType = 'requests' | 'sessions';
                         </td>
                         <td>{{ r.subjectName }}</td>
                         <td>
-                          <div>{{ r.syllabusName }}</div>
-                          <small class="text-muted">Unidad {{ r.unit }}</small>
+                          <div>{{ r.reason }}</div>
+                          <small class="text-muted">Semestre {{ r.unit }}</small>
                         </td>
                         <td>{{ r.teacherName }}</td>
                         <td><span class="badge bg-light text-dark border">{{ r.sessionType }}</span></td>
@@ -163,7 +163,7 @@ type TabType = 'requests' | 'sessions';
                   <tr>
                     <th>FECHA</th>
                     <th>ASIGNATURA</th>
-                    <th>TEMA</th>
+                    <th>MOTIVO</th>
                     <th>DOCENTE</th>
                     <th>DURACIÓN</th>
                     <th>ASISTENCIA</th>
@@ -194,7 +194,7 @@ type TabType = 'requests' | 'sessions';
                         <td>{{ s.subjectName }}</td>
                         <td>
                           <div>{{ s.syllabusName }}</div>
-                          <small class="text-muted">Unidad {{ s.unit }}</small>
+                          <small class="text-muted">Semestre {{ s.unit }}</small>
                         </td>
                         <td>{{ s.teacherName }}</td>
                         <td>{{ s.duration || '-' }}</td>
