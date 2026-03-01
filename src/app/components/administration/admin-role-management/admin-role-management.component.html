@@ -1,51 +1,76 @@
-<div class="container-fluid p-0">
+<div class="container-fluid p-0 mb-5">
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h2 class="fw-bold text-dark mb-0">Gestión de Roles</h2>
-      <p class="text-muted mb-0">Administra las roles</p>
+      <p class="text-muted mb-0">Administra los roles y su conexión de seguridad.</p>
     </div>
-    <button type="button" class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2"
-      (click)="prepareCreate()">
-      <i class="bi bi-plus-lg"></i> Nuevo Rol
-    </button>
   </div>
 
-  <div class="card border-0 rounded-4 shadow-sm">
-    <div class="card-body p-4">
+  <ul class="nav nav-pills mb-4 gap-2 border-bottom pb-3" id="rolesTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active fw-medium px-4 rounded-pill d-flex align-items-center gap-2"
+              id="app-roles-tab" data-bs-toggle="pill" data-bs-target="#app-roles" type="button" role="tab">
+        <i class="bi bi-people-fill"></i> Roles del servidor
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-medium px-4 rounded-pill d-flex align-items-center gap-2"
+              id="server-roles-tab" data-bs-toggle="pill" data-bs-target="#server-roles" type="button" role="tab">
+        <i class="bi bi-database-fill-gear"></i> Conexión con roles del servidor
+      </button>
+    </li>
+  </ul>
 
-      <div class="row g-3 mb-3 align-items-end">
+  <div class="tab-content" id="rolesTabContent">
 
-        <div class="col-12 col-md-8">
-          <label class="form-label text-dark small fw-medium mb-1 ps-1">Buscar</label>
-          <div class="input-group">
-            <input type="text" class="form-control bg-light border-0 py-2 ps-3 shadow-none"
-              placeholder="Buscar por roles..." [formControl]="searchControl">
-            <span class="input-group-text bg-light border-0 text-muted pe-3">
-              <i class="bi bi-search"></i>
-            </span>
-          </div>
-        </div>
+    <div class="tab-pane fade show active" id="app-roles" role="tabpanel">
 
-        <div class="col-12 col-md-4">
-          <label class="form-label text-dark small fw-medium mb-1">Estado</label>
-          <select class="form-select bg-light border-0 py-2 shadow-none text-muted fw-medium"
-            [formControl]="statusControl" style="cursor: pointer;">
-            <option value="">Todos</option>
-            <option value="true">Activos</option>
-            <option value="false">Inactivos</option>
-          </select>
-        </div>
+      <div class="d-flex justify-content-end mb-3">
+        <button type="button" class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2"
+          (click)="prepareCreate()">
+          <i class="bi bi-plus-lg"></i> Nuevo Rol
+        </button>
       </div>
 
       <div class="card border-0 rounded-4 shadow">
         <div class="card-body p-4">
+
+          <div class="row g-3 mb-4 align-items-end">
+            <div class="col-12 col-md-8">
+              <label class="form-label text-dark small fw-medium mb-1 ps-1">Buscar</label>
+              <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 py-2 ps-3 shadow-none"
+                  placeholder="Buscar por roles..." [formControl]="searchControl">
+                <span class="input-group-text bg-light border-0 text-muted pe-3">
+                  <i class="bi bi-search"></i>
+                </span>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label text-dark small fw-medium mb-1">Estado</label>
+              <select class="form-select bg-light border-0 py-2 shadow-none text-muted fw-medium"
+                [formControl]="statusControl" style="cursor: pointer;">
+                <option value="">Todos</option>
+                <option value="true">Activos</option>
+                <option value="false">Inactivos</option>
+              </select>
+            </div>
+          </div>
+
           <app-admin-role-table [roles]="roles" [isLoading]="isLoading"
             (editRole)="prepareEdit($event)"></app-admin-role-table>
+
         </div>
       </div>
-
     </div>
 
-<app-admin-role-create-modal (roleCreated)="loadRoles()"
-      [roleToEdit]="selectedRoleToEdit"></app-admin-role-create-modal>
+    <div class="tab-pane fade" id="server-roles" role="tabpanel">
+      <app-admin-role-management-server-connection></app-admin-role-management-server-connection>
+    </div>
+
+  </div>
+</div>
+
+<app-admin-role-create-modal (roleCreated)="loadRoles()" [roleToEdit]="selectedRoleToEdit"></app-admin-role-create-modal>
