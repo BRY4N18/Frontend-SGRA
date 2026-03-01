@@ -53,9 +53,9 @@ import {
 
         <!-- Welcome message for new users -->
         @if (isNewUser) {
-          <div class="alert alert-info border-0 shadow-sm mb-3">
+          <div class="alert alert-success border-0 shadow-sm mb-3">
             <div class="d-flex align-items-start">
-              <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+              <i class="bi bi-info-circle-fill fs-4 me-3 text-success"></i>
               <div>
                 <h6 class="fw-bold mb-1">¡Bienvenido! Configura tus preferencias</h6>
                 <p class="mb-0 text-muted">

@@ -26,8 +26,8 @@ export class StudentLayoutComponent implements OnInit {
 
   navItems = [
     { path: '/student/dashboard', label: 'Dashboard', icon: 'bi-grid' },
-    { path: '/student/new-request', label: 'Nueva Solicitud', icon: 'bi-plus-square' },
     { path: '/student/my-requests', label: 'Mis Solicitudes', icon: 'bi-card-list' },
+    { path: '/student/new-request', label: 'Nueva Solicitud', icon: 'bi-plus-square' },
     { path: '/student/history', label: 'Historial', icon: 'bi-clock-history' },
     { path: '/student/preferences', label: 'Preferencias', icon: 'bi-gear' }
   ];

@@ -35,12 +35,12 @@ type TabType = 'requests' | 'invitations';
       <!-- Tabs -->
       <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'requests'" (click)="switchTab('requests')">
+          <button class="nav-link" [class.active]="activeTab === 'requests'" [class.text-success]="activeTab !== 'requests'" (click)="switchTab('requests')">
             <i class="bi bi-card-list me-2"></i>Mis Solicitudes
           </button>
         </li>
         <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'invitations'" (click)="switchTab('invitations')">
+          <button class="nav-link" [class.active]="activeTab === 'invitations'" [class.text-success]="activeTab !== 'invitations'" (click)="switchTab('invitations')">
             <i class="bi bi-people me-2"></i>Invitaciones Grupales
             @if (invitations.length > 0) {
               <span class="badge bg-danger ms-1">{{ invitations.length }}</span>
@@ -343,7 +343,7 @@ type TabType = 'requests' | 'invitations';
         <div class="card border-0 shadow-sm">
           <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
-              <i class="bi bi-people me-2 text-primary"></i>
+              <i class="bi bi-people me-2 text-success"></i>
               Invitaciones a Tutorías Grupales
             </h5>
             <button class="btn btn-outline-secondary btn-sm" (click)="loadInvitations()" [disabled]="loadingInvitations">
@@ -396,7 +396,7 @@ type TabType = 'requests' | 'invitations';
                           <span class="badge bg-light text-dark border me-2">
                             <i class="bi bi-people me-1"></i> {{ inv.totalAccepted }}/{{ inv.totalInvited }} aceptaron
                           </span>
-                          <span class="badge bg-info text-dark">
+                          <span class="badge bg-success text-white">
                             {{ inv.sessionType }}
                           </span>
                         </div>

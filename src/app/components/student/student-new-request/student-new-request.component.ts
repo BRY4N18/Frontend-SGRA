@@ -102,7 +102,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
 
             <!-- Compañeros seleccionados (visible solo en Grupal) -->
             @if (isGroupSession() && selectedClassmates.length > 0) {
-              <div class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+              <div class="alert alert-success d-flex align-items-center justify-content-between mb-3">
                 <div>
                   <i class="bi bi-people-fill me-2"></i>
                   <strong>{{ selectedClassmates.length }}</strong> compañero{{ selectedClassmates.length > 1 ? 's' : '' }} seleccionado{{ selectedClassmates.length > 1 ? 's' : '' }}
@@ -110,7 +110,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
                     ({{ getSelectedNames() }})
                   </span>
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary" (click)="openClassmatesModal()">
+                <button type="button" class="btn btn-sm btn-outline-success" (click)="openClassmatesModal()">
                   <i class="bi bi-pencil me-1"></i>Editar
                 </button>
               </div>
@@ -198,7 +198,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
               <div class="modal-body">
                 @if (loadingClassmates) {
                   <div class="text-center py-4">
-                    <span class="spinner-border text-primary" role="status"></span>
+                    <span class="spinner-border text-success" role="status"></span>
                     <p class="text-muted mt-2">Cargando compañeros...</p>
                   </div>
                 } @else if (classmates.length === 0) {
@@ -215,7 +215,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
                              [(ngModel)]="classmateSearch" [ngModelOptions]="{standalone: true}">
                     </div>
                     <div class="d-flex gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-primary"
+                      <button type="button" class="btn btn-sm btn-outline-success"
                               (click)="selectAllClassmates()">
                         <i class="bi bi-check-all me-1"></i>Seleccionar Todos
                       </button>
@@ -265,7 +265,7 @@ import { CreateRequestPayload } from '../../../models/student/request.model';
                 <button type="button" class="btn btn-secondary" (click)="closeClassmatesModal()">
                   Cancelar
                 </button>
-                <button type="button" class="btn btn-primary" (click)="confirmClassmatesSelection()"
+                <button type="button" class="btn btn-success" (click)="confirmClassmatesSelection()"
                         [disabled]="loadingClassmates">
                   <i class="bi bi-check-lg me-1"></i>
                   Confirmar ({{ tempSelectedIds.size }})
