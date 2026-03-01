@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { UploadResult } from '../../../models/coordination/coord-dataload';
 import { CoordDataloadService } from '../../../services/coordination/coord-dataload/coord-dataload.service';
 
-// 1. Definimos un tipo estricto para las 8 opciones de carga
-export type UploadType = 'periods' | 'careers' | 'subjects' | 'syllabi' | 'students' | 'teachers' | 'registrations' | 'schedules';
+// 1. Definimos un tipo estricto para las 3 opciones de carga
+export type UploadType = 'students' | 'registrations' | 'teachers';
 
 @Component({
   selector: 'app-coord-dataload',
@@ -16,11 +16,9 @@ export type UploadType = 'periods' | 'careers' | 'subjects' | 'syllabi' | 'stude
 })
 export class CoordDataloadComponent {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
-  @ViewChild('fileInputStudents') fileInputStudents!: ElementRef<HTMLInputElement>;
-  @ViewChild('fileInputTeachers') fileInputTeachers!: ElementRef<HTMLInputElement>;
 
   // Opción seleccionada para el dropdown
-  selectedOption = {
+  selectedOption: { id: UploadType; label: string; icon: string } = {
     id: 'students',
     label: 'Estudiantes',
     icon: 'bi bi-mortarboard',
@@ -76,29 +74,14 @@ export class CoordDataloadComponent {
     this.isLoading = true;
     let uploadObservable;
     switch (this.selectedOption.id) {
-      case 'periods':
-        uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile);
-        break;
-      case 'careers':
-        uploadObservable = this.dataloadService.uploadCareers(this.selectedFile);
-        break;
-      case 'subjects':
-        uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile);
-        break;
-      case 'syllabi':
-        uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile);
-        break;
       case 'students':
         uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile);
-        break;
-      case 'teachers':
-        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
         break;
       case 'registrations':
         uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile);
         break;
-      case 'schedules':
-        uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile);
+      case 'teachers':
+        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
         break;
       default:
         this.isLoading = false;
@@ -137,19 +120,10 @@ export class CoordDataloadComponent {
   // ===== NUEVO SISTEMA UNIFICADO =====
 
   // 2. Lista de opciones para generar el menú desplegable en el HTML dinámicamente
-  uploadOptions = [
-    { id: 'periods' as UploadType, label: 'Periodos Académicos', icon: 'bi bi-calendar' },
-    { id: 'careers' as UploadType, label: 'Carreras', icon: 'bi bi-building' },
-    { id: 'subjects' as UploadType, label: 'Asignaturas', icon: 'bi bi-book' },
-    { id: 'syllabi' as UploadType, label: 'Temarios', icon: 'bi bi-card-text' },
-    { id: 'students' as UploadType, label: 'Estudiantes', icon: 'bi bi-mortarboard' },
-    { id: 'teachers' as UploadType, label: 'Docentes', icon: 'bi bi-person-badge' },
-    {
-      id: 'registrations' as UploadType,
-      label: 'Matrículas de Estudiantes',
-      icon: 'bi bi-journal-check',
-    },
-    { id: 'schedules' as UploadType, label: 'Horarios de Clases', icon: 'bi bi-clock' },
+  uploadOptions: { id: UploadType; label: string; icon: string }[] = [
+    { id: 'students',     label: 'Estudiantes',           icon: 'bi bi-mortarboard'   },
+    { id: 'registrations', label: 'Matrículas',           icon: 'bi bi-journal-check' },
+    { id: 'teachers',     label: 'Docentes',              icon: 'bi bi-person-badge'  },
   ];
 
   selectedUploadType: UploadType = 'students';
@@ -247,43 +221,18 @@ export class CoordDataloadComponent {
       this.showError('Por favor, selecciona un archivo primero.');
       return;
     }
-    // Validación de prerrequisitos solo para Matrículas y Horarios
-    if (['registrations', 'schedules'].includes(this.selectedUploadType)) {
-      const tipoLabel =
-        this.uploadOptions.find((opt) => opt.id === this.selectedUploadType)?.label || '';
-      const mensaje = `¿Ya subiste todos los datos previos (periodos, carreras, asignaturas, temarios, estudiantes, docentes) para "${tipoLabel}"?\n\nSi no lo hiciste, la carga puede fallar. ¿Deseas continuar?`;
-      if (!window.confirm(mensaje)) {
-        this.showError('Carga cancelada. Por favor, sube primero los datos previos.');
-        return;
-      }
-    }
     this.isUploading = true;
     this.uploadProgress = 0;
     let uploadObservable;
     switch (this.selectedUploadType) {
-      case 'periods':
-        uploadObservable = this.dataloadService.uploadPeriods(this.selectedFile);
-        break;
-      case 'careers':
-        uploadObservable = this.dataloadService.uploadCareers(this.selectedFile);
-        break;
-      case 'subjects':
-        uploadObservable = this.dataloadService.uploadSubjects(this.selectedFile);
-        break;
-      case 'syllabi':
-        uploadObservable = this.dataloadService.uploadSyllabi(this.selectedFile);
-        break;
       case 'students':
         uploadObservable = this.dataloadService.uploadStudentsFile(this.selectedFile);
-        break;
-      case 'teachers':
-        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
         break;
       case 'registrations':
         uploadObservable = this.dataloadService.uploadRegistrations(this.selectedFile);
         break;
-      case 'schedules':
-        uploadObservable = this.dataloadService.uploadClassSchedules(this.selectedFile);
+      case 'teachers':
+        uploadObservable = this.dataloadService.uploadTeachersFile(this.selectedFile);
         break;
       default:
         this.isUploading = false;
@@ -472,29 +421,4 @@ export class CoordDataloadComponent {
     this.showPrerequisiteModal = false;
   }
 
-  // ===================================================================
-  // ===== CONTROL DE ARCHIVOS Y MÉTODOS "LEGACY" (DEPRECADOS) =========
-  // (Mantenidos para evitar que tu HTML actual se rompa si los usa)
-  // ===================================================================
-
-  selectedFileStudents: File | null = null;
-  selectedFileTeachers: File | null = null;
-  isDraggingStudents = false;
-  isDraggingTeachers = false;
-  isUploadingStudents = false;
-  isUploadingTeachers = false;
-  studentUploadProgress = 0;
-  teacherUploadProgress = 0;
-  studentUploadSuccess = false;
-  teacherUploadSuccess = false;
-
-  openFileSelectStudents(): void {
-    this.fileInputStudents.nativeElement.click();
-  }
-  openFileSelectTeachers(): void {
-    this.fileInputTeachers.nativeElement.click();
-  }
-
-  // ... (Aquí irían el resto de tus métodos antiguos como uploadStudents, uploadTeachers, onDropStudents, etc.
-  // No los he borrado, puedes copiarlos y pegarlos aquí al final del archivo tal y como los tenías si aún los necesitas).
 }

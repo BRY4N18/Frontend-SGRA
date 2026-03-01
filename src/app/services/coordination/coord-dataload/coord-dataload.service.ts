@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
   Student,
-  StudentUploadResponse,
   Teacher,
-  TeacherUploadResponse,
   UploadResult,
   UploadStats
 } from '../../../models/coordination/coord-dataload';
@@ -20,63 +18,21 @@ import {
   providedIn: 'root'
 })
 export class CoordDataloadService {
-  uploadClassSchedules(selectedFile: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-class-schedules`;
-    return this.http.post<string[]>(url, formData).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir horarios']);
-      })
-    );
-  }
+
   uploadRegistrations(selectedFile: File): Observable<string[]> {
     const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-registrations`;
-    return this.http.post<string[]>(url, formData).pipe(
+    formData.append('file', selectedFile, selectedFile.name);
+    return this.http.post<string[]>(
+      `${this.apiUrl}/academic/coordinations/upload-registrations`,
+      formData,
+      { withCredentials: true }
+    ).pipe(
       catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir matrículas']);
-      })
-    );
-  }
-  uploadSyllabi(selectedFile: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-syllabi`;
-    return this.http.post<string[]>(url, formData).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir temarios']);
-      })
-    );
-  }
-  uploadSubjects(selectedFile: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-subjects`;
-    return this.http.post<string[]>(url, formData).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir asignaturas']);
-      })
-    );
-  }
-  uploadCareers(selectedFile: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-careers`;
-    return this.http.post<string[]>(url, formData).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir carreras']);
-      })
-    );
-  }
-  uploadPeriods(selectedFile: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const url = `${environment.apiUrl}/academic/coordinations/upload-periods`;
-    return this.http.post<string[]>(url, formData).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return of([error.message || 'Error al subir periodos']);
+        console.error('Error al cargar matrículas:', error);
+        const errorMessage = typeof error.error === 'string'
+          ? error.error
+          : (error.message || 'Error al procesar el archivo de matrículas');
+        return of([`ERROR: ${errorMessage}`]);
       })
     );
   }
@@ -185,183 +141,14 @@ export class CoordDataloadService {
   }
 
   // ============================================
-  // MÉTODOS PARA CARRERAS, ASIGNATURAS, TEMARIOS, PERIODOS, MATRÍCULAS Y HORARIOS
+  // MÉTODOS DE CONSULTA
   // ============================================
-
-  /**
-   * Carga un archivo Excel de carreras al servidor
-   */
-  uploadCareersFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-careers`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar carreras:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Carga un archivo Excel de asignaturas al servidor
-   */
-  uploadSubjectsFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-subjects`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar asignaturas:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Carga un archivo Excel de temarios al servidor
-   */
-  uploadSyllabiFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-syllabi`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar temarios:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Carga un archivo Excel de periodos al servidor
-   */
-  uploadPeriodsFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-periods`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar periodos:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Carga un archivo Excel de matrículas al servidor
-   */
-  uploadRegistrationsFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-registrations`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar matrículas:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Carga un archivo Excel de horarios al servidor
-   */
-  uploadSchedulesFile(file: File): Observable<string[]> {
-    const formData = new FormData();
-    formData.append('file', file, file.name);
-    return this.http.post<string[]>(`${this.apiUrl}/academic/coordinations/upload-class-schedules`, formData, {
-      withCredentials: true
-    }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al cargar horarios:', error);
-        const errorMessage = typeof error.error === 'string'
-          ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
-      })
-    );
-  }
-
-  /**
-   * Obtiene la lista de carreras cargadas
-   */
-  getCareers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/careers`, {
-      withCredentials: true
-    }).pipe(
-      catchError(() => of([]))
-    );
-  }
-
-  /**
-   * Obtiene la lista de asignaturas cargadas
-   */
-  getSubjects(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/subjects`, {
-      withCredentials: true
-    }).pipe(
-      catchError(() => of([]))
-    );
-  }
-
-  /**
-   * Obtiene la lista de temarios cargados
-   */
-  getSyllabi(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/syllabi`, {
-      withCredentials: true
-    }).pipe(
-      catchError(() => of([]))
-    );
-  }
-
-  /**
-   * Obtiene la lista de periodos cargados
-   */
-  getPeriods(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/periods`, {
-      withCredentials: true
-    }).pipe(
-      catchError(() => of([]))
-    );
-  }
 
   /**
    * Obtiene la lista de matrículas cargadas
    */
   getRegistrations(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/registrations`, {
-      withCredentials: true
-    }).pipe(
-      catchError(() => of([]))
-    );
-  }
-
-  /**
-   * Obtiene la lista de horarios cargados
-   */
-  getSchedules(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/academic/coordinations/class-schedules`, {
       withCredentials: true
     }).pipe(
       catchError(() => of([]))
