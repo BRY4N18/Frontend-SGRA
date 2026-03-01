@@ -18,7 +18,7 @@ export class AdminDashboardService {
     return this.http.get<KpiMetric>(`${this.apiUrl}/security/user-role-managements/kpi-dashboard-management`).pipe(
       map((data: KpiMetric) => {
         return [
-          { id: '1', value: data.userActive, label: 'Usuarios Activos', icon: 'bi-people', theme: 'primary' },
+          { id: '1', value: data.userActive, label: 'Usuarios Activos', icon: 'bi-people', theme: 'success' },
           { id: '2', value: data.userIncative, label: 'Usuarios Inactivos', icon: 'bi-person-exclamation', theme: 'danger' },
           { id: '3', value: data.rolesActive, label: 'Roles Activos', icon: 'bi-shield-check', theme: 'success' },
           { id: '4', value: data.rolesInactive, label: 'Roles Inactivos', icon: 'bi-shield-x', theme: 'secondary' }

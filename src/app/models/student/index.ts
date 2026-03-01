@@ -7,5 +7,5 @@ export * from './catalog.model';
 export * from './request.model';
 export * from './history.model';
 export * from './preference.model';
-export * from './request-chips.model';
+export * from './invitation.model';
 

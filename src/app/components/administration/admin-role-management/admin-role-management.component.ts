@@ -6,6 +6,7 @@ import { AdminRoleTableComponent } from './admin-role-table/admin-role-table.com
 import { AdminRoleCreateModalComponent } from './admin-role-create-modal/admin-role-create-modal.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, combineLatest, startWith } from 'rxjs';
+import { AdminRoleManagementServerConnectionComponent } from "./admin-role-management-server-connection/admin-role-management-server-connection.component";
 
 declare var bootstrap: any;
 
@@ -17,7 +18,8 @@ declare var bootstrap: any;
     AdminRoleTableComponent,
     AdminRoleCreateModalComponent,
     ReactiveFormsModule,
-  ],
+    AdminRoleManagementServerConnectionComponent
+],
   templateUrl: './admin-role-management.component.html',
   styleUrl: './admin-role-management.component.css',
 })

@@ -4,6 +4,7 @@ import { GRole, GRoleCUD } from '../../../models/administration/admin-role-manag
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { SpResponse } from '../../../models/administration/SpResponse.model';
+import { GRoleApp, GRoleServer, GRolesAppServerCUD } from '../../../models/administration/admin-role-management/GAppRoleServers';
 
 @Injectable({
   providedIn: 'root',
@@ -34,4 +35,11 @@ export class AdminRoleManagementService {
     return this.http.put<SpResponse>(`${this.apiUrl}/security/role-managements/update-role`, roleData);
   }
 
+  getRoleServerMatrix(): Observable<GRoleApp[]> {
+    return this.http.get<GRoleApp[]>(`${this.apiUrl}/security/role-managements/list-rolesgroles-conexion`);
+  }
+
+  updateServerMappings(payload: GRolesAppServerCUD[]): Observable<SpResponse> {
+    return this.http.put<SpResponse>(`${this.apiUrl}/security/role-management-role/update-assignment`, payload);
+  }
 }
