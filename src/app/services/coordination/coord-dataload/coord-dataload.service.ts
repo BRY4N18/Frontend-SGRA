@@ -102,10 +102,18 @@ export class CoordDataloadService {
     }).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error('Error al cargar estudiantes:', error);
-        const errorMessage = typeof error.error === 'string'
+
+        // HTTP 422: el body ES el array de resultados con errores parciales (mismo formato que 200)
+        if (error.status === 422 && Array.isArray(error.error)) {
+          return of(error.error as string[]);
+        }
+
+        // Para cualquier otro error (400, 417, 500…), prefijamos "ERROR:" para que
+        // la clasificación en el componente lo marque correctamente como error
+        const raw = typeof error.error === 'string' && error.error.trim()
           ? error.error
-          : 'Error al procesar el archivo';
-        return of([errorMessage]);
+          : (error.message || 'Error al procesar el archivo de estudiantes');
+        return of([`ERROR: ${raw}`]);
       })
     );
   }
