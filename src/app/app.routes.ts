@@ -42,6 +42,10 @@ export const routes: Routes = [
         path: 'roles',
         loadComponent: () => import('./components/administration/admin-role-management/admin-role-management.component').then(m => m.AdminRoleManagementComponent)
       },
+      {
+        path: 'email-config',
+        loadComponent: () => import('./components/administration/admin-email-config/admin-email-config.component').then(m => m.AdminEmailConfigComponent)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

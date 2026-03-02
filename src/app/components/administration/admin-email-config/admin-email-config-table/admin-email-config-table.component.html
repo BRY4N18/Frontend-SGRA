@@ -1,0 +1,52 @@
+<div class="table-responsive">
+  <table class="table table-hover align-middle" aria-label="Tabla de configuraciones de correo">
+    <thead class="table-light">
+      <tr>
+        <th scope="col" class="py-3">Correo Electrónico</th>
+        <th scope="col" class="py-3">Fecha Creación</th>
+        <th scope="col" class="py-3">Estado</th>
+        <th scope="col" class="py-3 text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (config of emailConfigs; track config.pidconfiguracioncorreo) {
+        <tr>
+          <td class="fw-medium">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-envelope-fill text-success"></i>
+              {{ config.pcorreoemisor }}
+            </div>
+          </td>
+          <td class="text-muted">{{ config.pfechahoracreacion | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <span class="badge rounded-pill"
+                  [ngClass]="{
+                    'bg-success-subtle text-success': (config.pestadop | lowercase) === 'activo',
+                    'bg-danger-subtle text-danger': (config.pestadop | lowercase) === 'inactivo'
+                  }">
+              {{ config.pestadop }}
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-1">
+              <button class="btn btn-sm btn-outline-success" title="Editar configuración"
+                      (click)="onEditClick(config)"
+                      aria-label="Editar configuración de correo">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      } @empty {
+        @if (!isLoading) {
+          <tr>
+            <td colspan="4" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2 opacity-50"></i>
+              No se encontraron configuraciones de correo.
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
