@@ -1,25 +1,21 @@
-<div class="container-fluid p-0 mb-5">
+<div class="container-fluid">
 
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-3">
     <div>
-      <h2 class="fw-bold text-dark mb-1">Gestión de Permisos</h2>
+      <h3 class="mb-1">Gestión de Permisos</h3>
       <p class="text-muted mb-0">Configura qué puede ver o modificar cada rol en las tablas del sistema.</p>
     </div>
 
-    <div class="d-flex flex-wrap align-items-center gap-3 bg-white p-2 rounded-pill shadow-sm border">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+      <select class="form-select" id="roleSelector" (change)="onRoleChange($event)"
+              aria-label="Seleccionar rol">
+        <option value="" selected disabled>Seleccione un rol...</option>
+        @for (role of rolesList; track role.roleGId) {
+          <option [value]="role.roleGId">{{ role.roleG }}</option>
+        }
+      </select>
 
-      <div class="d-flex align-items-center ps-3 pe-2 border-end">
-        <label for="roleSelector" class="fw-bold text-muted small me-2 text-nowrap">Rol Activo:</label>
-        <select class="form-select border-0 shadow-none fw-medium text-dark bg-transparent" id="roleSelector"
-                style="min-width: 160px; cursor: pointer;" (change)="onRoleChange($event)">
-          <option value="" selected disabled>Seleccione un rol...</option>
-          @for (role of rolesList; track role.roleGId) {
-            <option [value]="role.roleGId">{{ role.roleG }}</option>
-          }
-        </select>
-      </div>
-
-      <button type="button" class="btn btn-success rounded-pill px-4 fw-medium shadow-sm d-flex align-items-center gap-2"
+      <button type="button" class="btn btn-success d-flex align-items-center gap-2"
               [disabled]="!selectedRole || isSaving" (click)="saveConfiguration()">
         @if (isSaving) {
           <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -28,13 +24,12 @@
           <i class="bi bi-floppy-fill"></i> Guardar Cambios
         }
       </button>
-
     </div>
   </div>
 
   <app-admin-permission-kpis [metrics]="metrics"></app-admin-permission-kpis>
 
-  <div class="card border-0 rounded-4 shadow-sm bg-transparent">
+  <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
       <app-admin-permission-matrix [schemas]="schemas" (permissionChanged)="calculateMetrics()"></app-admin-permission-matrix>
     </div>

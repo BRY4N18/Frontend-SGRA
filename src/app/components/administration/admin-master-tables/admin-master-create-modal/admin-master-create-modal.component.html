@@ -1,6 +1,6 @@
 <div class="modal fade" id="createMasterModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 border-0 shadow-lg">
+    <div class="modal-content rounded-3 border-0 shadow-lg">
 
       <div class="modal-header border-bottom-0 pt-4 pb-2 px-4">
         <div>
@@ -17,20 +17,20 @@
 
           <div>
             <div class="form-floating">
-              <input type="text" class="form-control bg-light border-0 shadow-none" id="name" formControlName="name" placeholder="Nombre"
+              <input type="text" class="form-control" id="name" formControlName="name" placeholder="Nombre"
                     [ngClass]="{'is-invalid': f['name'].invalid && (f['name'].dirty || f['name'].touched)}">
-              <label for="name" class="text-muted fw-medium">Nombre *</label>
+              <label for="name" class="text-muted">Nombre *</label>
             </div>
             @if (f['name'].hasError('required') && f['name'].touched) { <div class="text-danger mt-1 small">El nombre es obligatorio.</div> }
           </div>
 
           <div>
             <div class="form-floating">
-              <select class="form-select bg-light border-0 shadow-none" id="status" formControlName="status">
+              <select class="form-select" id="status" formControlName="status">
                 <option value="activo">Activo</option>
                 <option value="inactivo">Inactivo</option>
               </select>
-              <label for="status" class="text-muted fw-medium">Estado Inicial *</label>
+              <label for="status" class="text-muted">Estado Inicial *</label>
             </div>
           </div>
 

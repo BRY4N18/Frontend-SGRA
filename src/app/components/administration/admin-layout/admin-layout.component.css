@@ -1,24 +1,43 @@
+:host {
+  --sgra-primary: #1B7505;
+  --sgra-primary-dark: #124d1c;
+  --sgra-surface: #ffffff;
+  --sgra-border: rgba(255, 255, 255, 0.25);
+  --sgra-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .admin-sidebar {
   width: 17.5rem;
-  background-color: #1B7505;
-  transition: all 0.3s ease-in-out;
+  background-color: var(--sgra-primary);
+  transition: width 0.3s ease-in-out;
 }
 
-.admin-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: #1a6b27;
+.admin-sidebar.collapsed {
+  width: 5rem;
 }
 
-.btn-profile {
-  background-color: transparent;
-  transition: background-color 0.2s;
-  border-radius: 3.125rem;
-  padding: 0.3125rem 0.9375rem 0.3125rem 0.3125rem;
+.admin-sidebar.collapsed .brand-text,
+.admin-sidebar.collapsed .nav-label {
+  display: none;
 }
 
-.btn-profile:hover {
-  background-color: #f8f9fa;
+.admin-sidebar.collapsed .nav-icon {
+  margin-right: 0;
+}
+
+.sidebar-header {
+  transition: padding 0.3s ease-in-out;
+}
+
+.admin-sidebar.collapsed .sidebar-header {
+  padding: 1rem !important;
+}
+
+/* Navegación */
+.nav-icon {
+  font-size: 1.1rem;
+  margin-right: 0.625rem;
+  min-width: 1.25rem;
 }
 
 .nav-link,
@@ -39,7 +58,7 @@
 }
 
 .active-link {
-  background-color: #124d1c !important;
+  background-color: var(--sgra-primary-dark) !important;
   font-weight: 600;
   opacity: 1;
   border-left: 0.25rem solid #ffffff;
@@ -49,15 +68,55 @@
 .btn-logout {
   background-color: transparent;
   border: none;
-  width: 100%;
-  text-align: left;
+  cursor: pointer;
 }
 
 .btn-logout:hover {
   background-color: #9c5151;
 }
 
-.content-wrapper {
-  min-width: 0;
-  width: 0;
+/* Topbar */
+.btn-toggle-sidebar {
+  background-color: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.btn-toggle-sidebar:hover {
+  background-color: #f8f9fa;
+}
+
+.btn-icon {
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: #6c757d;
+  transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+  background-color: #f8f9fa;
+  color: var(--sgra-primary);
+}
+
+.user-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--sgra-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-profile {
+  background-color: transparent;
+  transition: background-color 0.2s;
+  border-radius: 3.125rem;
+  padding: 0.3125rem 0.9375rem 0.3125rem 0.3125rem;
+}
+
+.btn-profile:hover {
+  background-color: #f8f9fa;
 }

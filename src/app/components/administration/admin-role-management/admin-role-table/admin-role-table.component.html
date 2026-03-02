@@ -1,49 +1,46 @@
 <div class="table-responsive">
   <table class="table table-hover align-middle">
-    <thead class="bg-light text-secondary small text-uppercase fw-bold tracking-wide">
+    <thead class="table-light">
       <tr>
         <th scope="col" class="py-3">Nombre</th>
         <th scope="col" class="py-3">Descripción</th>
         <th scope="col" class="py-3">Permisos</th>
         <th scope="col" class="py-3">Estado</th>
         <th scope="col" class="py-3">Fecha Creación</th>
-        <th scope="col" class="py-3 text-end pe-4">Acciones</th>
+        <th scope="col" class="py-3 text-end">Acciones</th>
       </tr>
     </thead>
     <tbody>
-
       @for (role of roles; track role.idg) {
         <tr>
-          <td>{{ role.nombreg }}</td>
+          <td class="fw-medium">{{ role.nombreg }}</td>
           <td class="text-muted small">{{ role.descripciong }}</td>
           <td>
-            <span class="badge border text-dark fw-medium rounded-pill px-3 py-2">
+            <span class="badge bg-light text-dark border rounded-pill px-3">
               {{ role.permisosg }} permisos
             </span>
           </td>
           <td>
-            <span class="badge rounded-pill text-uppercase px-3 fw-bold"
+            <span class="badge rounded-pill"
                   [ngClass]="{
                     'bg-success-subtle text-success': (role.estadog | lowercase) === 'activo',
-                    'bg-danger-subtle text-danger': (role.estadog | lowercase)=== 'inactivo'
-                  }"
-                  style="font-size: 0.7rem; letter-spacing: 0.05em;">
+                    'bg-danger-subtle text-danger': (role.estadog | lowercase) === 'inactivo'
+                  }">
               {{ role.estadog }}
             </span>
           </td>
           <td class="text-muted small">{{ role.fechacreaciong | date:'dd/MM/yyyy' }}</td>
-          <td class="text-end pe-4">
-            <div class="d-inline-flex gap-2">
-              <button class="btn btn-sm btn-outline-success border-0 bg-light-hover" title="Editar" (click)="onEditClick(role)">
-                <i class="bi bi-pencil"></i>
-              </button>
-            </div>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-success" title="Editar"
+                    (click)="onEditClick(role)" aria-label="Editar rol">
+              <i class="bi bi-pencil"></i>
+            </button>
           </td>
         </tr>
       } @empty {
         @if (!isLoading) {
           <tr>
-            <td colspan="6" class="text-center py-5 text-muted fw-medium">
+            <td colspan="6" class="text-center py-5 text-muted">
               <i class="bi bi-shield-slash fs-1 d-block mb-2 opacity-50"></i>
               No hay roles registrados.
             </td>
