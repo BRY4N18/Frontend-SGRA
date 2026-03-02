@@ -1,0 +1,107 @@
+<div class="modal fade" id="emailConfigModal" tabindex="-1"
+     aria-labelledby="emailConfigModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-3 border-0 shadow-lg">
+
+      <!-- Header -->
+      <header class="modal-header border-bottom-0 pt-4 pb-2 px-4">
+        <div>
+          <h5 class="modal-title fw-bold fs-4 text-dark mb-1" id="emailConfigModalLabel">
+            {{ isEditing ? 'Editar Correo' : 'Nuevo Correo' }}
+          </h5>
+          <p class="text-muted small mb-0">
+            Ingrese el correo electrónico y su contraseña de aplicación.
+          </p>
+        </div>
+        <button type="button" class="btn-close mb-auto"
+                data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </header>
+
+      <!-- Body -->
+      <div class="modal-body px-4 py-3">
+        <form [formGroup]="emailForm" (ngSubmit)="onSubmit()"
+              class="d-flex flex-column gap-3" autocomplete="off">
+
+          <!-- Correo electrónico -->
+          <div>
+            <div class="form-floating">
+              <input type="email" class="form-control" id="emailInput"
+                     formControlName="email"
+                     placeholder="correo&#64;ejemplo.com"
+                     [ngClass]="{'is-invalid': f['email'].invalid && (f['email'].dirty || f['email'].touched)}">
+              <label for="emailInput" class="text-muted">
+                <i class="bi bi-envelope me-1"></i>Correo electrónico
+              </label>
+            </div>
+            @if (f['email'].hasError('required') && f['email'].touched) {
+              <div class="text-danger mt-1 small">El correo es obligatorio.</div>
+            }
+            @if (f['email'].hasError('email') && f['email'].touched) {
+              <div class="text-danger mt-1 small">Ingrese un correo electrónico válido.</div>
+            }
+          </div>
+
+          <!-- Contraseña de aplicación -->
+          <div>
+            <div class="input-group">
+              <div class="form-floating flex-grow-1">
+                <input [type]="showPassword ? 'text' : 'password'"
+                       class="form-control" id="appPasswordInput"
+                       formControlName="appPassword"
+                       placeholder="contraseña de aplicación"
+                       [ngClass]="{'is-invalid': f['appPassword'].invalid && (f['appPassword'].dirty || f['appPassword'].touched)}">
+                <label for="appPasswordInput" class="text-muted">
+                  <i class="bi bi-key me-1"></i>Contraseña de aplicación
+                </label>
+              </div>
+              <button type="button" class="btn btn-outline-secondary"
+                      (click)="togglePasswordVisibility()"
+                      [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+                <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            @if (f['appPassword'].hasError('required') && f['appPassword'].touched) {
+              <div class="text-danger mt-1 small">La contraseña de aplicación es obligatoria.</div>
+            }
+            @if (f['appPassword'].hasError('minlength') && f['appPassword'].touched) {
+              <div class="text-danger mt-1 small">Mínimo 8 caracteres.</div>
+            }
+          </div>
+
+          <!-- Estado -->
+          <div>
+            <div class="form-floating">
+              <select class="form-select" id="emailStatus" formControlName="status"
+                      [ngClass]="{'is-invalid': f['status'].invalid && f['status'].touched}">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+              <label for="emailStatus" class="text-muted">Estado</label>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <footer class="modal-footer border-top-0 px-4 pb-4 pt-1 justify-content-end gap-2">
+        <button type="button" class="btn btn-light rounded-3 px-4 fw-medium text-secondary"
+                data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-success rounded-3 px-4 fw-medium shadow-sm"
+                [disabled]="emailForm.invalid || isSubmitting"
+                (click)="onSubmit()">
+          @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm me-2"
+                  role="status" aria-hidden="true"></span>
+            {{ isEditing ? 'Guardando...' : 'Creando...' }}
+          } @else {
+            {{ isEditing ? 'Guardar Cambios' : 'Crear Configuración' }}
+          }
+        </button>
+      </footer>
+
+    </div>
+  </div>
+</div>

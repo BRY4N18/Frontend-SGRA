@@ -76,3 +76,21 @@ a:hover {
   color: #146c43;
 }
 
+/* ===== Layout fix: componentes standalone como block ===== */
+app-admin-layout {
+  display: block;
+  width: 100%;
+  height: 100vh;
+}
+
+app-admin-layout router-outlet + * {
+  display: block;
+  width: 100%;
+}
+
+app-admin-role-management-server-connection {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
