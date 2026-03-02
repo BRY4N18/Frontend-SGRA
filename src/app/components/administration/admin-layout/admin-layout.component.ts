@@ -30,7 +30,6 @@ export class AdminLayoutComponent implements OnInit {
     { path: '/admin/roles',         label: 'Roles',           icon: 'bi-person-badge' },
     { path: '/admin/permissions',   label: 'Permisos',        icon: 'bi-shield-lock' },
     { path: '/admin/master-tables', label: 'Tablas Maestras', icon: 'bi-table' },
-    { path: '/admin/email-config',  label: 'Correo',          icon: 'bi-envelope-at' },
   ];
 
   ngOnInit(): void {

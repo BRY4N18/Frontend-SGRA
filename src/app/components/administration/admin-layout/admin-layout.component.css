@@ -8,15 +8,12 @@
 
 .admin-sidebar {
   width: 17.5rem;
-  min-width: 17.5rem;
-  flex-shrink: 0;
   background-color: var(--sgra-primary);
-  transition: width 0.3s ease-in-out, min-width 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out;
 }
 
 .admin-sidebar.collapsed {
   width: 5rem;
-  min-width: 5rem;
 }
 
 .admin-sidebar.collapsed .brand-text,
