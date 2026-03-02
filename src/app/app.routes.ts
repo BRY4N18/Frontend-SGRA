@@ -50,14 +50,14 @@ export const routes: Routes = [
     loadComponent: () => import('./components/teacher/teacher-layout/teacher-layout.component').then(m => m.TeacherLayoutComponent),
     canActivate: [authGuard, roleGuard(['teacher', 'docente'])],
     children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./components/teacher/teacher-dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
-      },
-      {
-        path: 'requests',
-        loadComponent: () => import('./components/teacher/teacher-requests/teacher-requests.component').then(m => m.TeacherRequestsComponent)
-      },
+      // {
+      //   path: 'dashboard',
+      //   loadComponent: () => import('./components/teacher/teacher-dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
+      // },
+      // {
+      //   path: 'requests',
+      //   loadComponent: () => import('./components/teacher/teacher-requests/teacher-requests.component').then(m => m.TeacherRequestsComponent)
+      // },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

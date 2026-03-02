@@ -26,7 +26,6 @@ export interface TeacherRequestRowDTO {
     subjectName: string;
     topic: string;
     sessionType: string;
-    status: string;
     totalCount: number;
 }
 
