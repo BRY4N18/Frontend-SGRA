@@ -1,0 +1,20 @@
+:host { font-family: 'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif; }
+    .header-icon {
+      width:48px; height:48px; min-width:48px; border-radius:14px;
+      background:#1B7505; color:#fff; display:flex; align-items:center;
+      justify-content:center; font-size:1.4rem; border:1px solid #145904;
+    }
+    .modal-icon {
+      width:48px; height:48px; min-width:48px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font-size:1.3rem;
+    }
+    .chip-box { min-height:72px; border:1px solid #e0e0e0 !important; }
+    .chip-icon { width:40px; height:40px; min-width:40px; font-size:1.1rem; }
+    .label { color:#6c757d; font-size:.8rem; display:block; margin-bottom:2px; }
+    th { white-space:nowrap; font-size:.85rem; letter-spacing:.02em; }
+    td { vertical-align:middle; }
+    .table { border:1px solid #e0e0e0; border-radius:8px; overflow:hidden; }
+    .table thead th { border-bottom:2px solid #e0e0e0; }
+    .table tbody tr { border-bottom:1px solid #f0f0f0; }
+    .clickable-row { cursor:pointer; transition:background-color .15s; }
+    .clickable-row:hover { background-color:#edf7e8 !important; }

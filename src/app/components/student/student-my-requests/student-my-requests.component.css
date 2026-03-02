@@ -1,0 +1,4 @@
+.chip-box { min-height: 72px; }
+    th { white-space: nowrap; font-size: .85rem; letter-spacing: .02em; }
+    td { vertical-align: middle; }
+    .nav-link { cursor: pointer; }
