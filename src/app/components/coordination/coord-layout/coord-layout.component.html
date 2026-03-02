@@ -1,53 +1,72 @@
 <div class="d-flex vh-100 bg-light">
 
-  <aside class="coord-sidebar d-flex flex-column text-white shadow">
+  <!-- SIDEBAR -->
+  <aside class="coord-sidebar d-flex flex-column text-white shadow" [class.collapsed]="isSidebarCollapsed()">
     <div class="sidebar-header text-center p-4 border-bottom border-light border-opacity-25">
-      <i class="bi bi-mortarboard display-6 mb-2"></i>
-      <h6 class="m-0 fw-bold">Gestión de Refuerzos Académicos</h6>
+      <i class="bi bi-mortarboard-fill display-6 mb-2"></i>
+      <div class="brand-text">
+        <h6 class="m-0 fw-bold">Gestión de Refuerzos</h6>
+        <small class="text-light opacity-75">Portal Coordinación</small>
+      </div>
     </div>
 
     <ul class="nav nav-pills flex-column mb-auto p-3 gap-2">
-      <li class="nav-item">
-        <a routerLink="/coordinator/dashboard" routerLinkActive="active-link" class="nav-link text-white">
-          <i class="bi bi-speedometer2 me-2"></i> Dashboard
-        </a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="/coordinator/dataload" routerLinkActive="active-link" class="nav-link text-white">
-          <i class="bi bi-cloud-arrow-up me-2"></i> Carga de Información
-        </a>
-      </li>
-      <!-- <li class="nav-item">
-        <a routerLink="/coordinator/physicalspaces" routerLinkActive="active-link" class="nav-link text-white">
-          <i class="bi bi-building me-2"></i> Espacios Físicos
-        </a>
-      </li> -->
-      <!-- <li class="nav-item">
-        <a routerLink="/coordinator/reports" routerLinkActive="active-link" class="nav-link text-white">
-          <i class="bi bi-file-earmark-bar-graph me-2"></i> Reportes
-        </a>
-      </li> -->
+      @for (item of navItems; track item.path) {
+        <li class="nav-item">
+          <a [routerLink]="item.path" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            <i class="bi {{ item.icon }} nav-icon"></i>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
     </ul>
 
     <div class="p-3 border-top border-light border-opacity-25 mt-auto">
-      <button type="button" (click)="logout()" class="btn btn-logout text-white w-100 text-start d-flex align-items-center nav-link">
-        <i class="bi bi-box-arrow-left me-2"></i> Cerrar Sesión
+      <button type="button" (click)="logout()" class="btn btn-logout text-white w-100 text-start d-flex align-items-center nav-link logout-link">
+        <i class="bi bi-box-arrow-left nav-icon"></i>
+        <span class="nav-label">Cerrar Sesión</span>
       </button>
     </div>
   </aside>
 
+  <!-- MAIN CONTENT -->
   <div class="flex-grow-1 d-flex flex-column overflow-hidden">
 
+    <!-- TOPBAR -->
     <header class="bg-white shadow-sm p-3 d-flex justify-content-between align-items-center z-1">
-      <h5 class="m-0 text-secondary fw-semibold">SGRA | Coordinación</h5>
+      <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-toggle-sidebar" (click)="toggleSidebar()">
+          <i class="bi bi-list fs-5"></i>
+        </button>
+        <h5 class="m-0 text-secondary fw-semibold d-none d-md-block">SGRA | Sistema de Gestión de Refuerzos Académicos</h5>
+      </div>
 
-      <button type="button" class="btn btn-profile d-flex align-items-center gap-3 border-0">
-        <div class="coord-avatar rounded-circle text-white d-flex justify-content-center align-items-center shadow-sm">
-          <i class="bi bi-person-fill"></i>
+      <div class="d-flex align-items-center gap-3">
+
+
+        <div class="dropdown">
+          <button type="button" class="btn btn-profile d-flex align-items-center gap-2 border-0" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="user-avatar rounded-circle text-white d-flex justify-content-center align-items-center shadow-sm">
+              {{ userInitials() }}
+            </div>
+            <div class="d-none d-sm-block text-start">
+              <span class="fw-medium text-dark d-block lh-1">{{ userName() }}</span>
+              <small class="text-muted">{{ userRoleLabel() }}</small>
+            </div>
+            <i class="bi bi-chevron-down text-muted"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li>
+              <button class="dropdown-item text-danger" type="button" (click)="logout()">
+                <i class="bi bi-box-arrow-left me-2"></i>Cerrar Sesión
+              </button>
+            </li>
+          </ul>
         </div>
-      </button>
+      </div>
     </header>
 
+    <!-- CONTENT -->
     <main class="flex-grow-1 p-4 overflow-auto">
       <router-outlet></router-outlet>
     </main>

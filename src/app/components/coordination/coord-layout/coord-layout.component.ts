@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth/auth.service';
 
@@ -11,31 +11,38 @@ import { AuthService } from '../../../services/auth/auth.service';
   styleUrls: ['./coord-layout.component.css']
 })
 export class CoordLayoutComponent implements OnInit {
+  private authService = inject(AuthService);
 
-  // Variables para mostrar en la vista
-  currentYear: number = new Date().getFullYear();
-  userName: string = '';
-  isSidebarCollapsed: boolean = false;
+  isSidebarCollapsed = signal(false);
+  userName = signal('Coordinador');
+  userRoleLabel = signal('Coordinador');
 
-  public authService = inject(AuthService);
+  userInitials = computed(() => {
+    const parts = this.userName().trim().split(' ');
+    const first = parts[0]?.[0] ?? 'C';
+    const second = parts[1]?.[0] ?? '';
+    return (first + second).toUpperCase();
+  });
+
+  navItems = [
+    { path: '/coordinator/dashboard', label: 'Dashboard', icon: 'bi-speedometer2' },
+    { path: '/coordinator/dataload', label: 'Carga de Información', icon: 'bi-cloud-arrow-up' },
+  ];
 
   ngOnInit(): void {
-    // Obtener el nombre del usuario desde localStorage o usar un valor por defecto
-    this.userName = localStorage.getItem('userName') || 'Coordinador';
+    const user = this.authService.currentUser();
+    if (user) {
+      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      this.userName.set(fullName || user.username || 'Coordinador');
+      this.userRoleLabel.set('Coordinador');
+    }
   }
 
-  /**
-   * Método para cerrar sesión
-   * Limpia el almacenamiento local y redirige al login
-   */
+  toggleSidebar(): void {
+    this.isSidebarCollapsed.update(v => !v);
+  }
+
   logout(): void {
     this.authService.logout().subscribe();
-  }
-
-  /**
-   * Método opcional para ocultar/mostrar menú en móviles
-   */
-  toggleSidebar(): void {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 }

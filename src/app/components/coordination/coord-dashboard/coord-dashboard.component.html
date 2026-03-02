@@ -1,108 +1,305 @@
 <div class="container-fluid">
-  <h1 class="mb-4 fw-bold text-dark">Dashboard de Coordinación</h1>
 
-  <!-- Fila de Tarjetas de Estadísticas -->
-  <div class="row g-3 mb-4">
-
-    <!-- Tarjeta 1: Información Cargada -->
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm" style="border-left: 4px solid #198754;">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <p class="text-muted mb-2">Información Cargada</p>
-              <h3 class="mb-0 fw-bold">1,245</h3>
-            </div>
-            <i class="bi bi-cloud-check text-success" style="font-size: 2rem;"></i>
-          </div>
-          <small class="text-success">+12.5% desde el mes pasado</small>
-        </div>
-      </div>
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="mb-1 fw-bold">Dashboard</h3>
+      <p class="text-muted mb-0">Resumen del módulo de coordinación</p>
     </div>
-
-    <!-- Tarjeta 2: Espacios Físicos -->
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm" style="border-left: 4px solid #0d6efd;">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <p class="text-muted mb-2">Espacios Registrados</p>
-              <h3 class="mb-0 fw-bold">48</h3>
-            </div>
-            <i class="bi bi-building text-primary" style="font-size: 2rem;"></i>
-          </div>
-          <small class="text-primary">Disponibles</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tarjeta 3: Coordinadores Activos -->
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm" style="border-left: 4px solid #fd7e14;">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <p class="text-muted mb-2">Coordinadores Activos</p>
-              <h3 class="mb-0 fw-bold">12</h3>
-            </div>
-            <i class="bi bi-people-fill text-warning" style="font-size: 2rem;"></i>
-          </div>
-          <small class="text-warning">En el sistema</small>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tarjeta 4: Reportes Pendientes -->
-    <div class="col-md-6 col-lg-3">
-      <div class="card border-0 shadow-sm" style="border-left: 4px solid #dc3545;">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <p class="text-muted mb-2">Reportes Pendientes</p>
-              <h3 class="mb-0 fw-bold">5</h3>
-            </div>
-            <i class="bi bi-exclamation-circle text-danger" style="font-size: 2rem;"></i>
-          </div>
-          <small class="text-danger">Requieren revisión</small>
-        </div>
-      </div>
-    </div>
+    <button class="btn btn-report" data-bs-toggle="modal" data-bs-target="#reportModal">
+      <i class="bi bi-file-earmark-arrow-down me-2"></i>Generar Reporte
+    </button>
   </div>
 
-  <!-- Gráficos/Tabla de Actividad -->
-  <div class="row g-3">
-    <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-light border-bottom">
-          <h5 class="mb-0 fw-bold">Actividad Reciente</h5>
-        </div>
+  <!-- KPI Cards -->
+  <div class="row g-3 mb-4">
+
+    <!-- Porcentaje de Asistencia -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm kpi-card">
         <div class="card-body">
-          <p class="text-muted text-center py-4">Gráfico de actividad (próximas integraciones)</p>
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-wrapper rounded-3 me-3 kpi-green">
+              <i class="bi bi-graph-up-arrow fs-4 text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="card-title mb-0 text-muted">Porcentaje de Asistencia</h6>
+            </div>
+          </div>
+          <div class="display-5 fw-bold text-dark">87%</div>
+          <small class="text-muted">De las sesiones programadas</small>
         </div>
       </div>
     </div>
 
-    <div class="col-lg-4">
-      <div class="card border-0 shadow-sm">
-        <div class="card-header bg-light border-bottom">
-          <h5 class="mb-0 fw-bold">Próximas Tareas</h5>
-        </div>
+    <!-- Total de Solicitudes -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm kpi-card">
         <div class="card-body">
-          <ul class="list-unstyled">
-            <li class="pb-2 border-bottom">
-              <small class="d-block text-muted">Hoy</small>
-              <span class="fw-bold">Revisar cargas de información</span>
-            </li>
-            <li class="py-2 border-bottom">
-              <small class="d-block text-muted">Mañana</small>
-              <span class="fw-bold">Validar espacios físicos</span>
-            </li>
-            <li class="pt-2">
-              <small class="d-block text-muted">La próxima semana</small>
-              <span class="fw-bold">Generar reportes consolidados</span>
-            </li>
-          </ul>
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-wrapper rounded-3 me-3 kpi-blue">
+              <i class="bi bi-clipboard-data fs-4 text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="card-title mb-0 text-muted">Total de Solicitudes</h6>
+            </div>
+          </div>
+          <div class="display-5 fw-bold text-dark">156</div>
+          <small class="text-muted">128 gestionadas &middot; 28 pendientes</small>
         </div>
+      </div>
+    </div>
+
+    <!-- Tasa de Inasistencia -->
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card h-100 border-0 shadow-sm kpi-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-wrapper rounded-3 me-3 kpi-amber">
+              <i class="bi bi-person-x-fill fs-4 text-white"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="card-title mb-0 text-muted">Tasa de Inasistencia</h6>
+            </div>
+          </div>
+          <div class="display-5 fw-bold text-dark">8.5%</div>
+          <small class="text-muted">No-shows registrados</small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fila 1: Gráfico de Barras + Donut -->
+  <div class="row g-3 mb-3">
+
+    <!-- Gráfico de Barras Apiladas: Solicitudes por materia -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-transparent border-0 p-4 pb-0">
+          <h5 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-bar-chart-line text-success me-2"></i>Solicitudes por Materia
+          </h5>
+          <p class="text-muted mb-0 small mt-1">Gestionadas vs. Pendientes por materia</p>
+        </div>
+        <div class="card-body p-4">
+          <div class="chart-container-bar">
+            <canvas #barChartCanvas></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Donut: Presencial vs Virtual -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-transparent border-0 p-4 pb-0">
+          <h5 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-pie-chart text-success me-2"></i>Modalidad
+          </h5>
+          <p class="text-muted mb-0 small mt-1">Presencial vs. Virtual</p>
+        </div>
+        <div class="card-body p-4 d-flex align-items-center justify-content-center">
+          <div class="chart-container-donut">
+            <canvas #donutChartCanvas></canvas>
+            <div class="donut-center">
+              <span class="fw-bold fs-4 text-dark">156</span>
+              <small class="text-muted d-block">TOTAL</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══════════════ MODAL: Generar Reporte ══════════════ -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content report-modal-shell border-0">
+      <div class="d-flex" style="min-height: 560px;">
+
+        <!-- ── Panel Izquierdo (Oscuro) ── -->
+        <div class="report-left-panel p-4 d-flex flex-column">
+
+          <!-- Encabezado -->
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="report-brand-icon">
+              <i class="bi bi-file-earmark-bar-graph-fill"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold text-dark mb-0" id="reportModalLabel">Generar Reporte</h6>
+              <small class="report-muted-text">Configura tu informe</small>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <!-- Periodo -->
+          <div class="mb-4">
+            <p class="report-section-label">PERIODO</p>
+            <div class="period-grid">
+              <div class="period-tile">
+                <i class="bi bi-calendar-week"></i>
+                <span>Último mes</span>
+              </div>
+              <div class="period-tile">
+                <i class="bi bi-calendar3"></i>
+                <span>Trimestre</span>
+              </div>
+              <div class="period-tile active">
+                <i class="bi bi-calendar-check"></i>
+                <span>Semestre</span>
+              </div>
+              <div class="period-tile">
+                <i class="bi bi-calendar4-range"></i>
+                <span>Año completo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Métricas -->
+          <div class="mb-4">
+            <p class="report-section-label">MÉTRICAS</p>
+            <div class="d-flex flex-column gap-2">
+              <div class="metric-chip active-green">
+                <span class="metric-dot" style="background:#198754"></span>
+                <span>Porc. de Asistencia</span>
+                <i class="bi bi-check-circle-fill ms-auto"></i>
+              </div>
+              <div class="metric-chip active-blue">
+                <span class="metric-dot" style="background:#3b82f6"></span>
+                <span>Total de Solicitudes</span>
+                <i class="bi bi-check-circle-fill ms-auto"></i>
+              </div>
+              <div class="metric-chip active-amber">
+                <span class="metric-dot" style="background:#f59e0b"></span>
+                <span>Tasa de Inasistencia</span>
+                <i class="bi bi-check-circle-fill ms-auto"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráficos -->
+          <div class="mb-4">
+            <p class="report-section-label">GRÁFICOS</p>
+            <div class="d-flex flex-column gap-2">
+              <div class="metric-chip active-gray">
+                <span class="metric-dot" style="background:#6c757d"></span>
+                <span>Solicitudes por Materia</span>
+                <i class="bi bi-check-circle-fill ms-auto"></i>
+              </div>
+              <div class="metric-chip active-gray">
+                <span class="metric-dot" style="background:#6c757d"></span>
+                <span>Distribución Modalidad</span>
+                <i class="bi bi-check-circle-fill ms-auto"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info badge -->
+          <div class="mt-auto">
+            <div class="report-info-pill">
+              <i class="bi bi-info-circle me-2"></i>
+              <small>5 variables seleccionadas</small>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── Panel Derecho (Claro) ── -->
+        <div class="report-right-panel flex-grow-1 d-flex flex-column">
+
+          <!-- Área de vista previa -->
+          <div class="flex-grow-1 p-4 overflow-auto">
+
+            <!-- Encabezado vista previa -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div>
+                <h6 class="fw-bold text-dark mb-1">Vista previa del reporte</h6>
+                <small class="text-muted">Semestre actual &mdash; Generado el 01/03/2026</small>
+              </div>
+              <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">
+                <i class="bi bi-eye me-1"></i>Preview
+              </span>
+            </div>
+
+            <!-- Glass KPI Cards -->
+            <div class="row g-3 mb-4">
+              <div class="col-4">
+                <div class="glass-kpi glass-kpi-green">
+                  <small class="text-muted d-block mb-1">Asistencia</small>
+                  <span class="fw-bold fs-4 text-success">87%</span>
+                  <small class="text-muted d-block mt-1" style="font-size:0.7rem">de sesiones programadas</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="glass-kpi glass-kpi-blue">
+                  <small class="text-muted d-block mb-1">Solicitudes</small>
+                  <span class="fw-bold fs-4" style="color:#3b82f6">156</span>
+                  <small class="text-muted d-block mt-1" style="font-size:0.7rem">128 gest. · 28 pend.</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="glass-kpi glass-kpi-amber">
+                  <small class="text-muted d-block mb-1">Inasistencia</small>
+                  <span class="fw-bold fs-4" style="color:#f59e0b">8.5%</span>
+                  <small class="text-muted d-block mt-1" style="font-size:0.7rem">no-shows registrados</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart Previews -->
+            <div class="row g-3">
+              <div class="col-8">
+                <div class="preview-chart-box">
+                  <small class="report-chart-label d-block mb-3">SOLICITUDES POR MATERIA</small>
+                  <div class="gradient-bars">
+                    <div class="g-bar" style="--h:70%"><span>Mat</span></div>
+                    <div class="g-bar" style="--h:55%"><span>Fís</span></div>
+                    <div class="g-bar" style="--h:44%"><span>Quí</span></div>
+                    <div class="g-bar" style="--h:85%"><span>Pro</span></div>
+                    <div class="g-bar" style="--h:32%"><span>Ing</span></div>
+                    <div class="g-bar" style="--h:28%"><span>Est</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="preview-chart-box d-flex flex-column align-items-center justify-content-center">
+                  <small class="report-chart-label d-block mb-3">MODALIDAD</small>
+                  <div class="preview-donut-modern"></div>
+                  <div class="d-flex gap-3 mt-3">
+                    <small style="font-size:0.65rem">
+                      <span class="me-1" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#198754"></span>Presencial 65%
+                    </small>
+                    <small style="font-size:0.65rem">
+                      <span class="me-1" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6"></span>Virtual 35%
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Barra de Acciones -->
+          <div class="report-action-bar px-4 py-3 d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-ghost-cancel" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-excel-modern">
+                <i class="bi bi-file-earmark-excel me-2"></i>Excel / CSV
+              </button>
+              <button type="button" class="btn btn-pdf-modern">
+                <i class="bi bi-file-earmark-pdf me-2"></i>PDF
+              </button>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   </div>
