@@ -16,20 +16,16 @@
         </h5>
         <p class="text-muted small mb-0">Selecciona el tipo de datos y arrastra o selecciona tu archivo Excel.</p>
       </div>
-      <div class="dropdown">
-        <button class="btn btn-success dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <i [class]="selectedOption.icon"></i>
-          {{ selectedOption.label }}
-        </button>
-
-        <ul class="dropdown-menu shadow">
-          <li *ngFor="let option of uploadOptions">
-            <a class="dropdown-item d-flex align-items-center gap-2" href="javascript:void(0)" (click)="selectOption(option)">
-              <i [class]="option.icon"></i>
-              {{ option.label }}
-            </a>
-          </li>
-        </ul>
+      <div class="d-flex align-items-center gap-2">
+        <i [class]="selectedOption.icon + ' text-success fs-5'"></i>
+        <select class="form-select form-select-sm border-success"
+                style="min-width: 180px; color: #198754; font-weight: 500; cursor: pointer;"
+                [(ngModel)]="selectedUploadType"
+                (ngModelChange)="onTypeSelectChange($event)">
+          <option *ngFor="let option of uploadOptions" [value]="option.id">
+            {{ option.label }}
+          </option>
+        </select>
       </div>
     </div>
 

@@ -34,6 +34,16 @@ export class CoordDataloadComponent {
     this.clearFile();
   }
 
+  // Método para el <select> nativo: actualiza selectedOption e icono según el ID elegido
+  onTypeSelectChange(typeId: UploadType): void {
+    const found = this.uploadOptions.find(o => o.id === typeId);
+    if (found) {
+      this.selectedOption = found;
+      this.selectedUploadType = found.id;
+    }
+    this.clearFile();
+  }
+
   // Método principal para subir datos
   uploadData() {
     if (!this.selectedFile) {
