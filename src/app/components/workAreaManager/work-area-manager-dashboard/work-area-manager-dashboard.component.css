@@ -1,0 +1,16 @@
+.tracking-wide {
+  letter-spacing: 0.05em;
+}
+
+.hover-lift {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
+}
+
+.btn-white {
+  background-color: #ffffff;
+}

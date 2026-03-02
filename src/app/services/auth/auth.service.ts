@@ -86,6 +86,8 @@ export class AuthService {
       this.router.navigate(['/teacher']);
     } else if (roles.includes('student') || roles.includes('estudiante')) {
       this.router.navigate(['/student']);
+    } else if (roles.includes('workareamanagement') || roles.includes('gestor de espacios fisicos')) {
+      this.router.navigate(['/workAreaManagement']);
     } else {
       // Fallback: si no tiene rol reconocido
       this.router.navigate(['/login']);
