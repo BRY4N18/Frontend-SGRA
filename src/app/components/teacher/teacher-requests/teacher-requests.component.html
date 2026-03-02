@@ -179,6 +179,9 @@
               <span class="label">Estado</span>
               <span class="badge rounded-pill" [ngClass]="statusBadge(selected.statusId)">{{ selected.statusName }}</span>
             </div>
+            @if (selected.scheduledId) {
+              <div class="col-6"><span class="label">ID Sesión programada</span><strong class="d-block">#{{ selected.scheduledId }}</strong></div>
+            }
           </div>
         </div>
         <div class="modal-footer border-top">

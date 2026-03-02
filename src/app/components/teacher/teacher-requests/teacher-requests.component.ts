@@ -200,7 +200,8 @@ export class TeacherRequestsComponent implements OnInit {
   submitCancel(): void {
     if (!this.selected) return;
     this.busy = true;
-    this.reqSvc.cancelRequest(this.selected.requestId, { reason: this.reasonText || undefined }).subscribe({
+    const id = this.selected.scheduledId ?? this.selected.requestId;
+    this.reqSvc.cancelRequest(id, { reason: this.reasonText || undefined }).subscribe({
       next: res => { this.busy = false; this.showSuccess(`Sesión cancelada. ${res.message}`); this.closeModal(); this.load(); },
       error: err => { this.busy = false; this.errorMsg = err?.message; this.cdr.detectChanges(); }
     });
@@ -210,7 +211,8 @@ export class TeacherRequestsComponent implements OnInit {
   submitVirtualLink(): void {
     if (!this.selected) return;
     this.busy = true;
-    this.sessSvc.setVirtualLink(this.selected.requestId, { url: this.virtualLinkUrl }).subscribe({
+    const id = this.selected.scheduledId ?? this.selected.requestId;
+    this.sessSvc.setVirtualLink(id, { url: this.virtualLinkUrl }).subscribe({
       next: res => { this.busy = false; this.showSuccess(`Enlace virtual registrado. ${res.message}`); this.closeModal(); },
       error: err => { this.busy = false; this.errorMsg = err?.message; this.cdr.detectChanges(); }
     });
@@ -220,7 +222,8 @@ export class TeacherRequestsComponent implements OnInit {
   submitAttendance(): void {
     if (!this.selected || !this.attendancePerformedId) return;
     this.busy = true;
-    this.sessSvc.registerAttendance(this.selected.requestId, {
+    const id = this.selected.scheduledId ?? this.selected.requestId;
+    this.sessSvc.registerAttendance(id, {
       performedId: this.attendancePerformedId,
       attendances: this.attendanceList,
     }).subscribe({
@@ -233,7 +236,8 @@ export class TeacherRequestsComponent implements OnInit {
   submitPerformed(): void {
     if (!this.selected) return;
     this.busy = true;
-    this.sessSvc.registerPerformed(this.selected.requestId, this.performedObservation, this.performedDuration, this.performedFiles).subscribe({
+    const id = this.selected.scheduledId ?? this.selected.requestId;
+    this.sessSvc.registerPerformed(id, this.performedObservation, this.performedDuration, this.performedFiles).subscribe({
       next: res => { this.busy = false; this.showSuccess(`Resultado registrado. ${res.message}`); this.closeModal(); this.load(); },
       error: err => { this.busy = false; this.errorMsg = err?.message; this.cdr.detectChanges(); }
     });

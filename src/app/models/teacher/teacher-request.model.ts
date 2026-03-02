@@ -7,6 +7,7 @@
 
 export interface TeacherRequestItemDTO {
   requestId: number;
+  scheduledId?: number;   // populated by the backend once the request is accepted
   studentName: string;
   subjectName: string;
   sessionType: string;

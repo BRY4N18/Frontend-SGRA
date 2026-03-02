@@ -59,10 +59,6 @@ export const routes: Routes = [
         loadComponent: () => import('./components/teacher/teacher-dashboard/teacher-dashboard.component').then(m => m.TeacherDashboardComponent)
       },
       {
-        path: 'availability',
-        loadComponent: () => import('./components/teacher/teacher-availability/teacher-availability.component').then(m => m.TeacherAvailabilityComponent)
-      },
-      {
         path: 'requests',
         loadComponent: () => import('./components/teacher/teacher-requests/teacher-requests.component').then(m => m.TeacherRequestsComponent)
       },
