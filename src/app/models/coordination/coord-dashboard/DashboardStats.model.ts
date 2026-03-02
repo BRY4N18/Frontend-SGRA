@@ -1,3 +1,44 @@
+// ============================================================
+// Interfaces del backend (GET /api/coordination/dashboard)
+// ============================================================
+
+export interface CoordinationDashboard {
+  kpis: DashboardKpis;
+  asistencia: DashboardAsistencia;
+  solicitudesPorMateria: DashboardSolicitudMateria[];
+  modalidades: DashboardModalidad[];
+}
+
+export interface DashboardKpis {
+  totalSolicitudes: number;
+  pendientes: number;
+  gestionadas: number;
+}
+
+export interface DashboardAsistencia {
+  totalSesionesRegistradas: number;
+  totalAsistencias: number;
+  totalInasistencias: number;
+  porcentajeAsistencia: number;
+  tasaInasistencia: number;
+}
+
+export interface DashboardSolicitudMateria {
+  asignatura: string;
+  totalMateria: number;
+  pendientes: number;
+  gestionadas: number;
+}
+
+export interface DashboardModalidad {
+  modalidad: string;
+  total: number;
+}
+
+// ============================================================
+// Interfaces legacy (mantenidas por compatibilidad)
+// ============================================================
+
 /**
  * Estadísticas del Dashboard del Coordinador
  */

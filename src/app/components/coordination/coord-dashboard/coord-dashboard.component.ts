@@ -1,13 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
 import { CoordDashboardService } from '../../../services/coordination/coord-dashboard/coord-dashboard.service';
-import {
-  DashboardStats,
-  QuickSummaryWidget,
-  RecentActivity,
-  Notification,
-} from '../../../models/coordination/coord-dashboard';
+import { CoordinationDashboard } from '../../../models/coordination/coord-dashboard';
 
 Chart.register(...registerables);
 
@@ -22,50 +17,67 @@ export class CoordDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('barChartCanvas') barChartRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('donutChartCanvas') donutChartRef!: ElementRef<HTMLCanvasElement>;
 
-  stats: DashboardStats | null = null;
-  widgets: QuickSummaryWidget[] = [];
-  recentActivities: RecentActivity[] = [];
-  notifications: Notification[] = [];
-  unreadCount = 0;
+  dashboard: CoordinationDashboard | null = null;
+  isLoading = true;
 
-  constructor(private dashboardService: CoordDashboardService) {}
+  private viewInitialized = false;
+
+  constructor(
+    private dashboardService: CoordDashboardService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.loadDashboard();
   }
 
   ngAfterViewInit(): void {
+    this.viewInitialized = true;
+    if (this.dashboard) {
+      this.initCharts();
+    }
+  }
+
+  private loadDashboard(): void {
+    this.dashboardService.getDashboard().subscribe(data => {
+      this.dashboard = data;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      if (this.viewInitialized) {
+        this.initCharts();
+      }
+    });
+  }
+
+  private initCharts(): void {
+    if (!this.dashboard) return;
     this.initBarChart();
     this.initDonutChart();
   }
 
-  private loadDashboardData(): void {
-    this.dashboardService.getDashboardStats().subscribe(stats => (this.stats = stats));
-    this.dashboardService.getQuickSummaryWidgets().subscribe(w => (this.widgets = w));
-    this.dashboardService.getRecentActivity(5).subscribe(a => (this.recentActivities = a));
-    this.dashboardService.getNotifications().subscribe(n => (this.notifications = n));
-    this.dashboardService.getUnreadNotificationsCount().subscribe(c => (this.unreadCount = c));
-  }
-
   private initBarChart(): void {
     const ctx = this.barChartRef?.nativeElement.getContext('2d');
-    if (!ctx) return;
+    if (!ctx || !this.dashboard) return;
+
+    const labels = this.dashboard.solicitudesPorMateria.map(s => s.asignatura);
+    const gestionadas = this.dashboard.solicitudesPorMateria.map(s => s.gestionadas);
+    const pendientes = this.dashboard.solicitudesPorMateria.map(s => s.pendientes);
 
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Matemáticas', 'Física', 'Química', 'Programación', 'Inglés', 'Estadística'],
+        labels,
         datasets: [
           {
             label: 'Gestionadas',
-            data: [42, 35, 28, 55, 20, 18],
+            data: gestionadas,
             backgroundColor: '#198754',
             borderRadius: 4,
             borderSkipped: false,
           },
           {
             label: 'Pendientes',
-            data: [8, 5, 12, 10, 3, 7],
+            data: pendientes,
             backgroundColor: '#f59e0b',
             borderRadius: 4,
             borderSkipped: false,
@@ -92,16 +104,20 @@ export class CoordDashboardComponent implements OnInit, AfterViewInit {
 
   private initDonutChart(): void {
     const ctx = this.donutChartRef?.nativeElement.getContext('2d');
-    if (!ctx) return;
+    if (!ctx || !this.dashboard) return;
+
+    const labels = this.dashboard.modalidades.map(m => m.modalidad);
+    const data = this.dashboard.modalidades.map(m => Number(m.total));
+    const colors = ['#198754', '#3b82f6', '#f59e0b', '#e74c3c'];
 
     new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Presencial', 'Virtual'],
+        labels,
         datasets: [
           {
-            data: [65, 35],
-            backgroundColor: ['#198754', '#3b82f6'],
+            data,
+            backgroundColor: colors.slice(0, labels.length),
             borderWidth: 0,
             hoverOffset: 8,
           },
@@ -123,16 +139,6 @@ export class CoordDashboardComponent implements OnInit, AfterViewInit {
           },
         },
       },
-    });
-  }
-
-  markAsRead(notificationId: number): void {
-    this.dashboardService.markNotificationAsRead(notificationId).subscribe(() => {
-      const notification = this.notifications.find(n => n.id === notificationId);
-      if (notification) {
-        notification.leida = true;
-        this.unreadCount = Math.max(0, this.unreadCount - 1);
-      }
     });
   }
 }
