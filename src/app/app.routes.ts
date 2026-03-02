@@ -58,10 +58,6 @@ export const routes: Routes = [
         path: 'requests',
         loadComponent: () => import('./components/teacher/teacher-requests/teacher-requests.component').then(m => m.TeacherRequestsComponent)
       },
-      {
-        path: 'history',
-        loadComponent: () => import('./components/teacher/teacher-history/teacher-history.component').then(m => m.TeacherHistoryComponent)
-      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
@@ -119,22 +115,8 @@ export const routes: Routes = [
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
-  },
-  {
-    path: 'workAreaManagement',
-    loadComponent: () => import('./components/workAreaManager/work-area-manager-layout/work-area-manager-layout.component').then(m => m.WorkAreaManagerLayoutComponent),
-    canActivate: [authGuard, roleGuard(['workAreaManagement', 'Gestor de Espacios Fisicos'])],
-    children: [
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./components/workAreaManager/work-area-manager-dashboard/work-area-manager-dashboard.component').then(m => m.WorkAreaManagerDashboardComponent)
-      },
-      {
-        path: 'management-requests',
-        loadComponent: () => import('./components/workAreaManager/work-area-manager-management-of-in-person-requests/work-area-manager-management-of-in-person-requests.component').then(m => m.WorkAreaManagerManagementOfInPersonRequestsComponent)
-      },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ]
+
+
   },
   {
     path: '**',

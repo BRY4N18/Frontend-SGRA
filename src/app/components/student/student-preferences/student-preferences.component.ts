@@ -12,7 +12,166 @@ import {
   selector: 'app-student-preferences',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './student-preferences.component.html'
+  template: `
+    <div class="container-fluid">
+      <!-- Header -->
+      <div class="mb-4">
+        <h3 class="mb-1">Preferencias</h3>
+        <p class="text-muted mb-0">Configura tus preferencias para notificaciones de refuerzos académicos</p>
+      </div>
+
+      <!-- Error Alert -->
+      @if (errorMessage) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+        </div>
+      }
+
+      <!-- Success Alert -->
+      @if (successMessage) {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          {{ successMessage }}
+          <button type="button" class="btn-close" (click)="successMessage = null"></button>
+        </div>
+      }
+
+      <!-- Loading State -->
+      @if (loading) {
+        <div class="card border-0 shadow-sm">
+          <div class="card-body text-center py-5">
+            <div class="spinner-border text-success mb-3" role="status"></div>
+            <p class="text-muted mb-0">Cargando preferencias...</p>
+          </div>
+        </div>
+      }
+
+      <!-- Preferences Form -->
+      @if (!loading) {
+
+        <!-- Welcome message for new users -->
+        @if (isNewUser) {
+          <div class="alert alert-success border-0 shadow-sm mb-3">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-info-circle-fill fs-4 me-3 text-success"></i>
+              <div>
+                <h6 class="fw-bold mb-1">¡Bienvenido! Configura tus preferencias</h6>
+                <p class="mb-0 text-muted">
+                  Aún no tienes preferencias de notificación configuradas. Selecciona cómo deseas recibir
+                  avisos sobre tus solicitudes de refuerzo y guarda los cambios.
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="mb-0">
+              <i class="bi bi-bell me-2 text-success"></i>
+              Notificaciones
+            </h5>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="onSave()" #preferencesForm="ngForm">
+              <!-- Channel Selection -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold">
+                  Canal de Notificación <span class="text-danger">*</span>
+                </label>
+                <p class="text-muted small mb-2">
+                  Selecciona cómo deseas recibir notificaciones sobre tus solicitudes de refuerzo
+                </p>
+                <select class="form-select" [(ngModel)]="form.channelId" name="channelId" required>
+                  <option [ngValue]="null">Selecciona un canal</option>
+                  @for (channel of channels; track channel.channelId) {
+                    <option [ngValue]="channel.channelId">{{ channel.channelName }}</option>
+                  }
+                </select>
+              </div>
+
+              <!-- Reminder Anticipation -->
+              <div class="mb-4">
+                <label class="form-label fw-semibold">
+                  Anticipación del Recordatorio <span class="text-danger">*</span>
+                </label>
+                <p class="text-muted small mb-2">
+                  ¿Con cuántos minutos de anticipación deseas recibir un recordatorio antes de tu sesión?
+                </p>
+                <div class="input-group" style="max-width: 200px;">
+                  <input type="number" class="form-control"
+                         [(ngModel)]="form.reminderAnticipation"
+                         name="reminderAnticipation"
+                         min="0" max="1440" required
+                         placeholder="0">
+                  <span class="input-group-text">minutos</span>
+                </div>
+                <small class="text-muted">Entre 0 y 1440 minutos (24 horas)</small>
+              </div>
+
+              <!-- Anticipation presets -->
+              <div class="mb-4">
+                <label class="form-label small text-muted">Opciones rápidas:</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary"
+                          (click)="setAnticipation(0)" [class.active]="form.reminderAnticipation === 0">
+                    Sin recordatorio
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"
+                          (click)="setAnticipation(15)" [class.active]="form.reminderAnticipation === 15">
+                    15 min
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"
+                          (click)="setAnticipation(30)" [class.active]="form.reminderAnticipation === 30">
+                    30 min
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"
+                          (click)="setAnticipation(60)" [class.active]="form.reminderAnticipation === 60">
+                    1 hora
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary"
+                          (click)="setAnticipation(120)" [class.active]="form.reminderAnticipation === 120">
+                    2 horas
+                  </button>
+                </div>
+              </div>
+
+              <!-- Current preference info -->
+              @if (currentPreference) {
+                <div class="alert alert-light mb-4">
+                  <small>
+                    <i class="bi bi-info-circle me-1"></i>
+                    Preferencia actual: <strong>{{ currentPreference.channelName }}</strong>
+                    con recordatorio de <strong>{{ currentPreference.reminderAnticipation }} minutos</strong>
+                  </small>
+                </div>
+              }
+
+              <!-- Buttons -->
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success"
+                        [disabled]="!preferencesForm.valid || saving">
+                  @if (saving) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Guardando...
+                  } @else {
+                    <i class="bi bi-check-lg me-2"></i>
+                    Guardar cambios
+                  }
+                </button>
+                <button type="button" class="btn btn-outline-secondary"
+                        (click)="resetForm()" [disabled]="saving">
+                  <i class="bi bi-arrow-counterclockwise me-2"></i>
+                  Restablecer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+    </div>
+  `
 })
 export class StudentPreferencesComponent implements AfterViewInit {
   private svc = inject(StudentPreferencesService);
